@@ -1,4 +1,4 @@
-https://github.com/VinicusGB/cursos_dev_web# HTTP: Entendo a web por baixo dos panos - 14 horas
+# HTTP: Entendo a web por baixo dos panos - 14 horas
 
 **Professor:** Fábio Pimentel<br>
 **Disponível:** <a href="https://cursos.alura.com.br/course/http-fundamentos" target="blank">ALURA</a><br>
@@ -325,25 +325,356 @@ Isso é um pouco mais legível e possui a vantagem que a URL não diz nada a res
 ### Comunicaçõ em HTTP
 ## 05. Depurando a requisição HTTP
 ### Depurando o método HTTP
+
+    Depurando uma requisição
+
+>   Ferramenta de Desenvolvedor: F12 -> Aba: Network -> Requisição:site -> Aba: Headers -> Categoria: General
+ - nome: nome da requisição
+ - status: selecionar para mais detalhes
+
 ### Console no Firefox e Internet Explorer
-### Analisando _Request_ e _Response_ 1
+
+    Para abrir o console no Mozilla Firefox basta apertar a tecla F12, ou CTRL + SHIFT + I. Ele também pode ser acessado pelo menu: Ferramentas -> Desenvolvedor web -> Exibir/Ocultar ferramentas**.
+
+<center><img src="https://s3.amazonaws.com/caelum-online-public/http/firefox-console.png"></center>
+
+    No Microsoft Internet Explorer basta apertar a tecla F12 ou ir pelo menu de configuração: F12 Ferramentas do desenvolvedor.
+
+<center><img src="https://s3.amazonaws.com/caelum-online-public/http/iexplorer-console.png"></center>
+
+<center><img src="https://s3.amazonaws.com/caelum-online-public/http/iexplorer-console-aberto.png"></center>
+
+    No Safari basta usa o atalho COMMAND + SHIFT + C .
+
+### Exercício: Analisando _Request_ e _Response_ 1
+
+    Abaixo há um exemplo de uma requisição e resposta, usando a ferramenta telnet. Através dele, acessamos www.caelum.com.br na porta padrão 80.
+
+<center><img src="https://s3.amazonaws.com/caelum-online-public/http/telnet-http.png"></center>
+
+    O telnet estabelece apenas uma conexão TCP (protocolo de rede que roda abaixo do HTTP) e permite que enviemos dados em cima dessa conexão, através do terminal. Uma vez a conexão estabelecida, basta escrever no terminal e os dados serão enviados automaticamente para o servidor. Para o servidor realmente entender os dados, devemos respeitar a sintaxe do protocolo HTTP!
+
+    Nesse exemplo digitamos no terminal:
+
+>    GET / HTTP/1.1<BR>
+>    HOST: www.caelum.com.br<br>
+
+    E a resposta do servidor segue logo abaixo:
+
+>    HTTP/1.1 200 OK<br>
+>    Content-Type: text/html; charset=utf-8<br>
+>    Vary: Accept-Encoding,User-Agent<br>
+>    Content-Language: pt-br<br>
+>    Date: Mon, 01 Jun 2015 21:00:20 GMT<br>
+>    Server: Google Frontend<br>
+>    Cache-Control: private
+
+    Agora, baseado nesses dados, qual foi o método HTTP e código da resposta?
+
+    a) HTTP e 1.1
+    b) HOST e 200
+    c) GET e 1.1
+    d) Alternativa correta: GET e 200
+
+> O método HTTP é GET e o código da resposta é 200.
+
+> Lembrando que o método define a ação ou intenção da requisição HTTP (GET é igual a receber). O código da resposta dá uma dica ao cliente se a requisição foi um sucesso ou não, e qual foi o problema em caso de falha. O código 200 significa que tudo deu certo!
+
 ### Depurando os códigos de resposta HTTP
-### Código de sucesso
-### Problema no servidor
-### Recurso não encontrado
-### Analisando _Request_ e _Response_ 2
-### Classes de códigos
+
+>   Ferramenta de Desenvolvedor: F12 -> Aba: Network -> Requisição:site -> Aba: Headers -> Categoria: General
+ - nome: nome da requisição
+ - status code:
+   - 2XX: Successful responses
+      - 200: ok, sucesso na solicitação
+   - 3XX: Redirection messages
+      - 301: moved permanently, novo endereço de requisição
+   - 4XX: Client error responses
+      - 404: not found, recurso não localizado
+   - 5XX: Server error responses
+     - 500: internal server error, erro interno no servidor
+
+### Exercício: Código de sucesso
+
+    Qualquer resposta HTTP possui um número que informa sobre o status da requisição.
+
+    Qual dos códigos abaixo indica que a requisição foi bem sucedida?
+
+    a) 100
+    b) 404
+    c) 300
+    d) Alternativa correta: 200
+
+> O código 200 significa OK, ou Sucesso, que não houve nenhum problema no processamento da requisição e ela foi bem sucedida.
+
+> Existem mais códigos que começam com 2xx. No entanto 200 é de longe o mais utilizado, principalmente no desenvolvimento de uma aplicação web.
+
+> Na documentação oficial, se diz a respeito da classe de códigos que começam com 2xx:<br>
+>  - 2xx - Resposta bem sucedida!
+    Essa classe de códigos de status indica que a ação solicitada pelo cliente foi recebida, compreendida, aceita e processada com êxito.
+
+    A tabela completa de mensagens HTTP pode ser vista em: https://www.w3schools.com/tags/ref_httpmessages.asp.
+
+### Exercício: Problema no servidor
+
+    Vimos que há diversos códigos HTTP. Vendo os códigos abaixo, qual deles representa algum problema gerado no servidor?
+
+    a) 302
+    b) 402
+    c) Alternativa correta: 500
+    d) 301
+
+> A classe 5xx significa que houve algum problema no servidor.
+
+> Por exemplo: 500 - Internal Server Error, ou outro famoso: 503 - Service Unavailable.
+
+> O código 500 acontece com frequência quando estamos desenvolvendo uma aplicação web e, ao testar, percebemos que erramos algo na lógica que gerou um problema no servidor.
+
+### Exercício: Recurso não encontrado
+
+    Abra uma nova aba no navegador e tente acessar: http://g1.globo.com/algo-que-nao-existe
+
+    Qual foi o código da resposta?
+
+    Obs: Você precisa depurar a requisição HTTP para descobrir o código da resposta.
+
+    a) 500
+    b) 405
+    c) 200
+    d) Alternativa correta: 404
+
+> 404 é o código clássico que indica que o recurso não foi encontrado. Em geral, a classe 4xx indica que o cliente errou algo na requisição.
+
+> Segue um outro exemplo da classe 4xx, tente acessar: https://s3.amazonaws.com/caelum-online-public/http/qq.png
+> -  Nesse caso o código de resposta é 403(não permitido): o cliente não tem a permissão.
+
+### Exercício: Analisando _Request_ e _Response_ 2
+
+    Repare os cabeçalhos da requisição e resposta:
+
+<center><img src="https://s3.amazonaws.com/caelum-online-public/http/telnet-http-302-v2.png"></center>
+
+    Seguem 4 afirmações:
+
+    1) O código da resposta é 302.
+
+    2) O recurso solicitado é /cursos/.
+
+    3) O cliente não recebeu a resposta.
+
+    4) O servidor está pedindo um redirecionamento.
+
+    Avalie as afirmações e escolha a resposta correta:
+
+    a) Alternativa correta: Apenas as afirmativas 1 e 4 são verdadeiras.
+    b) Todas as afirmativas são verdadeiras.
+    c) Apenas as afirmativas 1, 2 e 4 são verdadeiras.
+    d) Apenas as afirmativas 2 e 3 são verdadeiras.
+
+> 1) O código da resposta é 302.
+> - Correto, o código aparece na resposta. O código 302 significa Movido Temporariamente.
+> 2) O recurso solicitado é /cursos/.
+> - Errado, pois na requisição aparece: GET /treinamento HTTP/1.1.
+> 3) O cliente não recebeu a resposta.
+> - Errado, pois foi enviada sim uma resposta para o cliente.
+> 4) O servidor está pedindo um redirecionamento.
+> - Correto, na resposta aparece o cabeçalho Location, que define o redirecionamento para http://www.caelum.com.br/cursos/.
+
+
+> Portanto, as afirmativas 1 e 4 são verdadeiras.
+
+### Exercício: Classes de códigos
+
+    Já vimos 3 classes do protocolo HTTP: 2xx, 4xx e 5xx.
+
+<center><img src="https://s3.amazonaws.com/caelum-online-public/http/classe-http-1.png"></center>
+
+    Para que existem os códigos 3xx?
+
+    a) Alternativa correta: Redirecionamento.
+    b) Comunicação unidirecional.
+    c) Erro no intermediário.
+    d) Virus encontrado.
+
+> A classe do código 3xx é relacionada com o redirecionamento.
+
+> Nesse caso, o cliente (navegador) deve tomar medidas extras para concluir o pedido. Normalmente são utilizados os códigos 301 ou 302, junto com o cabeçalho de resposta Location.
+
+> Por exemplo, veja a requisição, tentando acessar a Alura através do protocolo HTTP (sem S):
+> > GET / HTTP/1.1<br>
+  > HOST: www.alura.com.br<br>
+>
+> Na resposta, recebemos o código 301 e o cabeçalho Location para enviar uma nova requisição, usando o protocolo HTTPS:
+> > HTTP/1.1 301 Moved Permanently<br>
+    Server: nginx/1.6.2<br>
+    Date: Tue, 02 Jun 2015 19:37:44 GMT<br>
+    Content-Type: text/html<br>
+    Content-Length: 184<br>
+    Location: https://www.alura.com.br/<br>
+
 ### Para saber mais: Mais códigos HTTP
+
+    HTTP é o protocolo mais utilizado na internet e há muita documentação disponível. Segue um link que explica os códigos HTTP de forma divertida: httpstatusdogs ou se você preferir gatos httpcats
+
+    Espero que goste :)
+
+    #### Opinião do instrutor
+
+    Além de se aprender de forma divertida com os cachorrinhos, você pode conferir uma documentação mais completa e detalhada neste link: https://httpstatuses.com/
+
 ## 06. Parâmetros da requisição
-### Revisando o capítulo anterior
-### A qual grupo eu pertenço?
+### Exercício: A qual grupo eu pertenço?
+
+    Com base na família de erros que você aprendeu no curso, marque a alternativa correta:
+
+    a) 
+    200, 203, 207 -> Respostas de Sucesso
+    500, 502, 503 -> Mensagem de redirecionamento
+    300, 201, 302 -> Respostas de erro do cliente
+    401, 404, 405 -> Respostas de erro do servidor
+
+
+    b) 
+    200, 203, 207 -> Respostas de Sucesso
+    401, 404, 405 -> Mensagem de redirecionamento
+    300, 201, 302 -> Respostas de erro do cliente
+    500, 502, 503 -> Respostas de erro do servidor
+
+    c) Alternativa correta
+    200, 203, 207 -> Respostas de Sucesso
+    300, 301, 302 -> Mensagem de redirecionamento
+    401, 404, 405 -> Respostas de erro do cliente
+    500, 502, 503 -> Respostas de erro do servidor
+
 ### Paraâmetros na requisição com métodos GET e POST
-### Testando parâmetros de requisição
-### Enviando parâmetros de forma correta
-### Qual é o método HTTP?
-### Por que POST?
+
+- GET: Passagem de parâmetros pela URL
+
+- POST: Passagem de parâmetros pela requisição
+
+### Exercício: Testando parâmetros de requisição
+
+    Vamos testar o envio de parâmetros através da requisição, fazendo uma busca no Google pela palavra Alura.
+
+    Para isso, na URI do Google, vamos enviar na requisição o parâmetro q com o valor Alura. Ou seja: 
+>    google.com.br/search?q=Alura
+
+    Ao entrar nessa URI, qual método HTTP foi usado?
+
+    a) Outro método.
+    b) POST.
+    c) Alternativa correta: GET.
+
+> Resposta correta: GET<br>
+> Quando passamos os parâmetros da requisição na URL, estamos fazendo uso do método GET. O que é super útil quando precisamos repetir a requisição com os mesmos parâmetros :)
+
+### Exercício: Enviando parâmetros de forma correta
+
+    Vimos que podemos enviar parâmetros em uma URL. Então, qual é a forma correta de enviá-los?
+
+    a) http://calculadordeimc.com.br/&peso=44&altura=1.50
+    b) http://calculadordeimc.com.br/?peso=44,altura=1.50
+    c)     Alternativa correta: http://calculadordeimc.com.br/?peso=44&altura=1.50
+    d) http://calculadordeimc.com.br/&peso=44?altura=1.50
+
+> Quando enviamos parâmetros na URL, devemos iniciar pelo ?, o nome do parâmetro e um =, para separar o nome do parâmetro do seu valor:
+ - ?nome_do_parametro=seu_valor
+ - Quando usamos mais do que, um parâmetro devemos usar & para separá-los:
+   - ?nome_do_parametro=seu_valor&nome_do_outro_param=valor
+
+### Exercício: Qual é o método HTTP?
+
+    Veja os dados da requisição:
+
+> AQUI /vendas?ano=2014 HTTP/1.1<br>
+> HOST: www.vendasfuturas.com.br
+
+    Qual método HTTP devemos colocar no lugar de AQUI para a requisição funcionar corretamente?
+
+    a) POST
+    b) PUT
+    c) Alternativa correta: GET
+    d) DELETE
+
+> GET é normalmente usado para pesquisas, mas isso depende um pouco de como a plataforma e o desenvolvedor usam esse método. Na vida real, vocês vão encontrar muitos exemplos que usam requisições do tipo GET, não só para pesquisas.
+> - O protocolo HTTP define que o GET deve ser utilizado apenas para acessar os dados, mas HTTP, como protocolo, não pode impedir o desenvolvedor de fazer algo diferente. Por exemplo, veja a requisição a seguir:
+
+>    GET /vendas/remove?id=53 HTTP/1.1<br>
+>    HOST: www.vendasfuturas.com.br
+
+>    Usamos GET, mas repare que o nome do recurso muda a intenção do método HTTP. O recurso se chama /vendas/remove, ou seja, queremos apagar a venda com a identificação 53, usando o método GET!
+
+>    O protocolo HTTP define apenas algumas regras entre cliente e servidor. O que o servidor realmente faz depende da implementação, ok?
+
+>    OBS: Se tiver com código 500 na cabeça, abra uma pergunta no fórum :)
+
+### Exercício: Por que POST?
+
+    Seguem os dados da requisição para efetuar o login na plataforma Alura:
+
+>    POST /signin/ HTTP/1.1<br>
+>    HOST: https://www.alura.com.br<br>
+>    Content-Type: application/x-www-form-urlencoded<br>
+>    email=nico.steppat%40caelum.com.br&senha=totalmentesecreta
+
+    Por que foi utilizado o método POST?
+
+    a) Foi utilizado POST. Mas como não há diferença, poderíamos usar GET.
+    b) Usamos POST para deixar os parâmetros explícitos na URL.
+    c) Usamos POST para definir o recurso.
+    d) Alternativa correta: Usamos POST para incluir os parâmetros no corpo da requisição.
+
+>    Utilizando o método GET, tanto o login quanto a senha seriam passados como parâmetro na URL, coisa que não queremos que aconteça. O método POST deixa os parâmetros no corpo da requisição, assim evita que informações importantes, como a senha, fiquem explícitas na URL.
+
+> Usando o método GET, a URL ficaria:
+> - GET /signin/?email=nico.steppat@caelum.com.br&senha=totalmentesecreta HTTP/1.1<br>
+    HOST: https://www.alura.com.br
+
+> Logo, o POST foi utilizado para que se enviasse os valores do formulário no corpo da requisição.
+  
 ### Para saber mais: Parâmetros na URL
+
+    Como, por exemplo, podemos enviar uma requisição usando o método GET para carregarmos a página que exibe informações sobre o usuário de número 2? Devemos passar o parâmetro id com o valor 2. Como por exemplo:
+
+>    http://meusite.com.br/usuario?id=2
+
+    Uma outra forma de fazer seria passar os valores na própria URL! Veja o exemplo:
+
+>   http://meusite.com.br/usuario/2
+
+    Mas tem um probleminha, não estamos dizendo explicitamente que o valor 2 realmente representa o id. Quando um parâmetro irá receber um certo valor, devemos combinar com o servidor (com o desenvolvedor da aplicação). Neste caso, foi combinado que o parâmetro recebido seria equivalente ao id passado antes.
+
+    Vamos ver um exemplo prático, em um serviço que retorna informações sobre um endereço de um determinado CEP? Acesse a URL:
+>   http://viacep.com.br/ws/20040030/json
+
+    A resposta será todas as informações do CEP da Caelum Rio, como complemento, número e bairro, formatadas em JSON. Isso significa que foi combinado com o servidor, que o primeiro valor passado depois de ws deve ser o CEP e logo após, o formato em que os dados deverão chegar. No nosso caso, JSON. Tudo bem? :)
+
+    Experimente agora trocar para o CEP de sua casa e para outro formato de dados, como por exemplo, XML.
+
 ### Para saber mais: Outros métodos HTTP e Web Services
+
+    Já falamos bastante sobre os métodos (ou verbos) HTTP, GET e POST. Esses dois são utilizados na grande maioria das aplicações web, e fazem parte do dia a dia do desenvolvedor, no entanto existem diversos outros métodos.
+
+    Se o GET foi criado para receber dados, e o POST para adicionar algo no servidor, será que não existe algo para apagar e atualizar?
+
+    A resposta é sim, e os métodos se chamam DELETE e PUT.
+
+    Novamente esses métodos normalmente não são utilizados quando se trata de uma aplicação web, e são mais importantes quando o assunto é Web Services.
+
+    Agora vem a pergunta, você já ouviu falar de Web Services?
+
+#### Opinião do instrutor
+
+    Quando falamos de um Web Service, sempre usamos o protocolo da web, ou seja o HTTP.
+
+    Um Web Service disponibiliza uma funcionalidade na web, através do protocolo HTTP. As funcionalidades variam muito e dependem muito da empresa e do negócio dela, mas por exemplo, na Alura temos um Web Service que traz todas as informações de um curso (nome, capítulos, exercícios, etc). O Google ou Facebook possuem muitos Web Services para acessar um usuário, ver os posts dele, interesses, etc. Muitas vezes esses serviços são pagos.
+
+    O importante é que sempre usamos o protocolo HTTP. A grande diferença de um Web Service é que os dados não vem no formato HTML, e sim em algum formato independente da visualização, como XML ou JSON.
+
+    Temos um pequeno exemplo de um Web Services que usamos em um dos treinamentos presenciais. Tente acessar: http://argentumws.caelum.com.br/negociacoes
+
+    Repare que recebemos dados sobre negociações, mas o formato é XML. Isso é um Web Service! É a tarefa do cliente ler os dados e apresentar para o usuário final. O cliente não precisa ser o navegador (e normalmente não é), pode ser um celular ou uma aplicação Desktop.
+
 ## 07. Serviços na web com REST
 ### Serviços Web-REST
 ### Métodos HTTP
