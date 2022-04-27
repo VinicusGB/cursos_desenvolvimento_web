@@ -1,4 +1,4 @@
-# HTTP: Entendo a web por baixo dos panos - 14 horas
+https://github.com/VinicusGB/cursos_dev_web# HTTP: Entendo a web por baixo dos panos - 14 horas
 
 **Professor:** Fábio Pimentel<br>
 **Disponível:** <a href="https://cursos.alura.com.br/course/http-fundamentos" target="blank">ALURA</a><br>
@@ -124,20 +124,198 @@
 > Quando usamos HTTP, os dados são enviados em texto puro. O que pode ser perigoso, já que assim deixamos os dados abertos para intermediários.
     
 ### Funcionamento do HPPPS
+
+    Para que o navegador confie neste protocolo HTTP é necessário uma identificação/certificado digital.
+    O certificado digital possui uma chave pública que criptografa a informação enviado pelo navegador. O servidor possui uma chave privada que descriptografa a informação.
+    - web segura
+    - certificado digital(identidade)
+    - chvaes(pública e privada)
+
 ### Certificado digital
-### Características do HTTPS
-### Autoridade certificadora
+    Quando precisamos informar nossos dados a algum servidor, queremos ter certeza que este servidor realmente representa a entidade em questão. Queremos confiar em quem estamos fornecendo nossos dados!
+
+    Um certificado digital prova uma identidade para um site, onde temos informações sobre o seu domínio e a data de expiração desse certificado.
+
+    Além disso, o certificado ainda guarda a chave pública que é utilizada para criptografar (cifrar) os dados que são trafegados entre cliente e servidor.
+
+### Exercício: Características do HTTPS
+
+    Sobre as características do HTTPS, selecione todas as opções abaixo que estejam corretas:
+
+    a) Alternativa correta: A chave privada fica apenas no lado do servidor.
+        Exato, a chave privada é utilizada para descriptografar os dados que foram criptografados com a chave pública, por isso ela é importante e deve ficar apenas em posse do servidor.
+    b) HTTP significa usar um certificado digital do servidor.
+    c) Alternativa correta: O certificado prova a identidade e tem validade.
+        Correto, todo certificado tem uma data validade e serve para provar a identidade entre o cliente e o servidor.
+    d) Alternativa correta: O certificado guarda a chave pública.
+        Perfeito, é no certificado digital que encontramos a chave pública utilizada para criptografar os nossos dados.
+
+> Lembrando o HTTP não utiliza criptografia nenhuma e é inseguro! Para deixar a web segura devemos usar o HTTPS sempre.
+
+### Exercício: Autoridade certificadora
+
+    Qual é a finalidade das autoridades certificadoras?
+
+    a) Alternativa correta: Garantir que podemos confiar naquele certificado (identidade).
+        Exato, a principal função de uma entidade certificadora é garantir que os certificados que estão sendo utilizados podem ser confiados.
+    b) Importar/Exportar chaves publicas do servidor.
+    c) Usada para registrarmos nomes de domínio (DNS).
+    d) Realizar a criptografia dos dados da requisição.
+
+> Essa garantia é feita através de uma assinatura digital. A autoridade certificadora (CA) assina digitalmente o certificado! Como na vida real, existem também no mundo digital: assinaturas!
+
+> Uma autoridade certificadora (CA - Certificate Authority) é um órgão que garante ao navegador e ao usuário que a identidade de um servidor (por exemplo o servidor da Alura) é realmente válida. Portanto, podemos trocar informações com este sem riscos!
+
 ### Para saber mais: As chaves do HTTPS
+
+    Aprendemos no vídeo que o HTTPS usa uma chave pública e uma chave privada. As chaves estão ligadas matematicamente, o que foi cifrado pela chave pública só pode ser decifrado pela chave privada. Isso garante que os dados cifrados pelo navegador (chave pública) só podem ser lidos pelo servidor (chave privada). Como temos duas chaves diferentes envolvidas, esse método de criptografia é chamado de criptografia assimétrica. No entanto, a criptografia assimétrica tem um problema, ela é lenta.
+
+<center><img src="https://s3.amazonaws.com/caelum-online-public/http/cripto-assimetrica.png"></center>
+
+    Por outro lado, temos a criptografia simétrica, que usa a mesma chave para cifrar e decifrar os dados, como na vida real, onde usamos a mesma chave para abrir e fechar a porta. A criptografia simétrica é muito mais rápida, mas infelizmente não tão segura. Como existe apenas uma chave, ela ficará espalhada pelos clientes (navegadores) e qualquer um, que tem a posse dessa chave, pode decifrar a comunicação.
+
+<center><img src="https://s3.amazonaws.com/caelum-online-public/http/cripto-simetrica.png"></center>
+
+    Agora, o interessante é que o HTTPS usa ambos os métodos de criptografia, assimétrica e simétrica. Como assim? Muita calma, tudo o que aprendemos é verdade! Só faltou o grande final :)
+
+    No certificado, vem a chave pública para o cliente utilizar, certo? E o servidor continua na posse da chave privada, ok? Isso é seguro, mas lento e por isso o cliente gera uma chave simétrica ao vivo. Uma chave só para ele e o servidor com o qual está se comunicando naquele momento! Essa chave exclusiva (e simétrica) é então enviada para o servidor utilizando a criptografia assimétrica (chave privada e pública) e então é utilizada para o restante da comunicação.
+
+    Então, HTTPS começa com criptografia assimétrica para depois mudar para criptografia simétrica. Essa chave simétrica será gerada no início da comunicação e será reaproveitada nas requisições seguintes. Bem-vindo ao mundo fantástico do HTTPS :)
+
 ## 03. Endereços sob seu domínio
 ### Endereços
-### O que é um domínio na internet?
-### Como funciona o DNS?
+
+> #### URL
+> - HTTP://WWW.ALURA.COM.BR
+>
+>       protocolo:  HTTP
+>       domínio:    WWW.ALURA.COM.BR
+>       raiz:       COM / BR / ORG / NET / ...
+>       sub-domíno:        COM / GOV / EDU / ...
+>
+
+> - HTTP://172.217.29.68
+>
+>       ip:        172.217.29.68 (DNS)
+>
+
+### Exercício: O que é um domínio na internet?
+
+    Falamos bastante sobre o domínio nessa aula, mas o que é um domínio (ou domain name) e qual a sua importância?
+
+    a) O domínio é o endereço que digitamos no navegador para acessar o site. Para isso, precisamos registrá-lo no servidor de domínios do Google.
+    b) Domínio é permitir uma conexão segura com o site Web de forma que o servidor garante a integridade do serviço. Falamos que o serviço foi acessado de forma dominante.
+    c) Alternativa correta: O domínio é o nome do site na Web. Ele facilita a navegação do usuário, que não precisa lembrar o IP de cada site.
+        Alternativa correta, o domínio é o nome do site na web e serve para facilitar a navegação do usuário, que acaba não precisando lembrar o IP de cada site.
+    d) Domínios eram uma forma primordial de acesso à Internet antes da popularização dos navegadores modernos. Atualmente não são mais usados e o comum é acessar pelo nome de acesso (Access Name).
+
+### Exercício: Como funciona o DNS?
+
+    Qual é o objetivo ou a função do DNS (Domain Name System ou servidor de domínios)?
+
+    a) Alternativa correta: O DNS tem como função realizar a tradução do nome de um domínio para o endereço de IP correspondente.
+        O DNS realiza a tradução do nome de um domínio para o endereço de IP. Existem vários servidores DNS no mundo e é fundamental para a nossa web o funcionamento deles.
+    b) O DNS é um protocolo usado no acesso remoto a uma caixa de correio eletrônico.
+    c) O DNS serve para transferir arquivos pela internet de forma rápida e versátil.
+    d) O DNS é usado para permitir o acesso seguro em redes inseguras, sendo muito usado para realizar o acesso remoto em outros computadores.
+
 ### Portas
-### Porta padrão HTTP
+
+> HTTP:     80<br>
+> HTTPS:    443
+
+    As portas de comunicação abertas no servidor.
+
+### Exercício: Porta padrão HTTP
+
+    Veja o endereço abaixo:
+
+> http://www.alura.com.brCOPIAR CÓDIGO
+
+    Qual é a porta utilizada?
+
+    a) 443
+    b) 8080
+    c) 3000
+    d) Alternativa correta: 80
+        Correto e como ela é o padrão você pode omiti-la no endereço.
+
+> Como as portas padrões são conhecidas pelo navegador, elas podem ser omitidas ao escrevermos uma URL.
+
+> Vários protocolos definem a sua porta padrão como por exemplo o FTP que usa 21 ou SSH que usa 22.
+
 ### Recursos
-### Identificando o protocolo
+
+> HTTPS:WWW.ALURA.COM.BR:443/COURSE/INTRODUCAO-HTML-CSS
+>
+>       protocolo:  HTTPS
+>       domínio:    WWW.ALURA.COM.BR
+>           raiz:                 BR
+>           sub-domínio:      COM
+>       porta:      443
+>       recursos:   COURSE/INTRODUCAO-HTML-CSS
+>
+- URL são endereços da WEB
+- Uma URL começa com o protocolo(http://) seguido pelo domínio(www.alura.com.br)
+- Após o domínio é especificado o caminho para um recurso(course/introducao-html-css)
+- Um recurso é algo concreto que queremos acessar
+
+### Exercício: Identificando o protocolo
+
+    Veja a URL abaixo:
+
+>    smb://server/download/videos/http.mp4
+
+    Nesse exemplo, como se chama o protocolo?
+
+    a) http
+    b) server
+    c) ftp
+    d) smb
+        Correto, o protocolo especificado na URL se chama smb (aquilo que vem antes do ://)
+
+> O protocolo especificado nessa URL se chama smb.
+
+> Lembrando que a URL sempre começa com o nome do protocolo:
+
+<center><img src="https://s3.amazonaws.com/caelum-online-public/http/http-url.png"></center>
+
+> - O protocolo smb realmente existe e é a abreviação de Server Message Block. Ele é utilizado para compartilhar arquivos dentro de uma rede local.
+
 ### Recursos na URL
+
+    Veja a URL a seguir:
+
+>    http://g1.globo.com/index.html
+
+    Qual é o nome do recurso?
+
+    a) g1.com.br
+    b) Alternativa correta: /index.html
+        Alternativa correta, o recurso é aquilo que vem depois do domínio/.
+    c) g1.globo.com/index.html
+    d) http
+    e) g1
+
+> No início da web, os recursos, na grande maioria, eram arquivos com a extensão .html ou .htm. Até hoje existem vários recursos que são arquivos na web. Mas reparem que a Alura não funciona dessa maneira. Em nenhum momento você acessa um arquivo no Alura. Por exemplo, para ver um curso, você usa a URL:
+>>https://cursos.alura.com.br/course/introducao-html-css
+
+Isso é um pouco mais legível e possui a vantagem que a URL não diz nada a respeito do formato. A URL não fica amarrada ao formato HTML.
+
 ### Para saber mais: URI ou URL?
+
+    Muitas vezes, desenvolvedores usam a sigla URI (Uniform Resource Identifier) quando falam de endereços na web. Alguns preferem URL (Uniform Resource Locator), e alguns misturam as duas siglas à vontade. Há uma certa confusão no mercado a respeito e mesmo desenvolvedores experientes não sabem explicar a diferença. Então, qual é a diferença?
+
+    Resposta 1 (fácil): Uma URL é uma URI. No contexto do desenvolvimento web, ambas as siglas são válidas para falar de endereços na web. As siglas são praticamente sinônimos e são utilizadas dessa forma.
+
+    Resposta 2 (mais elaborada): Uma URL é uma URI, mas nem todas as URI's são URL's! Existem URI's que identificam um recurso sem definir o endereço, nem o protocolo. Em outras palavras, uma URL representa uma identificação de um recurso (URI) através do endereço, mas nem todas as identificações são URL's.
+
+    Humm ... ficou claro? Não? Vamos dar um exemplo! Existe um outro padrão que se chama URN (Uniform Resource Name). Agora adivinha, os URN's também são URI's! Um URN segue também uma sintaxe bem definida, algo assim urn:cursos:alura:course:introducao-html-css. Repare que criamos uma outra identificação do curso Introdução ao HTML e CSS da Alura, mas essa identificação não é um endereço.
+
+<center><img src="https://s3.amazonaws.com/caelum-online-public/http/http-uri-urn-url.png" ></center>
+
+    Novamente, a resposta 2 vai muito além do que você realmente precisa no dia a dia. Normalmente URL e URI são usados como sinônimos.
+
 ## 04. O cliente pede e o servidor responde
 ### Modelo Requisição e Resposta
 ### O HTTP e o mestado das requisições
