@@ -514,7 +514,7 @@ Isso é um pouco mais legível e possui a vantagem que a URL não diz nada a res
 
 ### Para saber mais: Mais códigos HTTP
 
-    HTTP é o protocolo mais utilizado na internet e há muita documentação disponível. Segue um link que explica os códigos HTTP de forma divertida: httpstatusdogs ou se você preferir gatos httpcats
+HTTP é o protocolo mais utilizado na internet e há muita documentação disponível. Segue um link que explica os códigos HTTP de forma divertida: <a href="https://httpstatusdogs.com/" target="_blank">httpstatusdogs</a> ou se você preferir gatos <a href="https://http.cat/" target="_blank">httpcats</a>
 
     Espero que goste :)
 
@@ -548,9 +548,13 @@ Isso é um pouco mais legível e possui a vantagem que a URL não diz nada a res
 
 ### Paraâmetros na requisição com métodos GET e POST
 
-- GET: Passagem de parâmetros pela URL
+- GET: Receber dados. Passagem de parâmetros pela URL
 
-- POST: Passagem de parâmetros pela requisição
+- POST: Submeter dados. Passagem de parâmetros no corpo da requisição
+
+- DELETE: Remove um recurso.
+
+- PUT: Atualizar um recurso.
 
 ### Exercício: Testando parâmetros de requisição
 
@@ -677,14 +681,162 @@ Isso é um pouco mais legível e possui a vantagem que a URL não diz nada a res
 
 ## 07. Serviços na web com REST
 ### Serviços Web-REST
-### Métodos HTTP
-### Sobre o HTTP
-### Sobre o formato
+
+    Os serviços Web-REST são aplicações que fazem request para o servidor e obtém com response objeto JSON ou XML, não HTML.
+    
+> Aplicação<br>
+> GET: http://site.com/api/restaurantes<br>
+> Accept: application/json
+
+> Servidor<br>
+> Status Code: 200<br>
+> Content-type: application/json
+
+### Exercício: Métodos HTTP
+
+    No desenvolvimento Web, para requisição e envio de dados através de formulários, quais são os métodos HTTP que são mais utilizados pelos desenvolvedores no dia a dia?
+
+    a) Alternativa correta: GET e POST
+        Correto, GET e POST são de longe os métodos mais utilizados.
+    b) DELETE e PUT
+    c) PUT e POST
+    d) GET e HEAD
+
+>    Os métodos GET e POST são de longe os métodos mais utilizados no desenvolvimento web, mas porque isso?
+> -    A resposta está no próprio HTML. Por padrão, as páginas HTML fazem apenas requisições do tipo GET ou POST. Para o tipo POST especificamente, precisamos fazer uso da tag form, configurando o atributo method como POST, ao invés do seu valor padrão que é GET. O outro caso é quando usamos a tag a que cria um link de uma página para outra, fazendo com o que o navegador execute uma requisição do tipo GET.
+
+> Para fazer requisições usando métodos como PUT ou DELETE, precisamos fazer com código JavaScript.
+
+### Exercício: Sobre o HTTP
+
+    Leia abaixo as afirmações sobre o protocolo.
+
+    Marque todas as afirmações verdadeiras:
+
+    a) HTTP sempre deve ser utilizado em conjunto com HTML.
+    b) Alternativa correta: Requisições HTTP podem ser enviadas através de qualquer aplicativo/software que entenda o protocolo.
+        - Afirmação correta , o HTTP não depende do navegador. Aliás, o tempo todo o nosso celular usa o HTTP para enviar requisições através de aplicativos!
+    c) Alternativa correta: HTTP é totalmente independente do formato dos dados.
+        Afirmação correta pois HTTP não depende de um formato especifico!
+    d) HTTP não possui cabeçalhos para indicar o formato.
+    e) Alternativa correta: HTTP pode trafegar tanto dados binários quanto dados textuais.
+        Afirmação correta pois HTTP pode trafegar dados binários como imagens e dados textuais como HTML ou CSS!
+
+### Exercício: Sobre o formato
+
+    O protocolo HTTP envia dados em texto puro e já estudamos sobre as implicações disso em questões de segurança. Vimos inclusive como o HTTPS lida com isso.
+
+    Em alguns momentos se faz necessário avisar na própria requisição um formato específico esperado para a resposta.
+
+    De que forma podemos especificar o formato que esperamos que seja devolvido?
+
+    a) Pelo cabeçalho Content-Type.
+        O cabeçalho Content-Type, como o próprio nome sugere, traz informações sobre o tipo de conteúdo que está sendo trafegado. Logo se formos enviar através do HTTP um conteúdo JSON podemos especificar isso através dele. Ele, portanto, não tem relação com o formato esperado na resposta.
+    b) Pelo cabeçalho Accept-Type.
+        Accept-Type não é um cabeçalho válido para o HTTP.
+    c) Somente por um parâmetro na requisição já que o HTTP não lida com formatos específicos além de texto. Exemplo: /restaurantes?format=json.
+        Especificar como parâmetro na requisição é até usado em algumas serviços, embora existe sim como definir via cabeçalho HTTP esse formato.
+    d) Pelo cabeçalho Accept-Language.
+        Accept-Language é um cabeçalho que podemos usar para definir a linguagem usada.
+        Usa-se o seguinte formato:
+        Accept-Language: <linguagem-localização(opcional)>
+        Como em:
+            Accept-Language: en, Accept-Language: en-US(inglês americano) e Accept-Language: pt-BR(português brasileiro)COPIAR CÓDIGO
+    e) Alternativa correta: Pelo cabeçalho Accept.
+        Através dele podemos usar algum formato específico como:
+            Accept: text/html, Accept: text/css, Accept: application/xml, Accept: application/json, Accept:image/jpeg e Accept: image/*
+            
+            Ou até mesmo não definir nenhum formato específico colocando:
+        
+            Accept: */*
+
+>    A resposta correta é usando o cabeçalho Accept.
+>
+>    Através dele podemos usar algum formato específico como:
+>
+> - Accept: text/html, Accept: text/css, Accept: application/xml, Accept: application/json, Accept:image/jpeg e Accept: image/*<br>
+
+    Ou até mesmo não definir nenhum formato específico colocando:
+
+> - Accept: */*
+
 ### O que é REST?
-### Solicitando um recurso
+
+> URI + METHOD<br>
+
+> - pede todos os restaurantes
+> http://alurafood.com/api/restaurante - GET<br>
+> - adiciona um restaurante
+> http://alurafood.com/api/restaurante - POST<br>
+> - atualiza o restaurante 1
+> http://alurafood.com/api/restaurante/1 - PUT/PATCH<br>
+> - remove o restaurante 1
+> http://alurafood.com/api/restaurante/1 - DELETE<br>
+
+    O REST(REpresentational State Transfe) é a solicitação de request por meio do URI + METHOD. Muito utilizado por Web-Services.
+    - È um padrão arquitetural para comunicação entre aplicações
+    - Aproveita da estrutura que o HTTP proporciona
+    - Recursos são definidos via URI
+    - Operações com os métodos do HTTP (GET/POST/PUT/DELETE)
+    - Cabeçalhos (ACCEPT/CONTENT-TYPE) para especificar a representação (JSON, XML, ...)
+
+### Exercício: Solicitando um recurso
+
+    Veja a seguinte URL:
+
+>    http://alura.com.br/cursos/23/exercicios
+    
+    Supondo que você esteja acessando esse recurso através de uma requisição HTTP GET com o cabeçalho Accept: application/xml, o que se espera que aconteça?
+
+    a) Na resposta recebemos 23 exercícios do curso XML.
+        Errado, 23 é o identificador do curso.
+    b) Ao receber a requisição o servidor vai remover os exercícios do curso 23.
+    c) Na resposta recebemos todos as informações sobre o curso 23 excluindo os exercícios.
+    d) Alternativa correta: Na resposta recebemos os exercícios do curso 23 no formato XML.
+        Correto, pois GET tem a semântica de receber dados e o formato foi definido por meio do cabeçalho Accept.
+
+>    Resumindo, ao enviar um HTTP GET:
+>
+>    http://alura.com.br/cursos/23/exercicios
+>
+>    Devemos receber os exercícios do curso 23 no formato XML.
+
+>    É importante mencionar que isso é o esperado, mas o que realmente acontece depende da implementação do servidor. O protocolo HTTP define uma semântica, mas o servidor pode ou não obedecê-la! Também pode ser que o servidor atenda um formato como JSON, mas não trabalhe com XML.
+
 ### Idenficando um recurso
-### O que aprendemos?
+
+    Sabemos que o domínio da Alura é:
+
+>    cursos.alura.com.br
+
+    Você entrou na equipe de desenvolvedores da Alura e precisa definir o recurso para atualizar uma parte do exercício com a id 3 do curso http. Qual método HTTP e qual URL você escolheria?
+
+    a) DELETE e http://cursos.alura.com.br/cursos/http/exercicios/3
+    b) Alternativa correta: PATCH e http://cursos.alura.com.br/cursos/http/exercicios/3
+        Correto, PATCH é utilizado para atualização parcial do recurso que foi definido expressivamente: /cursos/http/exercicios/3
+    c) GET e http://cursos.alura.com.br/http/3
+    d) PATCH e http://cursos.alura.com.br/exercicio/3
+        Errado, pois o recurso não especifica o nome do curso.
+
+> Apesar do PATCH fazer parte da especificação e atender corretamente a essa questão, o método mais utilizado para essa finalidade é o PUT.
+
 ### Para sber mais: tipos de dados
+
+    Em alguns cabeçalhos do HTTP devemos especificar algum formato. Os formatos são chamados na documentação de MIME types. E na definição do cabeçalho usamos a seguinte estrutura: tipo/subtipo. São tipos conhecidos:
+
+>    text, image, application, audio e video
+
+    E alguns subtipos:
+
+>    text -> text/plain, text/html, text/css, text/javascript<br>
+>    image -> image/gif, image/png, image/jpeg<br>
+>    audio -> audio/midi, audio/mpeg, audio/webm, audio/ogg, audio/wav<br>
+>    video -> video/mp4<br>
+>    application -> application/xml,  application/pdf<br>
+    
+>    Para conhecer outros formatos aceitos você pode acessar aqui:
+https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types
+
 ### Outros links
 ## 08. HTTP2 - Por uma web mais eficiente
 ### HTTP2 - Dados binários, GZIP ativo e TLS
