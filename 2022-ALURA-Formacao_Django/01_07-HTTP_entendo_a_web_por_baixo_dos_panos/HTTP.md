@@ -351,6 +351,8 @@ Isso é um pouco mais legível e possui a vantagem que a URL não diz nada a res
 
 ### O que é um cookie?
 
+Vimos no vídeo o uso de um cookie para gravar um número, aquele Session ID. Mas o que é um cookie? Pesquise!
+
 #### Opinião do instrutor
 
     Quando falamos de Cookies na verdade queremos dizer Cookies HTTP ou Cookie web. Um cookie é um pequeno arquivo de texto, normalmente criado pela aplicação web, para guardar algumas informações sobre usuário no navegador. Quais são essas informações depende um pouco da aplicação. Pode ser que fique gravado alguma preferência do usuário. Ou algumas informações sobre as compras na loja virtual ou, como vimos no vídeo, a identificação do usuário. Isso depende da utilidade para a aplicação web.
@@ -897,16 +899,125 @@ HTTP é o protocolo mais utilizado na internet e há muita documentação dispon
 >    Para conhecer outros formatos aceitos você pode acessar aqui:
 https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types
 
-### Outros links
 ## 08. HTTP2 - Por uma web mais eficiente
 ### HTTP2 - Dados binários, GZIP ativo e TLS
-### Motivos por trás do HTTP/2
-### A tecnologia HPACK
-### Comparações entre versões
+
+    Mudanças em relação HTTP 1.0:
+    - HEADERS REQUEST/RESPONSE: BINÁRIOS + HPACK(COMPRESSÃO) + TLS(SEGURANÇA-CRIPTOGRAFIA), ANTES TEXTO PURO
+    - CONTENT-TYPE: GZIP(COMPRSSÃO) +TLS(SEGURANÇA-CRIPTOGRAFIA), ANTES TEXTO PURO
+
+### Exercício: Motivos por trás do HTTP/2
+
+    Dado o que vimos neste capítulo, aponte quais dos motivos abaixo foram importantes quando decidiram criar uma nova versão do protocolo HTTP, que já estava tão concretizado e estabelecido na Web.
+
+    a) Alternativa correta: Com o crescimento do número de dispositivos móveis conectados a Web, é cada vez mais importante que a quantidade de dados trafegada seja a menor possível, afinal este tipo de dispositivo não costuma ter uma conexão com muita banda larga. O protocolo HTTP/2 traz diversas tecnologias para diminuir o tamanho das requisições.
+        Correto, o HTTP/2 possui diversas tecnologias de compactação de sua requisição. Isto acaba sendo muito útil para clientes móveis, visto que a maioria das redes mobile ainda não são de grande qualidade.
+    b) Como o número de dispositivos conectados a internet aumentou bastante com a entrada dos dispositivos móveis e o inicio da Internet das Coisas, o protocolo HTTP/1.1 não estava mais sendo adequado para ser utilizado em tantas conexões, visto que ele tem um limite teórico de conexões simultâneas.
+    c) Alternativa correta: Por padrão, no protocolo HTTP versão 1.1 não é necessário o uso da camada de segurança TSL/SSL. Como hoje em dia trafegamos muitos dados críticos na Web, como senhas, logins e dados bancários, um protocolo atualizado que faz uso dessa segurança parece quase uma necessidade.
+        Correto, com o HTTP/2 o uso de HTTPS acaba sendo obrigatório, e esta é uma das grandes vantagens do uso desta nova atualização do protocolo.
+
+> Apesar do protocolo HTTP/1.1 ter sido de extrema importância para a Web ao longo de vários anos, como toda boa tecnologia, é necessário um update. A nova versão do HTTP veio para adequar este protocolo tão famoso a um mundo onde temos muito mais dados sendo trafegados na rede, e a velocidade de acesso e segurança do usuário se tornam bastante importantes.
+
+### Exercício: A tecnologia HPACK
+
+    Para que serve a tecnologia HPACK implementada no protocolo HTTP/2 ?
+
+    a) Para comprimir o corpo da resposta, reduzindo consideravelmente o tamanho da mesma.
+    b) Para comprimir a requisição como um todo, deixando ela mais leve.
+    c) Alternativa correta: Para comprimir os Headers da comunicação HTTP, deixando-os mais leves.
+        Exato, a tecnologia HPACK é especialista em comprimir os Headers da requisições/respostas HTTP, deixando as mais leves.
+    d) Para deixar os dados trafegados em binário, dificultando a interpretação em caso de dados interceptados.
+
+> O HPACK é uma tecnologia especializada em comprimir os Headers das comunicações HTTP/2. Como toda requisição HTTP acompanha algum header por padrão, uma tecnologia de compressão embutida no protocolo é demasiadamente útil para economizar dados trafegados.
+
+### Exercício: Comparações entre versões
+
+    Selecione as afirmativas verdadeiras sobre as versões 1.1 e 2.0 do protocolo HTTP:
+
+    a) O HTTP/2 é muito pouco adotado, já o HTTP/1.1 está presente em toda a Web.
+    b) Alternativa correta: No HTTP/1.1 o Gzip não é nativo do protocolo, no HTTP/2 ele já vem por padrão.
+        Correto, o Gzip vem nativamente no protocolo HTTP/2.
+    c) Alternativa correta: No HTTP/2 o uso do HTTPS é obrigatório, no HTTP/1.1 não.
+        Correto, o HTTP/2 reforça bastante o uso do HTTPS, ao contrário do HTTP/1.1 em que isto era opcional. Apesar de não ser obrigatório em sua especificação, os browsers não suportam o HTTP/2 sem HTTPS, o que acaba fazendo com que o seu uso seja exclusivo em modo criptografado.
+    d) Alternativa correta: No HTTP/2 os dados são trafegados em binário, no HTTP/1.1 eles são trafegados como texto.
+        Correto, uma das principais mudanças é que agora no HTTP/2 os dados são trafegados em binário e não mais em texto puro.
+
 ### HTTP2 - Cabeçalhos Stateful
-### Os cabeçalhos que mantêm estado
+
+>   GET /
+>   host: WWW.CAELUM.COM.BR<br>
+>   user-agent: MOZILLA/5.0 (MACINTOSH: INTEL MAC OS X 10.12; RV:34.0)<br>
+>   accept: TEXT/HTML, APPLICATION/SHTML+XML, APPLICATION/XML/Q=0.9,*/*;Q=0,8<br>
+>   accept-language: PT=BR,PT;Q=0,8,EN-US;Q=0.5,EN;Q=0,3
+>   accept-encoding: GZIP, DEFLATE
+
+>   GET /principal.js
+
+>   GET /imagens/logo.png
+>   host: WWW.CAELUM.COM.BR<br>
+>   accept: IMAGE/PNG,IMAGE/*;Q=0.8,*/*;Q=0,5<br>
+
+    Com o HTTP2 não é necessário enviar os HEADERS em todas as requisições.
+
+### Exercício: Os cabeçalhos que mantêm estado
+
+    Como a tecnologia de Headers Stateful pode nos ajudar a economizar dados?
+
+    a) Alternativa correta: Como trafegamos apenas os headers que mudam de uma requisição para outra, acabamos por economizar uma boa quantidade de dados, pois não precisamos enviar headers que mudam poucas vezes a todo momento, como o Accept.
+        Correto, os Headers Stateful permitem que apenas os cabeçalhos que mudem sejam enviados a cada requisição, economizando muita banda que seriam cabeçalhos repetidos.
+    b) Como os Headers Stateful mantêm estado, o servidor consegue gerenciar melhor as conexões com múltiplos clientes, fazendo com que dados não sejam enviados para os clientes errados, economizando-se dados por evitar falhas.
+    c) Com essa tecnologia os clientes sabem mais facilmente os estados dos servidores, e podem ou não enviar determinados headers de acordo com o número de requisições simultâneas que o servidor estiver lidando, trazendo assim uma economia de dados.
+
+> Quando estamos utilizando Headers Stateful, simplesmente colocamos nas requisições os cabeçalhos que se alteraram entre uma e outra, trazendo uma enorme economia de dados, visto que toda requisição HTTP possui um cabeçalho e que, muitas vezes, no HTTP/1.1, cabeçalhos repetidos eram trafegados em todas as requisições.
+
 ### HTTP2- Server Push
-### O Server PUsh
+
+    HTTP 1.0
+---
+    CLIENTE             |           SERVIDOR
+    index.html          ->          
+                        <-
+    eslilo.css          ->
+    jquery.js           ->
+    principal.js        ->
+    logo.png            ->
+
+    eslilo.css          <-
+    jquery.js           <-
+    principal.js        <-
+    logo.png            <-
+
+    HTTP 2.0
+---
+    CLIENTE             |           SERVIDOR
+    index.html          ->          
+                        <-
+    eslilo.css          <-
+    jquery.js           <-
+    principal.js        <-
+    logo.png            <-
+
+### Exercício: O Server PUsh
+
+    O que é o Server Push no HTTP/2?
+
+    a) O servidor acompanha o histórico de páginas do usuário e tenta prever qual página ele irá requisitar, enviando-a previamente para ele, tornando assim o carregamento mais rápido.
+    b) O servidor guarda um identificador específico para cada cliente, e faz o "push" dos dados com determinada configuração, que é personalizada para atender melhor a conexão de cada um dos clientes.
+    c) Alternativa correta: O servidor pode empurrar para o clientes certos recursos antes mesmo de serem solicitados, pois ele consegue analisar o HTML e ver o que mais é preciso para carregar a página fazendo com que não seja necessário gastar tempo pedindo todos os outros recursos.
+
+>    Correto, o servidor pode empurrar certas respostas para o cliente antes mesmo delas serem requisitadas.
+
 ### HTTP2 - Multiplexação
+
+    KEEP-ALIVE: Tempo de conexão com o servidor por via de protocolo TCP/IP.
+    - No HTTP 1.0 são 4 a 8 conexões simultâneas por domínio com requisições síncronas (serial)
+    - No HTTP 2.0 com requisições assíncronas (paralela) MULTIPLEXING
+
 ### HTTP2 - Resumo
-### Considerações finais
+
+- Atua sobre o que já se conhece de HTTP
+- Headers binários ecompimidos(HPACK)
+- GZIP padrão na resposta
+- Multiplexing(Requisição e resposta são paraleals)
+- Headers Stateful(Mandamos apenas os cabeçalhos que mudam)
+- Server Push(O servidor manda os recursos que são necessários antes do usuários requisitar)
