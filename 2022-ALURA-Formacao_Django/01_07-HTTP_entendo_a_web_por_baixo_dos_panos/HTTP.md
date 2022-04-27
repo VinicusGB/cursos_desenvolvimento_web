@@ -185,7 +185,7 @@ https://github.com/VinicusGB/cursos_dev_web# HTTP: Entendo a web por baixo dos p
 ## 03. Endereços sob seu domínio
 ### Endereços
 
-> #### URL
+#### URL
 > - HTTP://WWW.ALURA.COM.BR
 >
 >       protocolo:  HTTP
@@ -318,11 +318,71 @@ Isso é um pouco mais legível e possui a vantagem que a URL não diz nada a res
 
 ## 04. O cliente pede e o servidor responde
 ### Modelo Requisição e Resposta
-### O HTTP e o mestado das requisições
-### Sessão HTTP
+
+    Cada requisição é única. Não guarda informações de requisições anteriores.
+    Sessão é uma validação de login de um usuário, chave e valor, sendo um cookies. Cookies são pares de chave e valor.
+    - O protocolo HTTP segue o modelo REQUEST-RESPONSE
+    - Uma requisição precisa ter todas as informações para o servidor gerar a resposta
+    - HTTP é STATELESS!(Não mantém informações entre requisições)
+    - As plataformas de desenvolvimento usam sessões para guardar informações entre requisições
+
+### Exercício: O HTTP e o estado das requisições
+
+    Qual das informações abaixo é verdadeira?
+
+    a) O HTTP guarda o estado das requisições no navegador do usuário. Por consequência, a segunda requisição sempre será feita para o mesmo destino da primeira.
+        O HTTP faz uso de comunicação sem estado (stateless), isto é, a cada nova requisição é necessário passar todas as informações necessárias ao servidor.
+    b) Alternativa correta: Uma requisição sempre deve ser enviada com todas as informações necessárias, o que faz uma requisição ser sempre independente das demais.
+    c) A letra s na sigla HTTPS significa stateless. Usamos HTTPs para trabalharmos com um protocolo sem armazenamento de estado.
+        O S de HTTPS significa secure, que indica que é uma implementação do HTTP, mas utilizando uma camada adicional de segurança.
+
+> Todas as informações necessárias sempre devem estar contidas na requisição que será enviada, tornando-a independente das demais.
+
+### Exercício: Sessão HTTP
+
+    O que é uma sessão HTTP?
+
+    a) É o número gerado para identificar o cliente.
+    b) É o tempo entre requisição e resposta.
+    c) É o número gerado para identificar o servidor.
+    d) Alternativa correta: É o tempo que o cliente utiliza um web app.
+
+> Uma sessão HTTP nada mais é que um tempo que o cliente permanece ativo no sistema! Isso é parecido com uma sessão no cinema. Uma sessão, nesse contexto, é o tempo que o cliente usa a sala no cinema para assistir a um filme. Quando você sai da sala, termina a sessão. Ou seja, quando você se desloga, a Alura termina a sua sessão.
+
 ### O que é um cookie?
+
+#### Opinião do instrutor
+
+    Quando falamos de Cookies na verdade queremos dizer Cookies HTTP ou Cookie web. Um cookie é um pequeno arquivo de texto, normalmente criado pela aplicação web, para guardar algumas informações sobre usuário no navegador. Quais são essas informações depende um pouco da aplicação. Pode ser que fique gravado alguma preferência do usuário. Ou algumas informações sobre as compras na loja virtual ou, como vimos no vídeo, a identificação do usuário. Isso depende da utilidade para a aplicação web.
+
+    Um cookie pode ser manipulado e até apagado pelo navegador e, quando for salvo no navegador, fica associado com um domínio. Ou seja, podemos ter um cookie para www.alura.com.br, e outro para www.caelum.com.br. Aliás, um site ou web app pode ter vários cookies!
+
+    Podemos visualizar os cookies salvos utilizando o navegador. Como visualizar, depende um pouco do navegador em questão:
+
+> No Chrome: Configurações -> Privacidade -> Configurações de conteúdo... -> Todos os cookies e dados de site... -> Pesquisar alura
+
+> No Firefox: Preferências -> Privacidade -> remover cookies individualmente -> Pesquisar alura
+
 ### Login e Senha
-### Comunicaçõ em HTTP
+
+    Quando estamos autenticados em algum sistema, como a Alura, é necessário sempre enviar o e-mail e senha a cada requisição?
+    
+#### Opinião do instrutor
+
+    Quando enviamos uma requisição HTTP, todos os dados para que ela seja respondida devem ser enviados. Mas e o e-mail e a senha? Quando o login é feito, a Alura tem certeza de que um usuário existe e gera uma identificação quase aleatória pra esse usuário, lembra? E esse número fica salvo em um arquivo especial, chamado cookie, que é gerado e enviado por cada site :)
+
+### EXercício: Comunicaçõ em HTTP
+
+Qual dessas alternativas é verdadeira?
+
+    a) Em HTTP o servidor sempre envia uma requisição ao cliente para poder alterar algo na tela.
+    b) Alternativa correta: Uma comunicação com HTTP sempre é iniciada pelo cliente que manda uma requisição ao servidor esperando por uma resposta.
+    c) Quando trabalhamos com HTTP, a comunicação é sempre iniciada pelo lado do cliente que envia uma requisição ao servidor em busca de uma resposta. Mas em alguns casos, o servidor também pode enviar uma requisição ao cliente.
+
+> É importante lembrarmos que a comunicação sempre começa com o cliente: é ele quem pede as informações. O servidor responde apenas o que foi requisitado e nunca inicia a comunicação :)
+
+> No HTTP: Request -> espera -> Resposta
+
 ## 05. Depurando a requisição HTTP
 ### Depurando o método HTTP
 ### Console no Firefox e Internet Explorer
