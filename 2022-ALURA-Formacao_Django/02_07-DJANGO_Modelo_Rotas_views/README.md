@@ -652,19 +652,378 @@ De volta ao DATABASES, substituímos a extensão .sqlite3 por postgresql em 'ENG
 Agora, podemos substituir o conteúdo de 'NAME' por somente 'alura-receita' e passamos mais algumas configurações. Para preencher com o 'USER', voltamos ao PostgreSQL, clicamos sobre "dbserver" com o botão direito e acessamos as propriedades para ver que o "Username" da aba "Connection" é "postgres"; logo, escrevemos 'postgres para o usuário principal. Em seguida, passamos o 'PASSWORD' com a senha usada na aplicação entre aspas simples. Por fim, definimos o 'HOST' como 'localhost' e finalizamos esta etapa.
 
 ### Psycopg2
+
+O Psycopg é o adaptador de banco de dados PostgreSQL mais popular para a linguagem de programação Python. Ele foi projetado para aplicativos altamente multithread que criam e destroem muitos cursores e produzem um grande número de INSERT ou UPDATE s simultâneos.
+
+#### Instalação
+Para instalar este adaptador, dentro de sua venv, execute o seguinte comando:
+
+    pip install psycopg2
+
+Você também pode obter um pacote independente, sem exigir um compilador ou bibliotecas externas, instalando o pacote psycopg2-binary, para instalar execute o seguinte comando:
+
+    pip install psycopg2-binary
+
+>Para conectar nossa aplicação com o banco de dados, é necessário a instalação destes dois módulos!
+
 ### Modelo de receita
-### Faça como eu fiz na aula
-### {{ }} e {% %}
-### Models no Django
-### makemigration e migrate
+
+Instalamos o PostgreSQL, configuramos nossa aplicação para atender o novo banco de dados e agora precisamos salvar informações e exibi-las em nosso site de receitas.
+
+Inicialmente, trabalhamos com outra abstração de código fornecida pelo Django chamada modelos. Acessando esta parte de "Models" na documentação, vemos que são fonte única e definitiva de informações sobre dados, ou seja, criamos um molde a ser usado como base por todos os itens dizendo que toda nova receita possui um nome, data de publicação, tempo, rendimento, categoria, origem do envio, ingredientes e modo de preparo.
+
+Cada modelo Python é uma subclasse de models.Model e cada atributo da classe representa um campo na base de dados. O Django nos fornece uma API com acesso a banco de dados gerado de forma automática, então não precisamos fazer as queries SQL manualmente; inclusive, a página de documentação possui um link "Making queries" com mais informações. Ainda, nos apresenta um exemplo de como escrevemos o código para criar a classe e sua representação no banco.
+
+Para começar a gerar o modelo de receitas no Visual Studio, acessamos o app de receitas na pasta "receitas" e abrimos o arquivo models.py. O primeiro passo é criar a classe Receita() recebendo models.Model, e podemos partir para a criação dos campos.
+
+Como já sabemos os atributos, escrevemos nome_receita sendo igual a um campo com um limite de escrita com a propriedade models.CharField(), a qual contém vários argumentos a serem passados para modularizar da forma como precisamos, e para limitar a escrita do campo a 200 caracteres, aplicamos max_lenght=200.
+
+Em seguida, temos os ingredientes e o modo_preparo que precisam ter uma caixa de texto para uma maior quantidade de palavras através de models.TextField().
+
+Depois, há o tempo_preparo que deve ter um número inteiro pela propriedade models.IntegerField() e o rendimento que pode ter várias formas de preenchimento com letras e números com um limite de 100 caracteres, ficando models.CharField(max_lenght=100).
+
+Por enquanto não trabalharemos com a usuária ou usuário que nos enviou a receita no campo de origem "Por:". Partindo para a categoria, sua descrição é bem curta, então também é models.CharField(max_lenght=100).
+
+Por fim, queremos visualizar a data de publicação da receita através da importação do o módulo datetime a partir de datetime no topo do código. Desta forma, o date_receita é igual a models.DateTimeField() sendo por default=datetime.now, ou seja, teremos o registro do momento da criação da receita. Caso não consigamos pegar esta informações por algum motivo, podemos deixá-lo em branco passando black=true como segundo argumento.
+
+    from django.db import models
+    from datetime import datetime
+
+    class Receita(models.Model):
+        nome_receita = models.CharField(max_length=200)
+        ingredientes = models.TextField()
+        modo_preparo = models.TextField()
+        tempo_preparo = models.IntegerField()
+        rendimento = models.CharField(max_length=100)
+        categoria = models.CharField(max_length=100)
+        date_receita = models.DateTimeField(default=datetime.now, blank=True)
+
+
+Assim, temos as principais informações que queremos publicar em nosso site salvas neste arquivos. Agora, devemos passar este modelo para o banco de dados PostgreSQL abrindo um segundo terminal no Visual Studio, sempre conferindo se a venv está ativa.
+
+Para isso, precisamos informar que existem dados antes mesmo de enviá-los através de um código chamado makemigration, o qual prepara migrações a serem feitas. Então, escrevemos python manage.py makemigrations e apertamos a tecla "Enter" para gerar na lista lateral uma nova pasta chamada "migrations" que possui um arquivo 0001_initial.py com todas as informações passadas ao modelo.
+
+De volta ao PostgreSQL, acessamos "dbserver > Databases > alura_receita > Schemas > public > Tables" para clicar neste último item com o botão direito e selecionar a opção "Refresh..." para atualizar as tabelas. Como ainda não há nada, precisamos passar os dados efetivamente, ou seja, criamos uma lista de itens que queremos migrar mas ainda não mandamos de fato.
+
+Na primeira vez que subimos o terminal, apareceu uma mensagem indicando que temos migrações pendentes a serem aplicadas. Estas são relacionadas ao Django Admin que será visto adiante, mas é através dele que todos os apps registrados em models.py são criados, deletados, editados, visualizados e etc., gerando um crude destes modelos.
+
+Como desde o início da aplicação existiam migrações a serem feitas juntando com o modelo que criamos, pedimos ao Python escrevendo python manage.py migrate no terminal. Executando esta ação, o sistema cria tudo o que é necessário para funcionar tanto a parte de Admin quanto a classe e o modelo utilizado.
+
+De volta ao PostgreSQL, atualizamos as "Tables" novamente para ver que, desta vez, são criadas várias tabelas com questões relacionadas ao Admin do Django e nossa receitas_receita ao final. Clicando com o botão direito sobre esta última, selecionamos a opção "View/Edit Data > All Rows" para visualizar todas as linhas presentes e observamos que um campo id é gerado automaticamente conforme a documentação já explicitava.
+
+No passo seguinte, criaremos um Admin para gerar as receitas no banco de dados.
+
+### Exercício: {{ }} e {% %}
+
+Durante o desenvolvimento da nossa aplicação, utilizamos duas formas para embedar código python nos templates, sendo eles:
+
+    {{ }} {% %}
+
+Sabendo disso, podemos dizer que:
+
+a) Alternativa correta: Utilizamos {% %}, para processamento sem exibir na tela, como {% load static %} por exemplo.
+- Certo! Quando queremos processar um código sem exibir na tela, por exemplo, utilizando as tags load static, static, if ou for, utilizamos dentro das marcações {% %}.
+
+b) Alternativa correta: Utilizamos {{ }}, para renderizar variáveis no template por exemplo.
+- Certo! Quando queremos exibir um conteúdo na página, utilizamos está marcação.
+
+c) Utilizamos {% %}, para renderizar variáveis no template por exemplo.
+
+d) Podemos utilizar qualquer um dos dois, em qualquer parte do template, que teremos o mesmo resultado.
+
+### Exercício: Models no Django
+
+Um modelo é uma forma única e definitiva de informações sobre seus dados. Ele contém os campos e comportamentos essenciais dos dados que você está armazenando.
+
+Sabendo disso, analise as afirmações abaixo e selecione as verdadeiras.
+
+a) Cada modelo é sempre dividido em 6 tabelas diferentes no banco de dados.
+
+b) Alternativa correta: Cada atributo do modelo representa um campo no banco de dados.
+- _Certo! Por exemplo:_
+
+        class Person(models.Model):
+            first_name = models.CharField(max_length=30)
+    Ficaria representado no banco como:
+
+        CREATE TABLE myapp_person (
+            "id" serial NOT NULL PRIMARY KEY,
+            "first_name" varchar(30) NOT NULL,
+
+c) Alternativa correta: Todo modelo é uma classe Python, subclasse de django.db.models.Model.
+- _Certo! Todo modelo é uma classe, conforme podemos ver na documentação._
+
+### Exercício: makemigration e migrate
+
+Após configurar o banco de dados na aplicação, criamos no modelo, a classe Receita, com seus atributos para representar a tabela e seus campos respectivamente.
+
+Sabendo disso, verifique as afirmações abaixo e marque as corretas.
+
+a) O comando makemigrations sincroniza o estado do banco de dados com o conjunto atual de modelos e migrações.
+
+b) Alternativa correta: O comando migrate sincroniza o estado do banco de dados com o conjunto atual de modelos e migrações.
+- _Certo! Podemos encontrar mais acessando a documentação._
+
+c) O comando migrate cria novas migrações com base nas alterações detectadas nos modelos.
+
+d) Alternativa correta: O comando makemigrations cria novas migrações com base nas alterações detectadas nos modelos.
+- _Certo! Podemos encontrar mais acessando a documentação._
+
 ### Para saber mais: Models
-### O que aprendemos?
+
+#### Models
+
+Vimos que cada modelo é uma classe Python que geralmente é mapeado para ser uma tabela no banco de dados.
+
+Caso queira saber mais sobre Models do Django:
+
+- <a href="https://docs.djangoproject.com/en/2.2/topics/db/models/" target="_blank">Models segundo a documentação oficial do Django (texto em inglês)</a>
+
 ## 05. Admin, parâmetros e receitas
 ### Django Admin
+
+Já conectamos nossa aplicação Django com o banco de dados e criamos um modelo de receitas pela classe Receita(). Nesta etapa, exibiremos as informações do database em nossa página através do Django Admin, o qual é uma das partes mais poderosas segundo a documentação específica sobre esta parte acessível aqui.
+
+Em nosso app de receitas no Visual Studio, temos uma categoria chamada admin.py que possui uma mensagem dizendo para registrarmos nossos modelos neste arquivo. Com isso, conseguiremos acessar uma parte da criação integrada ao projeto Django capaz de criar, deletar e editar receitas, ou seja, teremos um crude completo de receitas.
+
+Para fazer este registro em admin.py, importamos nossa classe Receita de .models no topo do código. Como isso ainda não é suficiente, pedimos ao arquivo que registe o modelo através do código admin.site.register(Receita) e salvamos.
+
+Quando criamos nossa aplicação, temos o arquivo urls.py na pasta "alurareceita" já com o caminho de admin configurado em urlpatterns. Para ter certeza, vamos ao navegador e digitamos "localhost:8000/admin" na barra de busca para ver campos de login da Administração do Django já em português conforme configuramos.
+
+O próximo passo é criar o Admin, visto que o Django não o cria automaticamente. No terminal, digitamos python manage.py seguido do comando createsuperuser. Quando teclamos "Enter", o sistema nos pede um nome de usuário, um e-mail caso queira e uma senha de acesso seguindo as orientações de segurança que o Django nos fornece.
+
+Feito isso, retornamos ao login da Administração do Django no navegador e inserimos o nome do usuário e senha. Ao acessar a página, visualizamos o modelo de receita que registramos no admin.py. Clicamos em "Receitas" para abri-la e clicamos no botão "adicionar receita +" para acessar a parte que nos permite preencher os campos conforme definimos no modelo.
+
+Testamos o funcionamento inserindo informações aos campos e clicando em "Salvar" para conseguirmos visualizar o "Receita object (1)" na lista. Clicando neste item, voltamos aos campos desta receita e testamos alterações no nome ou em qualquer outro atributo.
+
+Agora, precisamos saber se essas informações foram salvas no banco de dados. Voltamos ao PostgreSQL e clicamos com o botão direito em "receitas_receita" dentro de "Tables" na lista lateral selecionando "Refresh...", e depois vemos todas as linhas para conferir se os dados foram realmente salvos.
+
+Estando todas as informações salvas tanto no Admin quanto no banco de dados, significa que estamos realizando a integração da forma como precisamos.
+
+Por fim, resta-nos verificar se os novos itens são exibidos na página principal da nossa aplicação.
+
 ### Exibindo dados dos banco
+
+Na etapa anterior, cadastramos uma nova receita com informações nos campos disponíveis na página de Admin do Django. Agora, visto que o arquivo está salvo no banco de dados, não queremos mais visualizar em nosso site o dicionário passado por contexto.
+
+No app de receitas, acessamos views.py e passamos as 'receitas' por contexto aos dados, e não mais 'nome_das_receitas'. Em seguida, deletamos o conteúdo do dicionário em receitas e disponibilizamos o modelo criado ao importar Receita de .models no topo do código.
+
+Com o modelo de receitas acessível, inserimos Receita.objects.all() para trazer todos os objetos salvos no banco de dados. Feito isso, o sistema destaca Receita e exibe uma mensagem dizendo que esta classe não possui objects como membro, o que é uma indicação do próprio Visual Studio e não uma falha de nosso código.
+
+    from django.shortcuts import render
+    from .models import Receita
+
+    def index(request):
+        receitas = Receita.objects.all()
+
+        dados = {
+            'receitas' : receitas
+        }
+        return render(request, 'index.html', dados)
+
+    def receita(request):
+        return render(request, 'receita.html')
+
+Copiamos esta mensagem e a colamos na barra de busca do navegador para clicar no primeiro link do Stack Overflow que nos sugere uma correção a partir de pip install pylint-django que deve ser adicionado em um novo terminal do Visual Studio com venv ligada.
+
+Instalado o pylint-django, a página do Stack Overflow nos orienta a adicionar outro comando às configurações do Visual Studio para evitar este destaque da classe. Copiamos e colamos em setting.json dentro de ".vscode" na aba de "Aplicacao" da lista lateral de arquivos.
+
+    {
+        "python.pythonPath": "venv/bin/python",
+        "python.linting.pylintArgs": [
+            "--load-plugins=pylint_django"
+        ],
+    }
+
+Assim que este arquivo é salvo, o destaque de Receita desaparece, pois incluímos esta nova verificação de código Django ao Visual Studio.
+
+Se voltarmos à aplicação e atualizarmos a página, todas as receitas somem. Isso acontece porque retiramos o dicionário de views.py e ainda não carregamos os dados do banco para serem visualizados.
+
+Abrindo a pasta "templates", acessamos o arquivo index.html para observamos que aplicamos for para o dicionário, mas agora estamos passando um objeto de fato. Logo, removemos todo o conteúdo do código Python deixando apenas o for. Em seguida, aplicamos outro código Python antes para indicar que, se tivermos o valor receitas armazenado no contexto de dados com if, executamos o código subsequente. Caso não tenhamos com else, nada acontece com endif também em código Python.
+
+Tendo as receitas, queremos pegar cada uma com in dentro da lista de receitas e exibimos seus nomes com receita.nome_receita ao invés de nome_da_receita em <h5>.
+
+    <!-- ##### Best Receipe Area Start ##### -->
+    <section class="best-receipe-area">
+        <div class="container">
+            <div class="row">
+                {% if receitas %}
+                {% for receita in receitas %}
+                <!-- Single Best Receipe Area -->
+                <div class="col-12 col-sm-6 col-lg-4">
+                    <div class="single-best-receipe-area mb-30">
+                        <img src="{% static 'img/gb-img/foto_receita.png' %}" alt=""></img>
+                            <div class="receipe-content">
+                            <a href="receita.html">
+                                <h5>{{ receita.nome_receita }}</h5>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                {% endif %}
+            </div>
+        </div>
+    </section>
+
+Com esse código salvo, retornamos ao navegador e atualizamos nossa aplicação.
+
+Desta forma, o novo item cadastrado no banco de dados é exibido na página inicial mas não acontece o que queremos ao clicar neste item. Adiante, veremos como acessar a página com os detalhes das receitas.
+
+Para garantir o funcionamento, voltamos à página de Admin do Django e cadastramos mais uma receita com suas informações, como "Sorvete" por exemplo. Com o novo objeto exibido na lista, voltamos à aplicação e atualizamos a página novamente.
+
+Com isso, o novo item é apresentado com sucesso. A seguir, resolveremos a questão do "Page not found" que aparece ao clicar no ícone da receita.
+
 ### Parâmetro na url
-### Faça como eu fiz na aula
+
+Sempre que clicamos em algum dos itens, não conseguimos visualizar os detalhes da receita em uma próxima página como podemos ver ao clicar no link "Receitas".
+
+Para resolver essa questão, acessamos o index.html no Visual Studio e alteramos o conteúdo de href na parte de Single Best Receipe Area com código Python para encaminhar a url 'receita'.
+
+Salvamos e testamos na página do navegador. Agora somos direcionados à página de receitas, mas queremos visualizar os dados específicos que salvamos no banco. Por exemplo, se clicarmos em "Sorvete", o correto seria acessar as informações que dizem respeito à este item em especial.
+
+Para isso acontecer, passamos um identificador de cada receita que é gerado automaticamente a cada cadastro feito no banco de dados, como vimos anteriormente. Por exemplo, o primeiro item "Sopa de legumes" possui um id 1 e o segundo "Sorvete" é id 2.
+
+Portanto, no mesmo href de Single Best Receipe Area, adicionamos receita.id na sequência do conteúdo com código Python. Isso ainda pode gerar problemas, então precisar antecipar o recebimento de um id neste link de 'receitas' indo em url.py e adicionando '<int:receita_id>' no começo do conteúdo da segunda linha de path().
+
+    urlpatterns = [
+        path('', views.index, name='index'),
+        path('<int:receita_id>', views.receita, name='receita')
+    ]
+
+Feito isso, voltamos ao views.py para indicar o recebimento deste parâmetro em receita().
+
+    def receita(request, receita_id):
+        return render(request, 'receita.html')
+
+Se salvarmos o arquivo, retornarmos à aplicação e atualizarmos a página, recebemos um erro "NoReverseMatch at/" indicando que tentamos acessar as receitas mas não foi encontrado nenhum argumento. O navegador nos mostra a falha na segunda linha href na parte de Nav Start, onde aponta para uma 'receita' sem especificar qual.
+
+Então acessamos o arquivo menu.html dentro de "partials" para alterar este mesmo trecho com o erro já indicado. Retiramos esta linha para exibirmos apenas as receitas presentes no banco de dados. Feito isso, voltamos à aplicação, atualizamos a página e vemos que o link "Receitas" não aparece mais enquanto reparamos também que, ao posicionar o cursor sobre o item de cada receita, aparece uma pequena aba no navegador com localhost:8000 seguido do número do id, indicando que está em correspondência.
+
+Porém, ao clicar nos itens principais acessamos a página de receitas sem as informações específicas que queremos. Nesta parte, a barra do navegador indica o endereço terminado com o id do item que está aberto.
+
+Voltamos ao views.py e capturamos o link que contém o id certo da receita dentro de receita(). Para isso, criamos uma nova variável chamada receita a ser exibida e utilizamos get_object_or_404() para fazer a captura do objeto ou exibir um erro 404. Dentro, passamos o modelo Receita e indicamos que o número identificador é uma primary key ou pk igual ao valor.
+
+Em seguida, passamos a informação à página através de receita_a_exibir sendo igual à um dicionário que indica que 'receita' é a receita trazida.
+
+Por fim, adicionamos o mesmo receita_a_exibir como terceiro argumento de render().
+
+    def receita(request, receita_id):
+        receita = get_object_or_404(Receita, pk=receita_id)
+
+        receita_a_exibir = {
+            'receita' : receita
+        }
+
+        return render(request, 'receita.html', receita_a_exibir)
+
+Desta forma, buscamos o valor e vemos um destaque de erro em get_object_or_404() porque ainda não importamos este módulo de django.shortcuts; para isso, adiciomanos uma vírgula após render no import no topo do código e escrevemos get_list_or_404 seguido de vírgula e get_object_or_404.
+
+Salvamos o arquivo e não vemos mais o destaque.
+
+De volta à aplicação no navegador, atualizamos a página e testamos os cliques nos links para ver se está funcionando como esperado.
+
+Ainda não conseguimos visualizar o nome de uma receita específica apesar de termos passado as informações para a página. Acessamos receita.html e observamos a parte Receipe Content Area onde aparece o Nome da receita na linha <h2>. Nesta, substituímos seu conteúdo para exibirmos a receita buscada em views.py através da escrita de '{{receita.nome_receita}}' conforme estabelecemos no modelo.
+
+Salvamos o arquivo, voltamos ao navegador e atualizamos a página para testar os links.
+
+Aparecendo o nome corretamente, retornamos ao receita.html para exibirmos a data da postagem substituindo o conteúdo de span> por '{{receita.date_receita}}' também como também fizemos no modelo. Aplicamos as mesmas alterações com código Python para os demais campos de acordo com os atributos estabelecidos.
+
+Mais adiante na parte Single Preparation Step, substituímos o texto genérico Lorem ipsum pelo modo de preparo '{{receita.modo_preparo}}' e na parte seguinte Ingredientes substituímos o mesmo conteúdo de p> por '{{receita.ingredientes}}'. Desta forma:
+
+    <!-- Receipe Content Area -->
+    <div class="receipe-content-area">
+        <div class="container">
+
+            <div class="row">
+                <div class="col-12 col-md-8">
+                    <div class"receipe-headline my-5">
+                        <span>{{ receita.date_receita }}</span>
+                        <h2>{{ receita.nome_receita }}</h2>
+                        <div class="receipe-duration">
+                            <h6>Preparo: {{ receita.tempo_preparo }} minutos</h6>
+                            <h6>Rendimento: {{ receita.rendimento }}</h6>
+                            <h6>Categoria: {{ receita.categoria }}</h6>
+                            <h6>Por: Pessoa</h6>
+                        </div>
+                    </div>
+                </div>
+
+            <div class="row">
+                <div class="col-12 col-lg-18">
+                    <!-- Single Preparation Step -->
+                    <div class="single-preparation-step d-flex">
+                        <p>{{ receita.modo_preparo }}</p>
+                    </div>
+                </div>
+
+                <!-- Ingredientes -->
+                ,div class="col-12 col-lg-4">
+                    <div class="ingredients">
+                        <h4>Ingredientes</h4>
+                        <div class="ingredients">
+                            <p>{{ receita.ingredientes }}</p>
+                        </div>
+                    </div>
+
+    //código omitido
+    </div>
+
+Salvamos o arquivo e conferimos nossa aplicação novamente.
+
+Estando todas as informações corretas de cada item na disposição e forma como elaboramos, podemos testar algumas outras exibições, como inverter a ordem dos campos no código, adicionar mais texto ao modo de preparo para visualizarmos como ficaria com mais descrição e etc.
+
 ### Ajudando alguém
-### Para saber mais
-### O que aprendemos?
-## Conclusão
+
+Ao longo do curso de Django da Alura, uma das pessoas matriculadas se deparou com um comportamento estranho ao acessar a página em desenvolvimento, que exibiu o seguinte comportamento:
+
+O trecho de código da index:
+
+    <div class="receipe-content">
+        <a href="{% url 'receita' receita.id %}">
+            <h5>{{ receita.nome_receita }}</h5>
+        </a>
+    </div>
+
+O trecho de código da views.py:
+
+    def receita(request):
+        receita = get_object_or_404(Receita, pk=receita_id)
+
+        receita_a_exibir = {
+            'receita' : receita
+        }
+
+O trecho de código da urls.py:
+
+    urlpatterns = [
+        path('', views.index, name='index'),
+        path('<int:receita_id>', views.receita, name='receita')
+    ]
+
+A partir disso, onde está o erro e porque temos este comportamento?
+
+a) Alternativa correta: A solução seria adicionar como argumento da função receita, o receita_id.
+- _Certo! É necessário indicar o id da receita como argumento da função. Dessa forma, o erro não ocorrerá mais._
+
+b) A solução seria alterar a tag de
+
+    <h5>{{receita.nome_receita}}</h5> para
+
+    <h5>{{receita.nome_receita == receita_id}}</h5>
+
+c) Este erro ocorre por conta do código encontrado no index.html.
+
+d) Este erro ocorre por conta do código encontrado no urls.py.
+
+e) Alternativa correta: Este erro ocorre por conta do código encontrado no views.py.
+- Certo! Existe um erro neste trecho de código.
+
+### Para saber mais: Admin
+
+Uma das partes mais poderosas do Django, é sua interface de admin.
+
+Se você quiser saber mais sobre o Django admin, confira a documentação do Django::
+
+- <a href="https://docs.djangoproject.com/en/2.2/ref/contrib/admin/" target="_blank">Django admin segundo a documentação oficial (texto em inglês)</a>
