@@ -404,17 +404,253 @@ Os templates do Django definem o layout e a formatação final enviados aos usu�
 Caso queira saber mais sobre Templates:
 - <a href="https://docs.djangoproject.com/en/2.2/topics/templates/" target="_blank">Templates segundo a documentação oficial do Django (texto em inglês)</a>
 
-### O que aprendemos?
 ## 03. Links, extends e partials
 ### Links, urls e views
+
+Deixamos o visual de nossa página ainda melhor, mas os links ainda não estão funcionando; quando clicamos em algum, recebemos uma mensagem de erro do servidor.
+
+Quando criamos a aplicação de receitas, geramos uma rota para a página principal dizendo que temos uma função chamada index() dentro de views.py, a qual renderiza nosso site.
+
+Porém, index.html não está funcionando, o que gera a mensagem de erro. Neste arquivo, temos a parte Logo que diz respeito ao logotipo principal da página, e para ativar seu link é preciso utilizar código Python novamente; em href=, retiramos o sufixo .html para então embedar com {% url 'index' %}, e assim direcionar para a página url index ao clicar no logo.
+
+><!-- Logo -->
+><a class="nav-brand" href="{% url 'index' %}">
+><img src ="{%static 'img/core-img/logo.png' %}" alt=""></a>
+
+É importante mudar o arquivo de loading em <!-- Preloader --> inserindo o código Python para arquivos estáticos como já conhecemos.
+
+Desta forma, quando clicamos em "Alura Receita" com o logotipo, vemos uma pequena imagem de uma pizza ao centro para marcar o carregamento.
+
+Agora precisamos lidar com os demais links e com o logotipo que deve estar presente no footer; alteramos da mesma maneira feita anteriormente para carregar a url com código Python em index.html nas partes de Nav Start e Footer Logo, bem como para arquivos estáticos na imagem deste último.
+
+><!-- Footer Logo -->
+><div class="footer-logo">
+>    <a href="{%url 'index' %}">
+>    <img scr="{% static 'img/core-img/logo.png' %}" alt=""></a>
+></div>
+
+Salvamos e retornamos à página para verificar as alterações. Porém, ao clicarmos em "Receitas", ainda é exibida a mensagem de erro no navegador.
+
+Em nossa aplicação, não temos uma rota para receitas. Ao final de urls.py, adicionamos mais uma linha de path() recebendo o caminho 'receita', o método da view responsável por atender a receita e um nome para esta função.
+
+>urlpatterns = [
+    path('', views.index, name='index'),
+    path('receita', views.receita, name='receita')
+]
+
+Salvamos e observamos um destaque em views, indicando que não existe a função receita() ainda. Logo precisamos criá-la em views.py de forma parecida com a feita em index(), pegando a requisição e retornando com a renderização de request e da página de receita.html.
+
+>def index(request):
+    return render(request, 'index.html')
+>
+>def receita(request):
+    return render(request, 'receita.html')
+
+Salvo o arquivo, vemos que em url.py há um destaque em vermelho, logo precisamos salvar este último arquivo também, pois há necessidade de uma ordem.
+
+De volta ao navegador, clicamos nos links para testar. Ao clicar em "Receitas", ainda é apresentada uma falha; isso aconteceu porque não alteramos receita.html em Nav Start no arquivo index.html para código Python que informa a url como já vimos.
+
+><!-- Nav Start -->
+><div class="classynav">
+>    <ul>
+>        <li><a href="{% url 'index' %}">Home</a></li>
+>        <li><a href="{% url 'receita' %}">Receitas</a></li>
+>    <ul>
+>
+>//código omitido
+></div>
+
+Feito isso, podemos retornar à aplicação para atualizar a página e clicar no link de "Receitas". Porém, o visual ainda não está como queremos, e veremos na próxima etapa como melhorar essa questão.
+
+Também lidaremos com a disposição dos arquivos html, pois não precisamos trabalhar com duplicados já que o Django possui um recurso interessante para isso.
+
 ### Estendendo html
+
+Nossa página principal está funcionando como esperado. Porém, quando clicamos em "Receitas", acessamos uma página com o visual ainda inadequado. Neste passo, melhoraremos essa questão através de nosso código.
+
+Em index.html, fazemos o carregamento dos arquivos estáticos e suas importações, enquanto em receita.html temos quase todos os mesmos arquivos duplicados de forma parecida. Para evitar isso e deixar nosso código mais elegante, criamos um novo arquivo básico que recebe toda a parte inicial de ambos os códigos até as importações ao final de body>. Será a partir deste que os demais estenderão os recursos.
+
+Dentro da pasta "templates", criamos um novo arquivo chamado base.html. Em index.html, recortamos todo o intervalo de código desde load static até body> ficando somente a partir de Preloader, e colamos no novo arquivo. Em seguida, recortamos todo o trecho final de JavaScript em All Javascript Files e colamos em base.html.
+
+Para indicar que futuramente queremos inserir pedaços de código de outras páginas html entre os recém colados em base.html, usamos código Python para block content, indicando que existe um bloco de conteúdo passado para o trecho em questão encerrado por endblock após body> e antes dos arquivos JavaScript, neste caso.
+
+Salvamos este arquivo e retornamos para index.html. O primeiro passo é adicionar {% load static %} no topo para carregar arquivos estáticos também. Agora, precisamos estender de base.html utilizando o comando extends com o nome do arquivo entre aspas simples em código Python da mesma forma.
+
+    {% extends 'base.html' %}
+    {% load static %}
+
+Feito isso, podemos voltar ao navegador e atualizar a página novamente.
+
+O site está todo em branco, pois não indicamos ao index.html que o bloco estendido começa a partir da linha de block content inserida depois do comando que carrega arquivos estáticos e vai até a última linha do texto com end block no formato de código Python.
+
+Desta forma, ao invés de receita.html carregar o trecho individualmente, estendemos do arquivo base.html, carregamos arquivos estáticos e indicamos o início e fim de bloco da mesma maneira que fizemos com index.html.
+
+De volta ao navegador, recarregamos a página e clicamos em "Receitas" para ver o visual mais agradável do que antes. Porém, nem o logotipo nem as imagens são exibidas; aplicamos o código Python para direcionar a url de 'index' e passar as imagens com static na parte de Logo, sem esquecer de inserir as aspas simples no caminho das figuras também.
+
+Testamos a página de receitas novamente. Falta-nos ajustar o footer e as imagens principais da mesma maneira em Receipe Slider e Footer Logo.
+
+Assim, ao invés de carregarmos várias vezes os mesmos arquivos em códigos duplicados, utilizamos base.html com todo o head>, arquivos JavaScript e inserção de trechos de outras páginas com block content e endblock com código Python.
+
+Em nosso projeto, os links estão funcionando, mas se formos à página de receitas e clicar no menu "Home", o navegador aponta um erro. Isso acontece porque temos um Navbar para a página de receitas e outro para index, e não é o que queremos.
+
 ### Partials
+
+No passo anterior, aprendemos a estender um arquivos html, mas podemos melhorar ainda mais nosso site através de partials que são pequenos trechos de código html que podem ser compartilhados com outras páginas.
+
+Quando clicamos nos links, tudo está funcionando como esperado. Porém, estando na página de receitas e clicando em "Home", o navegador apresenta um erro. Isso acontece porque não temos o mesmo código da página principal em "Home", e precisamos duplicá-lo.
+
+Indo em receita.html no Visual Studio, temos a parte de Nav Start que deve ser alterada. Mas não queremos ficar alterando em todas as páginas, pois podem ser muitas e seria bastante trabalhoso inserir o código Python para a url de 'index' em todas elas.
+
+Para facilitar, usamos as partials, ou seja, pegamos estes trechos de código do header> e os compartilhamos com outras páginas; desta forma, se precisarmos alterar alguma coisa no menu principal, basta focarmos em um ponto para atingir todas as demais.
+
+Começamos criando uma nova pasta em "templates" chamada "partials". Dentro desta, geramos dois novos arquivos chamados menu.html e footer.html.
+
+Como já temos nosso código Header Area Start correspondente à parte superior da aplicação em index.html, queremos que todas as páginas tenham este cabeçalho também. Para isso, recortamos todo este bloco até /header> e colamos em menu.html.
+
+Salvamos e indicamos ao menu.html que queremos inserir a partial através da inclusão de {% include 'partials/menu.html' %} no local onde estava o bloco recortado de index.html, trazendo este pedaço de volta.
+
+De volta ao navegador, clicamos no logotipo e vemos que um erro de arquivos estáticos não carregados no menu.html é apresentado. Portanto, também precisamos fazer esta indicação escrevendo {% load static %} no topo deste arquivo.
+
+Testamos novamente salvando e atualizando o site no navegador. Estando na página de receitas, clicamos em "Receitas" mais uma vez e observamos o mesmo erro anterior.
+
+Indo em receita.html, acessamos o início de header>, recortamos todo seu trecho de código e embedamos o código Python com include 'partials/menu.html' da mesma maneira.
+
+Salvamos e testamos os acessos pelos links mais uma vez. Como também não queremos código replicado para o footer>, aplicamos a mesma metodologia de recortar este pedaço, colar em footer.html, inserir {% load static %} no início do seu texto, finalizando com a escrita de include 'partials/menu.html' antes de endblock em receita.html.
+
+Fazemos a mesma coisa removendo todo o grande bloco de footer> de index.html para fazer a inclusão das partials de footer.html neste arquivo também.
+
+Testamos o funcionamento dos links em nossa página no navegador.
+
+Portanto, para não termos muitos códigos replicados, criamos as partials e estendemos por um arquivo base.html, melhorando bastante a manutenção e edição de nossos templates.
+
 ### Faça como eu fiz na aula
-### Extends, include e partials
-### O que aprendemos?
+### Exercício: Extends, include e partials
+
+Sabemos que código duplicado não é uma boa prática tornando a manutenção e edição do código muito mais difícil. Pensando nisso, melhoramos o código dos templates utilizando algumas templates tags.
+
+Com base nisso, analise as informações abaixo e marque as verdadeiras em relação a refatoração dos templates.
+
+a) **Alternativa correta: 
+A tag usada no template para incluir uma partial é {% include 'nome_da_partial' %}.**
+- _Certo! Quando queremos incluir apenas um bloco específico e não uma template completo, utilizamos a tag include._
+
+b) A tag extends pode ser indicada em qualquer parte do template.
+
+c) **Alternativa correta: No Django, podemos evitar código duplicado utilizando herança de template.**
+- _Certo! A herança de template permite criar um modelo, como um "esqueleto", contendo elementos comuns que podem ser compartilhados através da tag extends._
+
 ## 04. Modelo e banco de dados
 ### Nomes de receitas dinâmicas
+
+Na etapa anterior, melhoramos o código de nossos templates que estão funcionando tanto na página principal quanto na de receitas.
+
+Agora, precisamos exibir o nome das diferentes receitas que temos. Inicialmente, podemos alterar a nomenclatura em h5> da primeira parte Single Best Receipe Area de "Nome da receita" para "Sopa de legumes", na segunda para "Sorvete" e na terceira para "Lasanha" em index.html.
+
+Salvamos e vemos as três imagens com os nomes recém alterados ao atualizar a página no navegador. Se quisermos inserir uma nova receita, copiamos o bloco de div> e colamos na sequência para alterar seu título.
+
+Desta forma, nossa página exibe o novo item ao ser atualizada. Porém, é bastante trabalhoso fazer isso a cada nova receita incluída, e queremos que seja gerado de forma dinâmica ao só fornecer os nomes diretamente. Em Django, existe uma maneira que consiste em passar uma informação ao template na hora de renderizar a página principal.
+
+Para isso, deletamos os blocos com as receitas para deixar apenas a primeira "Sopa de legumes". Em seguida, acessamos views.py para ver a função render() que recebe a requisição e a página. Ao incluir mais uma vírgula ao argumento, o sistema indica que podemos passar um context com informações em formato de dicionário como terceiro parâmetro.
+
+Dentro dos parênteses de render(), incluímos {} que recebem 'nome_da_receita' e 'Sorvete'. Salvamos e atualizamos a página no navegador.
+
+Como não aparecem alterações, precisamos informar ao template onde nome_da_receita deve aparecer. Para isso, voltamos ao index.html para retirar "Sopa de legumes" da h5>; como queremos que este código seja executado e exiba o resultado na tela, não usamos código Python e sim {{}}. Dentro das chaves, passamos o nome do dicionário nome_da_receita.
+
+    <!-- ##### Best Receipe Area Start ##### -->
+    <section class="best-receipe-area">
+        <div class="container">
+            <div class="row">
+                <!-- Single Best Receipe Area -->
+                <div class="col-12 col-sm-16 col-lg-4">
+                    <div class="single-best-receipe-area mb-30">
+                        <img src="{% static 'img/bg-img/foto_receita.png' %}"></img>
+                        <div class="receipe-content">
+                            <a href="receita.html">
+                                <h5>{{ nome_da_receita }}</h5>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+Salvamos e atualizamos a página para ver o novo item gerado com o nome "Sola de legumes". Portanto, podemos passar um dicionário com todas as informações.
+
+Para ficar mais claro, criamos uma variável chamada dados em index() de views.py, passando 'nome_das_receitas' sendo do tipo dicionário receitas. Antes, passamos o dicionário no mesmo local como receitas sendo igual a {} e dentro desta, enumeramos 'Lasanha', 'Sopa de legumes' e 'Sorvete'.
+
+Ao invés de passar nome_da_receita em render(), passamos os dados.
+
+    def index(request):
+
+        receitas = {
+            1:'Lasanha',
+            2:'Sopa de legumes',
+            3:'Sorvete'
+        }
+
+        dados = {
+            'nome_das_receitas' : receitas
+        }
+        return render(request, 'index.html',dados)
+
+    def receita(request):
+        return render(request, 'receita.html')
+
+Salvamos e acessamos o arquivo index.html para que seja gerado um novo card a cada item que incluirmos no dicinário de forma dinâmica. Abaixo da linha de class="row", processamos um código Python para sabermos quantas receitas temos ao escrever for para cada chave em valor in nome_das_receitas.
+
+Como queremos o valor de cada item, colocamos .items ao final de nome_das_receitas. Além de indicar que temos for, precisamos dizer onde este acaba após <div> da sequência.
+
+E no lugar de nome_da_receita, queremos exibir o valor; portanto, substituímos valor por nome_da_receita. Desta forma,
+
+    <!-- ##### Best Receipe Area Start ##### -->
+    <section class="best-receipe-area">
+        <div class="container">
+            <div class="row">
+                {% for chave, nome_da_receita in nome_das_receitas.items %}
+                <!-- Single Best Receipe Area -->
+                <div class="col-12 col-sm-16 col-lg-4">
+                    <div class="single-best-receipe-area mb-30">
+                        <img src="{% static 'img/bg-img/foto_receita.png' %}"></img>
+                        <div class="receipe-content">
+                            <a href="receita.html">
+                                <h5>{{ nome_da_receita }}</h5>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+Salvamos e voltamos à aplicação para atualizar a página e avaliar as alterações. Para termos certeza do funcionamento, incluímos um quarto item ao dicionário em views.py, chamada 4:'Bolo de chocolate'. Atualizamos no navegador novamente.
+
+Apesar do visual da página principal estar satisfatório, os links das receitas ainda não estão funcionando, exibindo uma mensagem de erro após serem clicados, pois ainda não trabalhamos nestas partes.
+
+Estamos criando os nomes das receitas e passando informações de views aos templates, mas é arriscado manter todo os dados principais da aplicação em um arquivo. Portanto, é mais interessante mantê-los em um banco com a nomenclatura e seus detalhes como veremos a seguir.
+
 ### Banco de dados
+
+Em nossa aplicação, nossas informações das receitas são as que mais importam para este projeto. Portanto, não é interessante armazenar em dicionários e sim em um banco de dados seguro.
+
+Não utilizaremos o banco de dados SQLite que vem com o Django, e sim o PostgreSQL disponível para download aqui. De acordo com o sistema operacional, clicamos no link correspondente para depois clicar em "Download the installer".
+
+Em seguida, é apresentada uma tabela de versões com links de download e observamos que até a versão 10.10 há suporte para todos os sistemas operacionais que já é suficiente para nós, visto que não é um curso específico desta ferramenta, enquanto as superiores existem somente para Mac OS X e Windows x86-64.
+
+Feito o download, damos início à instalação. Salvamos no diretório de nossa preferência e selecionamos todos os comandos disponíveis para dar continuidade. O Setup pede uma senha bastante importante, pois é a que permite o acesso ao sistema. Escolhida uma senha confiável, o instalador pede uma porta para o servidor que pode ser a mesma já sugerida. Em seguida, definimos o "Locale" como "[Default locale]" e finalizamos a instalação com "Finish" após o progresso concluído.
+
+Abrimos o PostgreSQL buscando por pgAdmin 4.app em nosso caso, que inicia o servidor onde fica toda a nossa base de dados. Assim que é aberto, o programa pede a mesma senha definida na instalação para acessar.
+
+Após isso, precisamos criar um tipo de servidor que se conecta à aplicação Django. Na lista lateral, clicamos em "Servers" e selecionamos a opção "Create > Server..." para abrir uma nova janela e nomear como "dbserver" na aba "General". Indo em "Connection" na barra superior de opções desta caixa, preenchemos o campo obrigatório "Hostname/address" com "localhost" de nossa própria máquina que mantém o servidor do PostgreSQL. Em seguida, inserimos a senha para acessá-lo e finalizamos esta etapa no botão "Save" para visualizar nosso novo servidor na lista lateral.
+
+De volta à nossa aplicação Django, alteramos toda a configuração indo no arquivo setting.py em nosso projeto de "alurareceita" para acessar a parte de DATABASES. Nesta, vemos que o database default é o sqlite3, e devemos alterar para o banco de dados que queremos utilizar; mas antes, é necessária a instalação do módulo PostgreSQL para que a aplicação consiga se conectar.
+
+Para descobrir qual é o arquivo que serve como ponte entre ambos, abrimos o terminal que apresenta a venv aberta e digitamos pip install psycopg2 para finalizar com a tecla "Enter" e instalar o módulo. Ainda, é preciso instalar outro escrevendo pip install psycopg2-binary para obter os arquivos binários. Desta forma, conseguimos fazer com que ambos se conectem. Minimizamos o terminal com "Command + J" ou "Ctrl + J".
+
+De volta ao DATABASES, substituímos a extensão .sqlite3 por postgresql em 'ENGINE'. Já em 'NAME', devemos passar o nome do banco de dados; para criá-lo, voltamos ao PostgreSQL para clicar com o botão direito sobre "dbserver" e selecionar "Create > Database...". Na janela, nomeamos o campo "Database" como "alura_receitas" e clicamos em "Save" para ver o novo banco na lista lateral.
+
+Agora, podemos substituir o conteúdo de 'NAME' por somente 'alura-receita' e passamos mais algumas configurações. Para preencher com o 'USER', voltamos ao PostgreSQL, clicamos sobre "dbserver" com o botão direito e acessamos as propriedades para ver que o "Username" da aba "Connection" é "postgres"; logo, escrevemos 'postgres para o usuário principal. Em seguida, passamos o 'PASSWORD' com a senha usada na aplicação entre aspas simples. Por fim, definimos o 'HOST' como 'localhost' e finalizamos esta etapa.
+
 ### Psycopg2
 ### Modelo de receita
 ### Faça como eu fiz na aula
