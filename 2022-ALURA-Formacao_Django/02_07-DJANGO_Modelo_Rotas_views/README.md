@@ -1027,3 +1027,786 @@ Uma das partes mais poderosas do Django, é sua interface de admin.
 Se você quiser saber mais sobre o Django admin, confira a documentação do Django::
 
 - <a href="https://docs.djangoproject.com/en/2.2/ref/contrib/admin/" target="_blank">Django admin segundo a documentação oficial (texto em inglês)</a>
+
+# Integração de modelos no Django: Filtros, buscas e admin
+**Fonte:** Guilherme LIma<br>
+**Disponível:** <a href="https://cursos.alura.com.br/course/fundamentos-django-2" target=_blank>ALURA</a><br>
+**Conteúdo:**
+- Realize filtros e crie listas no seu site
+- Crie e integre modelos
+- Faça o admin do seu site com o Django admin
+- Saiba como criar uma página de busca com páginação
+---
+## 01. Ajustando o Django admin Ver primeiro vídeo
+### Introdução
+
+Boas vindas!
+
+Sou o instrutor Guilherme Lima do curso Integração de Modelos no Django 2.
+
+Anteriormente, elaboramos um modelo na primeira parte do treinamento, e agora iremos integrá-lo a um novo que será criado em nossas aulas.
+
+Além disso, faremos algumas configurações para deixar nosso Django Admin muito mais confortável para editarmos nossas receitas.
+
+Daremos continuidade ao desenvolvimento da aplicação, seguindo boas práticas de programação. Aprimoraremos ainda mais o visual, adicionando imagens para cada receita na página principal e um campo de busca por palavras.
+
+Criaremos um outro app para manter armazenadas as pessoas que postaram a receita no Django Admin, que terá um display muito mais agradável. Na parte de receitas, aprenderemos como alterar algumas configurações para termos filtros.
+
+Com isso, aprofundaremos ainda mais nossos conhecimentos sobre Django.
+
+Os pré-requisitos para este curso são ter feito a primeira parte do treinamento, ter noções básicas de Python, HTML, CSS e JavaScript além de darmos continuidade ao que começamos a aprender sobre PostgreSQL.
+
+Ao final de nossas aulas, poderemos criar app mais poderosas utilizando este framework de Django com a linguagem Python, o que é muito relevante para todos que se interessam em desenvolver aplicações web com essas ferramentas.
+
+Vamos lá!
+
+### Listando receitas por nome
+
+Daremos continuidade ao desenvolvimento da aplicação Alura Receita.
+
+Começamos pela atualização de uma receita, como a "Sopa de legumes" por exemplo: queremos modificar o tempo de preparo de 40 para 30 minutos e o rendimento de 6 para 4 porções.
+
+Para isso, acessamos o Admin adicionando /admin ao endereço do navegador, clicamos no link "Receitas" para visualizar a lista com os itens, abrimos a "Receita object" correta e alteramos as informações dos campos finalizando em "Salvar". Retornamos à página da aplicação e atualizamos para ver se os dados foram alterados corretamente.
+
+Porém, a exibição desses itens na lista de Receitas em Admin não estão informativos o suficiente para saber a quais receitas correspondem, e precisamos clicar em cada um para descobrir do que se tratam, o que é pouco prático principalmente pensando no crescimento constante dessa lista. O ideal seria visualizar o id e o nome para ficar claro.
+
+Indo ao nosso código no Visual Studio, acessamos nosso app de "receitas" e abrimos o arquivo admin.py. Observamos que passamos nosso modelo Receita como argumento para admin.site.register(), e podemos criar uma nova classe para este chamada ListandoReceitas() que recebe admin.ModelAdmin. Dentro desta, passamos uma edição para o display da nossa lista pelo código list_display, indicando que queremos o 'id' e o 'nome_receita', o qual deve ser o mesmo presente em models.py.
+
+De volta ao Admin do Django, atualizamos a página com a lista e não vemos nenhuma diferença; isso se deu porque criamos a classe ListandoReceitas() e ainda não a passamos ao admin.site.register() quando registramos a aplicação. Além de fazer o registro do modelo, queremos também a configuração do display que acabamos de implementar.
+
+    from django.contrib import admin
+    from .models import Receita
+
+    class ListandoReceitas(admin.ModelAdmin):
+        list_display = ('id', 'nome_receita')
+
+    admin.site.register(Receita, ListandoReceitas)
+
+Salvamos e voltamos à página para atualizar e ver que agora são apresentados os id e nomes das receitas na lista de Admin.
+
+Se quisermos exibir também outros campos como a categoria e o tempo de preparo por exemplo, basta adicionar 'categoria' e 'tempo_preparo' ao list_display, ou qualquer outro atributo do modelo. Desta forma, está muito mais claro saber qual item corresponde a qual receita.
+
+Para acessarmos os itens da lista, devemos clicar somente nos números de id, mas é interessante podermos transformar os nomes das receitas em links de acesso também. Para isso, basta adicionar list_display_link sendo igual a id e 'nome_receita' na classe ListandoReceitas().
+
+    from django.contrib import admin
+    from .models import Receita
+
+    class ListandoReceitas(admin.ModelAdmin):
+        list_display = ('id', 'nome_receita', 'categoria', 'tempo_preparo')
+        list_display_links = ('id', 'nome_receita')
+
+    admin.site.register(Receita, ListandoReceitas)
+
+Salvando o arquivo com estas configurações, podemos clicar também nos nomes das receitas para acessá-las. Inclusive, podemos fazer edições nos campos para testar a atualização.
+
+Com tudo funcionando corretamente, podemos seguir adiante.
+
+### Busca, Filtros e paginação
+
+No passo anterior, alteramos nosso código para que nossos itens sejam visualizados de forma bem mais clara na lista do Django Admin.
+
+Nesta etapa, veremos novas configurações para manipular melhor nossa receitas, como a implementação de um buscador por palavras.
+
+Indo à classe ListandoReceitas() no arquivo admin.py, começamos incluindo search_fields sendo igual ao campo que queremos buscar, como 'nome_receita' por exemplo e salvamos o arquivo.
+
+De volta à página de Admin do Django, atualizamos e um erro aparece. Voltamos ao terminal do Visual Studio para receber uma mensagem de erro dizendo que o valor search_fields precisa ser uma lista ou uma tupla, e passamos um valor específico. Então, adicionamos uma vírgula após 'nome_receita' para o erro não ser exibido novamente.
+
+Atualizando a aplicação, vemos um campo de busca no topo da lista de receitas na Administração. Podemos testar escrevendo "sorvete" por exemplo para encontrarmos apenas a receita com essa palavra, ou partes desta palavra.
+
+Para manipularmos melhor nossas receitas, podemos exibir um filtro por categoria através da propriedade list_filter sendo igual a ('categoria',), sem esquecer a vírgula para evitar o problema já visto.
+
+De volta à aplicação, aparece um novo espaço com o filtro por categoria de acordo com o que estabelecemos, lembrando de manter a grafia correta.
+
+Criamos mais uma receita de "Pudim" para incluir na categoria de "sobremesa", a mesma do sorvete. Preenchemos os campos com um texto qualquer somente para conseguirmos visualizar e testar o funcionamento das buscas e do filtro.
+
+Pensando no crescimento de nosso projeto com cada vez mais itens, nossa lista pode ficar gigantesca e pouco prática. Para melhorar essa questão, criamos uma paginação para a lista de forma bastante simples através da propriedade list_per_page que pode receber um número específico de receitas por página. Como ainda temos poucos elementos, fazemos igual a 2.
+
+    from django.contrib import admin
+    from .models import Receita
+
+    class ListandoReceitas(admin.ModelAdmin):
+        list_display = ('id', 'nome_receita', 'categoria', 'tempo_preparo')
+        list_display_links = ('id', 'nome_receita')
+        search_fields = ('nome_receita',)
+        list_filter = ('categoria',)
+        list_per_page = 2
+
+    admin.site.register(Receita, ListandoReceitas)
+
+Voltamos ao Admin do Django e percebemos as páginas exibidas com o número de itens que estabelecemos. Podemos adicionar ainda mais receitas para testarmos essa nova configuração. Desta forma, podemos buscar receitas e organizá-las em páginas de forma mais agradável.
+
+### Exercício: Melhorando o admin
+
+Para melhorar o admin do Django, exibindo informações como id, nome da receita, categoria e tempo de preparo, além de incluir links para editar a receita, filtros e paginação, uma pessoa incluiu o seguinte código:
+
+    from django.contrib import admin
+    from .models import Receita
+
+    class ListandoReceitas(admin.ModelAdmin):
+        list_display = ('id', 'nome_receita', 'categoria', 'tempo_preparo')
+        list_display_links = ('id', 'nome_receita')
+        search_fields = ('nome_receita',)
+        list_filter = ('categoria',)
+        list_per_page = 2
+
+    admin.site.register(Receita)
+
+Sabendo disso, o que vai acontecer quando a pessoa acessar o app de receita através do admin?
+
+a) O admin será carregado apenas com o filtro e a paginação funcionando.
+
+b) Alternativa correta: O admin será carregado, porém sem nenhuma das configurações citadas acima.
+- _Certo! É necessário passar a classe ListandoReceitas no momento que registramos o app, como segundo argumento: admin.site.register(Receita, ListandoReceitas)._
+
+c) O admin não será carregado, e um erro será exibido.
+
+d) O admin será carregado com todas as configurações citadas acima.
+
+## 02. Quem postou a receita?
+### Criando um modelo de pessoas
+
+Criamos algumas novas receitas e melhoramos a página de Admin para organizar melhor as informações. Mas podemos aperfeiçoar a aplicação ainda mais, como veremos nesta etapa.
+
+Sempre que acessamos uma receita a partir da página principal, vemos os dados e características específicas de cada uma. Porém, em todas elas, ainda é exibida a origem da postagem como "Por: Pessoa", e queremos que seja visível o nome de quem enviou a receita.
+
+Da mesma forma que criamos e registramos o app para manipular a Administração de forma mais eficaz, criaremos um outro para gerar algumas pessoas e vincular este novo app com o de receitas.
+
+Começamos abrindo uma nova janela de terminal no Visual Studio conferindo se a venv está realmente ligada para dizer ao Python que queremos criar um novo app para as pessoas que enviam receitas. Escrevemos python manage.py startapp pessoas e quando apertamos a tecla "Enter", o sistema cria um novo diretório chamado "pessoas".
+
+Para fazer com que pertença à nossa aplicação, vamos ao "alurareceita" onde estão as configurações em settings.py para visualizarmos os apps instalados, como o 'receitas'. Adicionamos 'pessoas' seguido de , ao INSTALLED_APPS.
+
+Feito isso, nosso app está registrado. Agora, criamos algumas pessoas na aplicação indo ao arquivo models.py dentro de "pessoas" e geramos uma classe chamada Pessoa() que será representada como uma tabela no banco de dados com cada campo sendo um atributo.
+
+Esta nova classe recebe models.Model como argumento. Em seguida, queremos que a pessoa tenha um nome sendo igual a um tipo de texto models.Charfield() passando um limite de max_length igual a 200. Também queremos que cada pessoa registrada possua um email com a mesma propriedade e limite anterior.
+
+    from django.db import models
+
+    class Pessoa(models.Model):
+        nome = models.CharField(max_length=200)
+        email = models.CharField(max_length=200)
+
+Criado este modelo, precisamos registrá-lo no admin.py deste mesmo diretório, para que este seja capaz de criar essas pessoas. Primeiro, importamos o modelo Pessoa de .models no topo do código e depois inserimos que admin.site.register() deve registrar Pessoa como argumento.
+
+    from django.contrib import admin
+    from .models import Pessoa
+
+    admin.site.register(Pessoa)
+
+Salvamos e abrimos o terminal para executar o comando python manage.py makemigrations que cria a migração de pessoas com a tecla "Enter". É criada uma nova pasta "migrations" com o arquivo 0001_initial.py com a migração.
+
+De volta ao admin.py de "pessoas", abrimos o terminal e inserimos o comando python manage.py migrate para gerar a pessoa no banco de dados. Com isso, abrimos o PostgreSQL e clicamos em "Tables" com o botão direito para selecionar "Refresh..." e atualizar as tabelas para ver se a tabela "pessoas_pessoa" é apresentada na lista lateral.
+
+Em seguida, atualizamos a página de Admin do Django e vemos o item "Pessoas" na lista. Ao clicar neste link, não há nenhuma pessoa registrada ainda e criamos uma nova clicando em "Adicionar pessoa", preenchendo os campos com dados de nome e e-mail e finalizando em "Salvar".
+
+Feito isso, temos uma nova pessoa na lista sob nome de "Pessoa object (1)". Da mesma forma que fizemos anteriormente, queremos melhorar a visualização das informações indo ao app "pessoas" para abrir o arquivo admin.py. Podemos abrir a classe de "receitas" para seguir a metodologia de filtros aplicada em seu admin.py para a classe ListandoReceitas() como exemplo.
+
+Adaptando e simplificando a lista de pessoas, criamos uma classe ListandoPessoas() de admin.ModelAdmin em admin.py de "pessoas". Dentro desta classe, passamos o list_display com o 'id','nome' e o 'email' da pessoa e, como queremos que mais aspectos sejam links clicáveis, adicionamos list_display_links para id e 'nome'.
+
+Ainda, podemos adicionar as propriedades search_fields e list_per_page sendo 'nome' e 2 respectivamente para o campo de busca e a paginação, sem esquecer a vírgula após o argumento desta primeira. Por fim, passamos a nova classe para o registro.
+
+    from django.contrib import admin
+    from .models import Pessoa
+
+    class ListandoPessoas(admin.ModelAdmin):
+        list_display = ('id', 'nome', 'email')
+        list_display_links = ('id', 'nome')
+        search_fields = ('nome',)
+        list_per_page = 2
+
+    admin.site.register(Pessoa, ListandoPessoas)
+
+Salvo este arquivo, retornamos à página de Admin do Django e atualizamos a parte da lista de pessoas para ver se as configurações foram efetuadas.
+
+Podemos testar criando outras pessoas e conferir se está tudo funcionando como esperado.
+
+A seguir, vincularemos as pessoas às receitas, dizendo que quem enviou a receita exibida no site.
+
+### Integrando modelos
+
+No passo anterior, criamos "pessoas_pessoa" no banco de dados e o app que mantém um crude completo deste elemento. Agora, vincularemos às nossas receitas informando quem enviou uma determinada receita.
+
+Acessando a página de "Models" da documentação do Django neste link, temos uma parte falando sobre relacionamentos entre tabelas e classes em "Relationships"; nesta, há um exemplo que nos permite ver algo parecido com nossa aplicação.
+
+As duas classes do exemplo criam um relacionamento entre si através da chave estrangeira models.ForeignKey(), onde a segunda se refere à anterior. Além de receber a primeira classe como argumento, esta chave também recebe on_delete=models.CASCADE, significando que o Django aplica um comportamento de restrição ao SQL e também exclui o objeto que contém a ForeingKey(), sendo exatamente o que precisamos para nossa aplicação.
+
+Em nosso projeto atual, se criarmos e vincularmos as receitas com as pessoas, podemos gerar um erro de integridade, pois já possuímos dados anteriores que não têm um registro de quem os enviou. Como apenas criamos receitas de exemplo para testarmos, podemos removê-las para dar continuidade.
+
+De volta à Administração de Django, acessamos "Início > Receitas > Receitas" para deletar os itens da lista clicando em "Selecionar todos receitas" e escolhendo a opção "Remover receitas selecionados" para finalizar em "Ir". Em seguida, o sistema confirma a ação e prosseguimos.
+
+Com os objetos excluídos e fora da aplicação, podemos manipular nossos dados. Acessando o models.py de "receitas", informamos que sempre há uma pessoa vinculada quando uma receita é gerada por meio de um novo campo pessoa sendo igual a models.ForeignKey() da mesma forma que o modelo de exemplo da documentação. Para a chave estrangeira, passamos a classe de Pessoa e on_delete=models.CASCADE. Por fim, precisamos somente importar Pessoa de pessoas.models no topo do código e salvamos o arquivo.
+
+    from django.db import models
+    from datetime import datetime
+    from pessoas.models import Pessoa
+
+    class Receita(models.Model):
+        pessoa = models.ForeignKey(Pessoa, on_delete=models.CASCADE)
+        nome_receita = models.CharField(max_length=200)
+        ingredientes = models.TextField()
+        modo_preparo = models.TextField()
+        tempo_preparo = models.IntegerField()
+        rendimento = models.CharField(max_length=100)
+        categoria = models.CharField(max_length=100)
+        date_receita = models.DateTimeField(default=datetime.now, blank=True)
+
+Com isso, fazemos uma alteração em nossa classe que referencia as tabelas e campos no banco de dados. Para inserir isso no database, geramos uma migração no segundo terminal com a venv ligada e escrevemos python manage.py makemigration para executar o comando com "Enter".
+
+O sistema indica que estamos tentando popular alguns campos que possuem algumas linhas, e nos oferece duas opções: podemos prover um valor defaut agora ou podemos adicionar este valor em models.py. Optamos pela primeira opção digitando 1 como resposta ao terminal. Em seguida, definimos uma String vazia com '' para este valor default, fazendo com que seja gerada a migração de receita.
+
+Desta forma, migramos para o banco de dados pelo comando migrate no terminal como já vimos. De volta à aplicação, atualizamos a página para ver que os itens desaparecem, pois as removemos.
+
+Na página de Admin, clicamos em "Receitas > Receitas" para adicionar um novo item. O primeiro campo apresentado é o "Pessoa" com uma barra contendo as opções criadas sob nome de "Pessoa object". Continuamos preenchendo os campos somente como teste e finalizamos em "Salvar".
+
+A seguir, veremos como obter uma identificação mais clara dentro do campo "Pessoa" da forma como se apresentam na lista com seus nomes corretos.
+
+### Exibindo nome das pessoas
+
+Agora, sempre que criamos uma nova receita, temos um campo chamado "Pessoa"; porém, sua identificação não é clara pois não são nomeados adequadamente, apenas como "Pessoa Object" seguido do número identificador.
+
+Em nossa lista de Pessoas no Admin do Django, vemos que cada id corresponde à um nome específico, sendo justamente o que queremos visualizar no novo campo de cadastro.
+
+Para fazermos isso, voltamos ao models.py de "pessoas" e definimos uma nova classe em Pessoa com def chamada __str__(). Dentro, referenciamos o próprio objeto que queremos exibir através de self e, em seguida, retornamos seu nome adicionando .nome para substituir "Receita Object".
+
+    from django.db import models
+
+    class Pessoa(models.Model):
+        nome = models.CharField(max_length=200)
+        email = models.CharField(max_length=200)
+        def __str__(self):
+            return self.nome
+
+Com isso, o objeto referenciado sempre retornará o nome próprio de quem enviou a receita. Salvamos o arquivo e atualizamos a página de cadastro de novos itens no Admin para ver a alteração no campo "Pessoa".
+
+Estando as identificações corretas, podemos ver mais claramente a usuária ou usuário que postou a receita. Porém, quando retornamos à página principal da aplicação e clicamos em um item, o campo "Por:" ainda é preenchido por "Pessoa" nas informações.
+
+Para conseguirmos visualizar o nome e alterarmos essa exibição, acessamos receita.html dentro de "templates" para observar a forma como trouxemos os demais campos da receita. Como adicionamos a referência de pessoa ao modelo de receitas e já buscamos todas as Receitas em views.py, a pessoa também está vinculada; logo, apenas substituímos Pessoa pelo código Python {{}} contendo receita.pessoa em Por: na linha <h6> de receita.html, conforme temos na classe de Receita() do modelo.
+
+De volta à aplicação, vemos o nome da usuária ou usuário no campo "Por:" da página de detalhes. Fazemos um teste adicionando uma nova receita à lista para ter certeza de que a origem da postagem é exibida pela nomenclatura correta.
+
+Estando a visualização de acordo com o que queremos, significa que criamos e vinculamos os modelos com sucesso tanto em nossos templates quanto nas referências aos objetos, tornando o acesso muito mais prático e claro.
+
+### Exercício: '__str__'
+
+Para descobrir quem postou a receita, criamos o app de pessoa e o modelo, conforme o código abaixo.
+
+    from django.db import models
+
+    class Pessoa(models.Model):
+        nome = models.CharField(max_length=200)
+        email = models.CharField(max_length=200)
+        def __str__(self):
+            return self.nome
+
+Analisando o código acima, podemos afirmar que:
+
+a) O método __str__ indica que os atributos nome e email são do tipo texto.
+
+b) O método __str__ indica que o atributo nome é do tipo texto.
+
+c) Alternativa correta: O método __str__ substitui o nome padrão dos objetos dessa classe para o nome da pessoa.
+- _Certo! Dessa forma, no lugar do nome Pessoa object(1), podemos ver o nome armazenado no atributo nome da classe Pessoa._
+
+## 03. Filtros e categorias
+### Filtro receitas publicadas
+
+Gostaríamos de criar algumas receitas mas sem publicá-las no site para realizarmos algumas edições. Com base no que já temos, criamos uma nova receita chamada "Bolo de chocolate (edição)" de categoria "bolo" para fazer este teste preenchendo os campos com informações e selecionando alguma das pessoas.
+
+Porém, quando atualizamos a aplicação, esta receita aparece e não é o que queremos. Para evitar que seja exibida pois pode ser que haja algo a alterar, criamos uma forma de indicar quais itens queremos publicar e quais estarão em modo de edição sem visualização na página.
+
+No Visual Studio, acessamos o app de "receitas" para abrir models.py e criamos um novo campo determinando verdadeiro ou falso para sabermos se a receita está publicada ou não. Se sim, corresponde a True e se não, a False.
+
+Na classe Receita(), adicionamos o novo campo chamado publicada sendo igual a models.BooleanField(). O primeiro argumento é o valor defaut do item como False; desta forma, quando criamos uma nova receita, não queremos que fique com publicada como flag verdadeira.
+
+Como alteramos a classe, devemos subir a atualização para o banco de dados através do comando python manage.py makemigrations no terminal para criar a migração, sempre atentando à venv. Feito isso, migramos com migrate da mesma forma que já conhecemos.
+
+Salvamos e retornamos à lista de "Receitas" no Admin do Django. Abrindo o item "Bolo de chocolate", notamos um novo campo "Publicada" com a opção de marcação vazia, pois o padrão é False. Salvamos e voltamos à página principal para atualizá-la e ver que esta receita em modo de edição ainda está aparecendo. Ao verificarmos as outras receitas que estão exibidas, estas também não estão marcadas como publicadas com True.
+
+Criamos este novo atributo e indicamos se é verdadeiro ou falso, mas ainda não alteramos o código no momento em que as informações são enviadas para serem renderizadas.
+
+Para conseguirmos visualizar somente os valores das receitas marcadas com True, precisamos modificar a views.py de "receitas" no Visual Studio. Na definição de index(), pegamos todas as receitas com objects.all() sem considerar a flag que implementamos.
+
+Primeiro, alteramos a forma como estamos buscando nossos objetos retirando .all() e depois indicamos um filtro com .filter() recebendo o campo publicada somente com valor True.
+
+    def index(request):
+        receitas = Receita.objects.filter(publicada=True)
+
+        dados = {
+            'receitas' : receitas
+        }
+        return render(request, 'index.html', dados)
+
+Ao atualizarmos a página principal da aplicação, todas as receitas desaparecem conforme esperamos, já que nenhuma está com essa marcação positiva. Editamos um dos itens para marcar a opção de "Publicada", salvamos e voltamos ao nosso site para ver que somente esta é exibida, significando que fizemos a configuração com sucesso.
+
+### Ordenação e edição no admin
+
+Anteriormente, criamos uma forma de exibir apenas as receitas que possuem a flag de "Publicada" como verdadeira. E sabemos que basta marcar essa opção positivamente para fazer com que um item em edição seja visível na página principal.
+
+Porém, também é interessante apresentar essa marcação na linha de cada receita da lista da Administração do Django ao invés de somente na parte exclusiva de edição dos campos. Desta forma, acessamos mais rapidamente a informação de quais itens estão publicados e quais não estão.
+
+Para isso, acessamos o arquivo admin.py da pasta "receitas". Neste, temos a classe ListandoReceitas() exibindo quatro dados na lista com list_display, e adicionamos mais 'publicada' à este.
+
+    class ListandoReceitas(admin.ModelAdmin):
+        list_display = ('id', 'nome_receita', 'categoria', 'tempo_preparo', 'publicada')
+        list_display_links = ('id', 'nome_receita')
+        search_fields = ('nome_receita',)
+        list_filter = ('categoria',)
+        list_per_page = 2
+
+Salvamos, voltamos à lista do Admin e atualizamos a página para ver se a flag da opção "Publicada" é exibida na lista. Em seguida, visualizamos mais receitas alterando o conteúdo de list_per_page para 5, vendo se o novo campo é apresentado com seu status.
+
+Estando as modificações corretas, podemos prosseguir; se quisermos alterar o status de publicação de uma receita, precisamos acessar sua parte de edição dos campos, desmarcar a opção "Publicada", salvar e somente assim podemos ver um "x" neste item recém retirado da página principal, o que é um passo bem grande.
+
+Para simplificar a marcação das receitas publicadas e não publicadas, queremos que esta opção esteja disponível na listagem e não somente na edição interna.
+
+Como já temos o campo 'publicada' em list_display, precisamos criar uma nova forma de indicar que este pode ser editado na lista através de list_editable sendo igual a 'publicada' entre parênteses seguido de uma vírgula, visto que também se trata de uma tupla.
+
+    class ListandoReceitas(admin.ModelAdmin):
+        list_display = ('id', 'nome_receita', 'categoria', 'tempo_preparo', 'publicada')
+        list_display_links = ('id', 'nome_receita')
+        search_fields = ('nome_receita',)
+        list_filter = ('categoria',)
+        list_editable = ('publicada',)
+        list_per_page = 2
+
+Salvamos, voltamos à lista do Admin, atualizamos a página e vemos as marcações editáveis em cada linha de receitas, facilitando a publicação ou não destas. Também, aparece um botão de "Salvar" para executar as edições, e podemos testar seu funcionamento vendo se aparecem ou não na página principal da aplicação.
+
+Outra alteração interessante diz respeito à forma como exibimos os nossos campos, pois se acessarmos models.py de 'receitas", temos date_receita que pode ser usada para que a lista seja ordenada por data de publicação.
+
+Primeiro, para alterar a ordenação, acessamos views.py que possui um filtro de exibição em index() e criamos um segundo adicionando order_by() recebendo 'date_receita' em Receitas.objects de receitas. Para que as mais recentes apareçam primeiro, adicionamos - ao início do novo comando.
+
+    def index(request):
+        receitas = Receita.objects.order_by('-date_receita').filter(publicada=True)
+
+        dados = {
+            'receitas' : receitas
+        }
+        return render(request, 'index.html', dados)
+
+Salvamos, voltamos à página principal da aplicação e avaliamos se as receitas estão ordenadas da mais recente para a mais antiga. Podemos adicionar mais itens publicados para este teste também.
+
+Feito isso, podemos dar continuidade.
+
+### Foto para cada receita
+
+No passo anterior, alteramos nosso Admin para editarmos as receitas que podem ou não ser publicadas no site, gerando um resultado bem interessante.
+
+Porém, os itens ainda estão com uma imagem padrão na tela principal e na página de detalhes, e precisamos adicionar fotografias específicas referentes à cada receita.
+
+Começamos alterando o modelo no app de "receitas" para incluir um novo campo de armazenamento de imagem, chamado foto_receita sendo igual a models.ImageField() recebendo o local de upload da foto. Em nosso projetos, estamos executando localmente direto da máquina como vimos no curso anterior, portanto precisamos salvar em um diretório exclusivo para nossas imagens.
+
+Dentro de models.ImageField(), aplicamos upload_to para indicar o caminho sendo igual a 'fotos/, seguido de %d, %m e %Y para ser baseado no dia, mês e ano de criação sem termos problemas de sincronização conforme as receitas são criadas. Depois, como segunda opção, adicionamos blank=True para que o comportamento seja de deixar em branco caso o item não possua uma imagem própria.
+
+    from django.db import models
+    from datetime import datetime
+    from pessoas.models import Pessoa
+
+    class Receita(models.Model):
+        pessoa = models.ForeignKey(Pessoa, on_delete=models.CASCADE)
+        nome_receita = models.CharField(max_length=200)
+        ingredientes = models.TextField()
+        modo_preparo = models.TextField()
+        tempo_preparo = models.IntegerField()
+        rendimento = models.CharField(max_length=100)
+        categoria = models.CharField(max_length=100)
+        date_receita = models.DateTimeField(default=datetime.now, blank=True)
+        foto_receita = models.ImageField(upload_to='fotos/%d/%m/%Y', blank=True)
+        publicada models.BooleanField(default=False)
+
+Salvamos e acessamos setting.py de "alurareceita" para gerarmos dois novos comportamentos na aplicação que indicam o uso de arquivos de mídia como imagens do site. Neste arquivo, temos uma rota para arquivos estáticos e adicionamos outra rota para estes novos tipos de documentos para possibilitar o upload das fotos.
+
+Ao final do texto, inserimos MEDIA_ROOT sendo nosso próprio diretório os.path.join() passando BASE_DIR seguido de 'media'. Em seguida, escrevemos outra configuração chamada MEDIA_URL para referenciar '/media/', pois no banco de dados é salvo o caminho para uma determinada imagem, e não esta propriamente dita.
+
+    STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+    STATIC_URL = '/static/'
+    STATICFILES_DIRS = [
+        os.path.join(BASE_DIR, 'alurareceita/static')
+    ]
+
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+    MEDIA_URL = '/media/'
+
+Feitas essas alterações nas configurações e no modelo, precisamos rodar as migrações no terminal com python manage.py makemigrations. Ao executar, o sistema aponta a necessidade da instalação do módulo Pillow através do comando pip install pillow. Em seguida, atualizamos a versão de pip escrevendo pip install --upgrade pip e terminamos fazendo a migração efetiva novamente.
+
+Desta forma, podemos visualizar a migração no novo arquivo 0004_receita_foto_receita.py na pasta "migrations". Depois, mandamos para o banco de dados abrindo o terminal e escrevendo python manage.py migrate, como já conhecemos.
+
+Podemos ver no aplicativo PostgreSQL ao clicar com o botão direito em "receitas_receita" da lista lateral para escolher a opção "View/Edit Data > All Rows". Assim, visualizamos todas as linhas e vemos um novo campo "foto_receita" como aplicamos.
+
+Se voltarmos à lista do Admin do Django e atualizarmos a página, o navegador aponta uma falha; indo ao primeiro terminal no Visual Studio, o sistema indica que instalamos o Pillow mas não subimos o servidor novamente. Limpamos a tela do terminal e escrevemos python manage.py runserver.
+
+Retornamos à lista do Admin para atualizarmos a página mais uma vez. Sendo exibida sem problemas, clicamos em "Adicionar receita" e vemos um novo campo "Foto receita:" com a opção de escolher uma imagem para upload através do botão "Choose File". Também é possível editar uma receita já existente e carregar sua fotografia.
+
+Escolhida uma fotografia de nossa preferência para um item específico do site, podemos voltar ao PostgreSQL, clicar com o botão direito sobre nossa tabela e visualizar todas as linhas para observar que o campo "foto_receita" possui um caminho indicado na receita que recebeu o upload de uma imagem.
+
+Nosso próximo passo é conseguir exibir as fotos nas receitas das páginas principais e na página de seus detalhes.
+
+### Configurações do Admin
+
+Durante o desenvolvimento de uma aplicação Django, dividimos nossa aplicação em 2 partes: nosso site e o admin do Django, onde criamos os conteúdos que serão exibidos no site.
+
+Porém, no Django é possível filtrar ou ordenar os objetos que queremos renderizar no site.
+
+Sabendo disso, analise as afirmações abaixo e marque as verdadeiras.
+
+a) Não é possível ordenar os objetos por datas maiores primeiro.
+
+b) Alternativa correta: É possível adicionar mais de um filtro.
+- _Certo! Podemos adicionar mais de um filtro, por exemplo: Receita.objects.order_by('-data_receita').filter(publicada=True).filter(tempo_preparo=10)._
+
+c) Alternativa correta: É possível buscar todos os objetos, sem filtros e sem ordenação.
+- _Certo! Podemos buscar todos os objetos, por exemplo: Receita.objects.all()._
+
+## 04. Buscando receitas
+### Exibindo a foto
+
+Feito o upload da fotografia que queríamos para uma receita específica, precisamos exibi-la no lugar da imagem padrão presente na página principal e na de detalhes.
+
+Para isso, acessamos urls.py em "alurareceita" para indicar o uso das configurações de mídia recém incluídas em settings.py. Começamos incluindo + ao final de urlpatterns seguido de static() que recebe setting.MEDIA_URL onde estão os caminhos, seguido de document_root igual a settings.MEDIA_ROOT.
+
+from django.contrib import admin
+from django.urls import path, include
+
+    urlpatterns = [
+        path('', include('receitas.urls')),
+        path('admin/', admin.site.urls),
+    ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+Desta forma, indicamos que estes arquivos cujos uploads foram permitidos podem ter suas urls utilizadas pela aplicação.
+
+Quando adicionamos a foto à receita, um novo folder "media" aparece na lista lateral do Visual Studio, contendo o caminho de pastas de acordo com o dia, mês e ano de publicação que leva ao arquivo final de mídia propriamente dito.
+
+Quando salvamos o código, um destaque de erro em static() é apresentando, pois o sistema não conhece nem este nem o arquivo de settings, ou seja, precisamos fazer seus imports no topo do código.
+
+    from django.contrib import admin
+    from django.urls import path, include
+    from django.conf import settings
+    from django.conf.urls.static import static
+
+    urlpatterns = [
+        path('', include('receitas.urls')),
+        path('admin/', admin.site.urls),
+    ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+Assim, os erros desaparecem quando salvamos e tornamos possível encontrar o caminho para carregar a imagem no banco de dados.
+
+Agora, criamos uma verificação que avalia se uma receita possui uma fotografia e, caso não possua, queremos carregar a imagem padrão que aparece na página principal. Para isso, acessamos index.html e observamos que há a linha <img> na parte de Single Best Receipe Area que carrega o ícone quando não temos uma foto.
+
+Portanto, dentro do loop de receita, escrevemos código Pyhton para processamento {% %} recebendo if para verificar o caso de receita.foto_receita ser igual a nulo, o que exibe a imagem padrão.
+
+Caso não seja null, o site deve apresentar a url dos arquivos de mídia configurada na aplicação, ou seja, o objeto manipulado receita.foto_receita.url também com código Python de processamento, bastante parecido com o que usamos nos arquivos estáticos. Em seguida, fechamos a verificação com endif.
+
+    <!-- ##### Best Receipe Area Start ##### -->
+    <section class="best-receipe-area">
+        <div class="container">
+            <div class="row">
+                {% if receitas %}
+                {% for receita in receitas %}
+                <!-- Single Best Receipe Area -->
+                <div class="col-12 col-sm-16 col-lg-4">
+                    <div class="single-best-receipe-area mb-30">
+                        {% if receita.foto_receita == '' %}
+                            <img src="{% static 'img/bg-img/foto_receita.png' %}">
+                        {% else %}
+                            <img src="{{ receita.foto_receita.url }}" alt="">
+                        {% endif %}
+                            <div class="receipe-content">
+                            <a href="receita.html">
+                                <h5>{{ receita.nome_receita }}</h5>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+                {% else %}
+                {% endif %}
+            </div>
+        </div>
+    </section>
+Salvamos e retornamos à aplicação para atualizar a página principal e ver se a imagem esperada é apresentada. Depois, clicamos no item para abrir a parte de detalhes da receita e ver que a fotografia ainda é a padrão, e não a que foi carregada.
+
+Conforme estabelecido, a padrão deve ser exibida quando não tivermos uma imagem específica. Voltamos ao código index.html para copiar a linha de if, else, caminho do arquivo e endif que acabamos de escrever, e colar na parte Receipe Slider em receita_html que contém o local da foto padrão.
+
+    <!-- Receipe Slider -->
+    <div class="container">
+        <div class="row">
+            <div class='col-12">
+                <div class "receipe-slider owl-carousel">
+                    {% if receita.foto_receita == null %}
+                        <img src="<% static 'img/bg-img/tomate_banner.jpg' %}"
+                    {% else %}
+                        <img src="{{ receita.foto_receita.url }}" alt="">
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+Salvamos e voltamos à aplicação para testar o funcionamento das modificações. Podemos adicionar mais receitas sem upload de imagens ou publicar as que não possuem nenhuma para terminar a verificação, vendo se a foto padrão é exibida nesses casos.
+
+Quando estamos na página de detalhes e clicamos em "Alura Receita" para voltar ao index, o navegador apresenta um erro; isso acontece porque utilizamos null em index.html e receita.html, e precisamos alterar para apenas uma string vazia com '' nos dois arquivos.
+
+Feito isso, podemos observar os itens que possuem e os que não possuem uma fotografia específica referente à receita, de acordo com as configurações que fizemos.
+
+Desta forma, garantimos tanto as imagens de upload quanto as padrões da aplicação.
+
+### Criando a página de busca
+
+Incluímos uma imagem para nossas receitas e, caso não tenhamos, exibimos apenas a foto padrão. Para nosso site ficar ainda melhor, é interessante que todas as receitas visíveis na página principal tenham sua própria fotografia.
+
+Começamos marcando como publicadas as receitas que queremos exibir e fazemos o upload de uma imagem para elas. Assim que terminamos e atualizamos a página principal, temos um visual bem mais agradável. Entramos em cada uma para ver os detalhes e se a imagem é apresentada nesta parte também.
+
+Todos os links presentes parecem estar funcionando; porém, ao clicar no ícone de busca representada por uma lupa, escrever alguma palavra e finalizar com "Enter", o navegador aponta um erro com a mensagem "Proibido".
+
+Queremos que o site apresente os itens do resultado da busca. Para resolver este problema, criamos uma rota para identificar o caminho buscado.
+
+Indo ao código de urls.py dentro de "receitas" no Visual Studio, observamos os path() para views.index e views.receita, e precisamos criar para a busca também.
+
+Nomeamos este novo path() como 'buscar' e adicionamos o método views.buscar, linkando o nome do caminho por meio de 'buscar'.
+
+    from django.urls import path
+
+    from . import views
+
+    urlpatterns = [
+        path('', views.index, name='index'),
+        path('<int:receita_id>', views.receita, name='receita'),
+        path('buscar', views.buscar, name='buscar')
+    ]
+
+Desta forma, quando quisermos encontrar este path(), utilizamos código Python digitando url e 'buscar' através de name.
+
+Salvamos e vemos um destaque em views indicando que não há 'buscar' em views.py de "receitas", portanto precisamos criá-lo. Acessamos este último arquivo e definimos o novo método buscar() recebendo a request. Sempre quando conseguimos receber este método, precisamos renderizar para ter outra página carregada com return e render() recebendo a requisição como primeiro parâmetro e o template buscar.html.
+
+    def buscar(request):
+        return render(request, 'buscar.html')
+
+Salvamos este arquivo e o urls.py para resolver a questão do destaque apresentado. Como ainda não temos este template relacionado à busca, precisamos criá-lo na pasta "templates".
+
+Abrindo-a, clicamos no ícone de "New file" e nomeamos como buscar.html. Neste, testamos o fluxo colocando uma linha h1> com o escrito "Buscar". De volta ao index.html, acessamos a parte de busca em Search Wrapper para ver form que aponta ao símbolo "#", o qual não é o que queremos utilizar, pois pretendemos renderizar a imagem de fato e encaminhar ao index.html.
+
+Fazemos isso apagando somente o trecho "#" method="post">da linha a partir de '<form action= para que este receba "{% url 'buscar' %}">', embedando código Python de processamento.
+
+Este 'buscar' é o mesmo name criado em urls.py anteriormente, e quando clicarmos o formulário de busca, o sistema encaminha à url para carregar a página buscar.html com escrito de "Buscar". Com isso, criamos um novo path e um novo método em views.py para atender esta requisição.
+
+Voltamos à aplicação, atualizamos a página e clicamos no ícone da lupa para abrir a barra de busca. Digitamos alguma palavra-chave existente em alguma das receitas para testar. Quando teclamos "Enter", conseguimos carregar a nova página e visualizar a mensagem "Buscar" conforme planejado.
+
+Na barra de endereço do navegador, aparece "search=" seguida da palavra buscada, mas queremos que apareça "buscar" em seu lugar. De volta à parte Search Wrapper do index.html, temos a linha com input type="search" name="search"; ao invés de "search" em type, escrevemos "text" e no lugar de "search" como conteúdo de name, apenas digitamos "buscar" para realizar esta alteração.
+
+    <!-- Search Wrapper -->
+    <div class="search-wrapper">
+        <!-- Close Btn -->
+        <div class="close-btn"><i class= "fa fa-times" aria-hidden="true"></i></div>
+
+        <div class "container">
+            <div class="row">
+                <div class="col-12">
+                    <form action="{% url 'buscar' %}">
+                        <input type="text" name="buscar" placeholder="O que está procurando..."></input>
+                        <button type="submit"><i class="fa fa-search" aria hidden="true"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+Voltamos a aplicação, atualizamos e testamos a busca novamente para ver as mudanças na barra de navegação.
+
+Porém, não é interessante apenar exibir uma página com um título "Buscar" quando a usuária ou usuário realizar uma busca por palavras; queremos que o resultado seja apresentado devidamente, e podemos exibir o mesmo layout da página inicial somente com as receitas filtradas pela procura.
+
+Para isso, começamos acessando o arquivo index.html, copiamos todo seu código e colamos em buscar.html após deletar a linha <h1>Buscar</h1> para facilitar o trabalho, já que ambas devem ser parecidas.
+
+Para a página renderizar, passamos receitas com if em Best Receipe Area Start, enquanto em views.py o render() da função buscar() não recebe nenhuma receita.
+
+Salvamos o arquivo buscar.html e retornamos para a aplicação, atualizando sua página inicial. Abrimos a barra de busca acessível pela lupa e escrevemos alguma palavra existente nos títulos das receitas publicadas para testarmos o direcionamento.
+
+Fazendo isso, aparece nosso site sem nenhuma receita. É o que planejamos, mas é interessante apresentar alguma mensagem à usuária ou usuário quando nenhum resultado é encontrado para a busca, como "Receita não encontrada".
+
+Para isso, vamos ao template buscar.html e vemos a pergunta if para exibir cada receita em loop com o código subsequente caso ela exista, e não implementamos nenhuma ação para o caso else de não haver nenhuma. Portanto, usamos este último elemento para informar a ausência de resultados para a busca.
+
+Copiamos a linha div class="col-12 col-sm-6 col-lg-4"> e a colamos logo após {% else %}. Em seguida, abrimos um parágrafo p> para digitar "Receita não encontrada".
+
+Retornamos à aplicação, atualizamos a página e fazemos uma busca qualquer para ver a nova mensagem incluída.
+
+Porém, mesmo que a palavra buscada exista nos títulos de receitas publicadas, não visualizamos os resultados corretos que deveriam ser exibidos. Portanto, veremos a seguir como exibir as devidas receitas buscadas a partir do que foi digitado pela usuária ou usuário.
+
+### Resultado da busca
+
+Nesta etapa, exibiremos os resultados da busca. Por exemplo, se temos uma receita de "Suco verde", queremos que esta seja exibida como resultado da procura pela palavra "suco".
+
+Para isso, alteramos o código de views.py de "receitas" para conseguirmos obter todos os objetos e filtrá-los pelo conteúdo da busca posteriormente, seguindo a mesma metodologia aplicada para as receitas publicadas ou não com filter().
+
+Começamos copiando a primeira linha de index() deste arquivo que possui o recurso filter() e colando em buscar() mais adiante no texto. Como trouxemos todas as receitas, alteramos o nome da variável de receitas para lista_receitas.
+
+Agora, verificamos se de fato temos algum escrito na barra de 'buscar' com if, vendo se há valor na requisição com in request. Caso haja conteúdo, adicionamos .GET: seguido de nome_a_buscar que representa o nome da receita, sendo igual ao valor presente na barra de endereço do navegador quando procuramos alguma palavra em nossa aplicação através da marcação "buscar", ou seja, request.GET['buscar'].
+
+Em seguida, perguntamos com if se temos de fato temos um valor de busca e devemos filtrar com filter() desta lista lista_receitas sendo igual a lista_receitas.filter() recebendo nome_receita, da mesma forma que escrevemos em nosso modelo.
+
+Para verificarmos se o que foi digitado está presente em algum dos nomes das receitas, colocamos __ após nome_receita seguido de icontains, o qual procura tudo relacionado ao valor inserido na barra de busca. Na sequência, comparamos com = se é nome_a_buscar.
+
+Feito isso, criamos a variável de dados da mesma forma feita em index() para passarmos os valores ao momento de serem renderizados. Então, escrevemos 'receita' do tipo lista_receitas já com o filtro por data e publicação e, caso tenhamos o valor na busca, exibimos somente a lista de receitas entre chaves.
+
+Como fizemos a verificação em receitas na função de buscar.html, não precisamos realizar nenhuma alteração. Por fim, passamos esta informação de dados como contexto de render() para o template.
+
+    def buscar(request):
+        lista_receitas = Receita.objects.order_by('-date_receita').filter(publicada=True)
+
+        if 'buscar' in request.GET:
+            nome_a_buscar = request.GET['buscar']
+            if nome_a_buscar:
+                lista_receitas = lista_receitas.filter(nome_receita__icontains=nome_a_buscar)
+
+        dados = {
+            'receitas' : lista_receitas
+        }
+
+        return render(request, 'buscar.html', dados)
+
+Salvamos, retornamos para a aplicação no navegador, atualizamos a página e testamos o mecanismo de busca por alguma palavra ou letra presente nos títulos das receitas.
+
+Estando tudo funcionando com os itens filtrados pela procura ou todas as receitas exibidas em caso do campo vazio, precisamos fazer com que a página de busca seja exibida ao realizarmos outra pesquisa por palavra ou letra estando na parte de detalhes da receita aberta, pois quando o fazemos, o navegador apresenta um erro com "Proibido".
+
+Para resolver essa questão, precisamos que as linhas de \<form>, \<input> e \<button> presentes na parte de busca do index.html seja idêntico ao da página receita.html; copiamos e colamos para que sejamos direcionados corretamente.
+
+    <!-- Search Wrapper -->
+    <div class="search-wrapper">
+        <!-- Close Btn -->
+        <div class="close-btn"><i class= "fa fa-times" aria-hidden="true"></i></div>
+
+        <div class "container">
+            <div class="row">
+                <div class="col-12">
+                    <form action="{% url 'buscar' %}">
+                        <input type="text" name="buscar" placeholder="O que está procurando..."></input>
+                        <button type="submit"><i class="fa fa-search" aria hidden="true"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+Salvamos e testamos o funcionamento da aplicação.
+
+Estando tudo conforme esperado, percebemos um código duplicado do formulário de busca em ambos os templates. Isso pode ser problemático, pois se alterarmos algo em um dos trechos, devemos modificar o outro da mesma forma para que se mantenham iguais.
+
+Mais adiante, melhoraremos este nosso código quebrando-o em partials.
+
+### Foto no banco de dados
+
+Para possibilitar o upload de imagens para cada receita, adicionamos o seguinte atributo no models.py de receitas:
+
+foto_receita = models.ImageField(upload_to='fotos/%d/%m/%Y/', blank=True)
+
+Porém, o que será salvo no banco de dados?
+
+a) A imagem da receita no tamanho real.
+
+b) Alternativa correta: A url com o caminho da foto.
+- _Certo! Será salvo o caminho da imagem da receita, e não a imagem propriamente dita._
+
+c) A imagem da receita comprimida.
+
+## 05. Autorização e melhorando o código
+### Autorização e usuários
+
+Quando acessamos a página de detalhes da receita, há um campo de busca em formato de lista com opções como "Comida típica brasileira", por exemplo.
+
+Nesta fase do curso, não criaremos as edições para este elemento, mantendo esta mesma edição. Então, comentamos este trecho de código em receita.html envolvendo todo o bloco de Receipe Post Search em <!-- no início e --> ao final.
+
+Salvamos, retornamos para a aplicação e vemos o desaparecimento deste campo. Por enquanto, deixaremos o layout assim pois desenvolveremos esta parte em outra etapa do curso.
+
+Neste passo, nos voltamos para a página de Administração do Django; em nosso treinamento, utilizamos os apps de "Receitas" e "Pessoas", criando um relacionamento entre ambas e gerando-o no banco de dados. Porém, ainda não lidamos com a parte de "Autenticação e Autorização" que contém "Grupos" e "Usuários".
+
+Dentro de Django, é possível criar um determinado tipo de usuário capaz de tomar decisões e realizar modificações e outro grupo que não possui essas autorizações.
+
+Clicando no item "Usuários", acessamos uma lista e clicamos no botão "Adicionar usuário" para inserir um nome fictício no campo "Usuário" e uma senha qualquer. Clicando em "Salvar", acessamos outra página com outros campos de observações, informações pessoais e permissões.
+
+Na parte de "Permissões", temos três opções que podem ser marcadas: "Ativo", "Membro da equipe" e "Status de superusuário". O primeiro significa que este usuário pode criar outros e fazer login, o segundo permite que acesse a parte de Administração do Django e o terceiro indica que possui todas as permissões sem atribuí-las explicitamente. Começamos marcando apenas as duas primeiras opções.
+
+Mais adiante, temos a parte de "Permissões do usuário" que possui as ações que a usuária ou usuário cadastrados podem tomar, como criar pessoas ou receitas na aplicação, ou até mesmo atribuir algumas autorizações. Nesta seção, selecionamos as opções que queremos liberar na janela "permissões do usuário disponíveis" e com a seta as transferimos para a janela de "permissões do usuário escolhido(s)". Segurando a tecla "Command" ou "Ctrl", selecionamos mais de uma opção para a transferência.
+
+Desta forma, estabelecemos quais funções a usuária ou usuário pode exercer. Feito isso, finalizamos em "Salvar" e retornamos à lista para ver o novo item cadastrado.
+
+Para acessar a página de Admin com outro usuário, clicamos em "Encerrar Sessão" e depois em "Acessar novamente" para fazer o login com os novos dados registrados. Dependendo de como foram estabelecidas as permissões, a página de Administração do Django apresenta diferenças de lista, acesso e ações.
+
+Quando modificamos algum dado como o nome do item por exemplo, após salvar aparece uma faixa informando que o "Receita object" foi alterado com sucesso. Já sabemos como alterar para o nome correto da receita, então acessamos o arquivo models.py de "receitas" e definimos uma nova função na classe Receita() chamada __str__() recebendo a propriedade self. Em seguida após o :, indicamos o retorno de self.nome_receita.
+
+    from django.db import models
+    from datetime import datetime
+    from pessoas.models import Pessoa
+
+    class Receita(models.Model):
+        pessoa = models.ForeignKey(Pessoa, on_delete=models.CASCADE)
+        nome_receita = models.CharField(max_length=200)
+        ingredientes = models.TextField()
+        modo_preparo = models.TextField()
+        tempo_preparo = models.IntegerField()
+        rendimento = models.CharField(max_length=100)
+        categoria = models.CharField(max_length=100)
+        date_receita = models.DateTimeField(default=datetime.now, blank=True)
+        foto_receita = models.ImageField(upload_to='fotos/%d/%m/%Y', blank=True)
+        publicada models.BooleanField(default=False)
+        def __str__(self):
+            return self.nome_receita
+
+Salvamos e atualizamos a página de Admin do Django. Editamos a informação de algum item novamente para ver se seu nome correto é exibido na mensagem de confirmação da alteração. Se a nomenclatura certa é apresentada, fica bem mais fácil identificarmos qual receita foi modificada.
+
+Agora, encerramos a sessão e acessamos novamente com nosso login de superusuário original com todas as funções disponíveis para ver a página de Administração da forma como a víamos anteriormente.
+
+Este é uma parte poderosa de Django que nos permite a fácil manutenção e gestão da aplicação; podemos ter pessoas para cada função com diversos níveis de autorização, distribuindo atividades com o recurso de "Permissões".
+
+### Partial e refatoração
+
+Para evitarmos códigos duplicados no formulário de busca interna em nossas páginas buscar.html, receita.html e index.html, bem como erros em caso de alteração em algum desses arquivos que demandariam as mesmas mudanças em todos, criamos uma nova partial chamada busca.html.
+
+Selecionamos "partials" e clicamos no item de "new file" para nomear como busca.html na lista lateral do Visual Studio. Este novo arquivo deve receber todo o bloco de código de Search Wrapper, e com isso podemos apagar os trechos duplicados das páginas já citadas.
+
+Nas demais partials, indicamos o carregamento de arquivos estáticos escrevendo {% load static %} no topo do código, e replicamos este mesmo comando em busca.html.
+
+    {% load static %}
+
+    <!-- Search Wrapper -->
+    <div class="search-wrapper">
+        <!-- Close Btn -->
+        <div class="close-btn"><i class= "fa fa-times" aria-hidden="true"></i></div>
+
+        <div class "container">
+            <div class="row">
+                <div class="col-12">
+                    <form action="{% url 'buscar' %}">
+                        <input type="text" name="buscar" placeholder="O que está procurando..."></input>
+                        <button type="submit"><i class="fa fa-search" aria hidden="true"></i></button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+Salvamos o arquivo e agora podemos incluir a partial de busca.html em cada umas das três páginas que antes continham o código duplicado, escrevendo então `{% include 'partials/busca.html' %}` no lugar dos trechos recortados de Search Wrapper.
+
+Indo ao index da aplicação, atualizamos e testamos a busca por palavra tanto na página principal quanto na de detalhes da receita novamente, para então confirmar que os arquivos estão funcionando como esperado.
+
+Portanto, basta utilizar a partial de busca com include embedando Python nos arquivos necessários para evitar os potenciais problemas de códigos duplicados.
+
+É comum indicar as partials com um undeline na frente de seu nome. Clicamos com o botão direito sobre busca.html na lista lateral e selecionar "Rename" para alterar para _busca.html. O mesmo se aplica aos demais, ficando _footer.html, _menu.html.
+
+Com isso, precisamos atualizar os trechos de código que reutilizam essas partials para o nome corrigido com _, como é em index.html, receita.html e buscar.html. Testamos a aplicação para ver se tudo foi alterado corretamente e está funcionando como esperado.
+
+    {% include 'partials/_busca.html' %}
+
+Com isso, deixamos bem mais claro que se trata de partials. Caso tenhamos qualquer alteração em alguma delas, temos mais segurança de que sejam compartilhadas e executadas corretamente nos demais arquivos que as utilizam.
+
+### Exercício: Template tags
+
+Para evitar código duplicado, refatoramos o código html para evitar duplicidade de código, criando a partial _busca.html.
+
+Em relação às templates tags, analise as afirmações abaixo e marque as verdadeiras.
+
+a) Alternativa correta: Usamos a template tag `{% extends %}` para herdar outro template.
+- Certo! Por exemplo, caso queira herdar um template base, o código seria: `{% extends 'base.html' %}`.
+
+b) Dentro do template, devemos utilizar para carregar arquivos estáticos {% include static %}.
+
+c) Para adicionar uma partial chamada minhapartial.html, poderia adicionar o código `{{ include 'partials/minhapartial.html' }}`
+
+
+
+

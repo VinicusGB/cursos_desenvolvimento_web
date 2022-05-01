@@ -31,6 +31,7 @@ ALLOWED_HOSTS = []
 # Application definition. LOCAL PARA REGISTRO DOS MEUS APPS
 
 INSTALLED_APPS = [
+    'pessoas',
     'receitas',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -138,3 +139,8 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR,'alurareceita/static')
 ]
 
+
+# Media files (PNG, JPEG, aruqivos que serão carregado no projeto)
+
+MEDIA_ROOT = os.path.join(BASE_DIR,'media')
+MEDIA_URL = '/media/'
