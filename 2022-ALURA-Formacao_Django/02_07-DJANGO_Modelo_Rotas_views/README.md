@@ -1,6 +1,6 @@
-# Introdução ao Django: Modelo, Rotas e Views
+# 1. Introdução ao Django: Modelo, Rotas e Views
 **Fonte:** Guilherme LIma<br>
-**Disponível:** <a href="https://cursos.alura.com.br/course/fundamentos-django-2" target=_blank>ALURA</a><br>
+**Disponível:** <a href="https://cursos.alura.com.br/course/fundamentos-django-2" target="_blank">ALURA</a><br>
 **Conteúdo:**
 - Aprenda a desenvolver aplicações web utilizando a linguagem Python
 - Desenvolva uma aplicação do zero, seguindo as principais convenções e boas práticas
@@ -21,12 +21,12 @@ Para conseguir acompanhar este curso, é recomendado que você tenha o <a href="
 
 Caso necessite ajuda para instalação do Python, recomendamos os seguintes links:
 
-- Passo a passo para instalar o Python3 no Windows. <a href="https://cursos.alura.com.br/course/python-3-introducao-a-nova-versao-da-linguagem/task/22687" target=_blank>aqui</a>
-- Passo a passo para instalar em outros sistemas operacionais.<a href="https://cursos.alura.com.br/course/python-3-introducao-a-nova-versao-da-linguagem/task/22688" target=_blank> aqui</a>
+- Passo a passo para instalar o Python3 no Windows. <a href="https://cursos.alura.com.br/course/python-3-introducao-a-nova-versao-da-linguagem/task/22687" target="_blank">aqui</a>
+- Passo a passo para instalar em outros sistemas operacionais.<a href="https://cursos.alura.com.br/course/python-3-introducao-a-nova-versao-da-linguagem/task/22688" target="_blank"> aqui</a>
 
 Além disso, para que tenhamos o mesmo resultado, é recomendado que você faça o download da mesma versão do Python e do Django que utilizei quando o curso foi gravado, que poderá ser encontrada aqui:
 
-- <a href="https://www.python.org/downloads/release/python-374/" target=_blank>Python 3.7.4</a>
+- <a href="https://www.python.org/downloads/release/python-374/" target="_blank">Python 3.7.4</a>
 - <a href="">Django 2.2.6</a>
 
 O Django pode ser instalado através do comando:
@@ -218,11 +218,11 @@ animação com texto, produtividade, código limpo e documentação
 
 A questão dos frameworks web do século 21 é fazer com que aspectos enfadonhos do desenvolvimento web sejam rápidos. Django deve permitir que o desenvolvimento de aplicações web seja incrivelmente rápido.
 
-Aplicações Django devem usar o mínimo possível de código; elas não devem ter código padrão. Django deve aproveitar as características dinâmicas do Python, como <a href="https://pt.wikipedia.org/wiki/Introspec%C3%A7%C3%A3o_%28computa%C3%A7%C3%A3o%29" target=_blank>introspecção</a>.
+Aplicações Django devem usar o mínimo possível de código; elas não devem ter código padrão. Django deve aproveitar as características dinâmicas do Python, como <a href="https://pt.wikipedia.org/wiki/Introspec%C3%A7%C3%A3o_%28computa%C3%A7%C3%A3o%29" target="_blank">introspecção</a>.
 
 Caso queira saber mais sobre filosofia do Django:
 
-- <a href="https://docs.djangoproject.com/pt-br/2.2/misc/design-philosophies/" target=_blank>Filosofia do Django segundo a documentação oficial</a>
+- <a href="https://docs.djangoproject.com/pt-br/2.2/misc/design-philosophies/" target="_blank">Filosofia do Django segundo a documentação oficial</a>
 
 ## 02. Template, rotas e views
 ### Criando a pasta template
@@ -1028,9 +1028,9 @@ Se você quiser saber mais sobre o Django admin, confira a documentação do Dja
 
 - <a href="https://docs.djangoproject.com/en/2.2/ref/contrib/admin/" target="_blank">Django admin segundo a documentação oficial (texto em inglês)</a>
 
-# Integração de modelos no Django: Filtros, buscas e admin
+# 2. Integração de modelos no Django: Filtros, buscas e admin
 **Fonte:** Guilherme LIma<br>
-**Disponível:** <a href="https://cursos.alura.com.br/course/fundamentos-django-2" target=_blank>ALURA</a><br>
+**Disponível:** <a href="https://cursos.alura.com.br/course/fundamentos-django-2" target="_blank">ALURA</a><br>
 **Conteúdo:**
 - Realize filtros e crie listas no seu site
 - Crie e integre modelos
@@ -1807,6 +1807,51 @@ b) Dentro do template, devemos utilizar para carregar arquivos estáticos {% inc
 
 c) Para adicionar uma partial chamada minhapartial.html, poderia adicionar o código `{{ include 'partials/minhapartial.html' }}`
 
-
-
-
+# 3. Autenticação no Django? formulários, requisições e mensagens
+**Fonte:** Guilherme LIma<br>
+**Disponível:** <a href="https://cursos.alura.com.br/course/fundamentos-django-2" target="_blank">ALURA</a><br>
+**Conteúdo:**
+- Aprenda a criar um sistema de autenticação de usuários não vinculado ao Django admin
+- Saiba como trabalhar com formulários no Django
+- Desenvolva uma aplicação com requisições protegidas, evitando falsificação de requisições
+- Melhore a experiência dos usuários do seu site, enviando mensagens de sucesso e de erro
+- Crie uma aplicação inspirada num produto real
+---
+## 01. App de usuários
+### Introdução
+### Saudações e ambiente
+### Criando o app de usuários
+### Material do curso
+### Cadastro e login
+### Faça como eu fiz na aula
+### Renderizando as páginas
+### O que aprendemos?
+## 02. Formulário no Django
+### Requisições no Django
+### CSRF, token e dados
+### Criando usuários
+### Faça como eu fiz na aula
+### Token CSRF
+### O que aprendemos?
+## 03. Autenticação de usuários
+### Login e dashboard
+### Realizando o Login
+### Material do curso
+### Menu, logout e dashboard
+### Faça como eu fiz na aula
+### Menu dinâmico
+### O que aprendemos?
+## 04. Formulário de receita
+### Material do curso
+### Criando formulário de receita
+### Dados da requisição
+### Receita de cada usuário
+### Faça como eu fiz na aula
+### Cada receita com seu dono
+### O que aprendemos?
+## 05. Refatoração e mensagens
+### Mensagens de sucesso e erro
+### Refatoração e ajustes finais
+### Faça como eu fiz na aula
+### Mensagem não exibida
+### O que aprendemos?
