@@ -8,9 +8,10 @@
     </div>
 
     <!-- Search Wrapper -->
-    {% include 'partials/busca.html' %}
+    {% include 'partials/_busca.html' %}
 
-    {% include 'partials/menu.html' %}
+    <!-- ##### Header Area Start ##### -->
+    {% include 'partials/_menu.html' %}
 
     <!-- ##### Best Receipe Area Start ##### -->
     <section class="best-receipe-area">
@@ -35,14 +36,13 @@
                 </div>
                 {% endfor %}
                 {% else %}
-                <div class="col-12 col-sm-6 col-lg-4">
-                    <p>Receita não encontrada</p>
-                </div>
                 {% endif %}
             </div>
         </div>
     </section>
     <!-- ##### Best Receipe Area End ##### -->
 
-    {% include 'partials/footer.html' %}
+    <!-- ##### Footer Area Start ##### -->
+    {% include 'partials/_footer.html' %}
+    
 {% endblock %}

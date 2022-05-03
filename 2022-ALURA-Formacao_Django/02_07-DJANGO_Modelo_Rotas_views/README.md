@@ -1819,12 +1819,277 @@ c) Para adicionar uma partial chamada minhapartial.html, poderia adicionar o có
 ---
 ## 01. App de usuários
 ### Introdução
+
+Meu nome é Guilherme Lima, muito boas vindas à terceira parte do nosso treinamento de Django 2.
+
+Nesse momento do curso, abriremos nossa aplicação para Autenticação de Usuários, aprenderemos a trabalhar com Formulários e com algumas Validações.
+
+Sempre que desejássemos criar uma nova receita na nossa aplicação, tínhamos que colocar o nome como do administrador principal.
+
+Com o acesso no admin, clicávamos nas opções "Receitas > Adicionar receita", e criávamos uma receita nova. Para visualizá-la, marcávamos a flag de "publicada" ou não.
+
+Vamos fechar a aba da aplicação e agora, nessa terceira parte das aulas, abriremos a possibilidade de outras pessoas criarem novas receitas, não-vinculadas com nosso admin do Django.
+
+Criaremos um formulário de cadastro em que será possível criarmos nossa própria conta. Em seguida, realizaremos o login com uma conta, por exemplo, "gui@alura.com", com a senha "123".
+
+Acessaremos a conta e então veremos que alguns links iniciais mudaram. Teremos a Página Principal, na qual veremos todas as aplicações.
+
+CLicando em Minhas Receitas, haverá receitas que não estarão disponíveis para a aplicação no geral, apenas para o usuário.
+
+Selecionando a foto de algum alimento na página, por exemplo, o pão, será aberto o Modo de Preparo, detalhes e Ingredientes do pão, assim como a torta de morango.
+
+Assim, conseguiremos criar nossas próprias receitas. Quando clicarmos em "Criar Receita" no menu, não seremos direcionados para o admin, mas para um novo formulário com campos para preencher.
+
+Aprenderemos como obter os valores dos campos, criar os formulários, ligar as informações que buscamos com o admin do Django, e assim por diante.
+
+Além de tudo, poderemos fazer o Logout, e novamente veremos alterações na página se sairmos da conta. Visualizaremos somente o cadastro e o login.
+
+Teremos o campo de busca, que já desenvolvemos anteriormente em treinamentos.
+
+Como pré-requisito, é aconselhável já ter acompanhado os cursos de Django 1 e 2, pois sendo uma continuidade, o aprendizado fará muito mais sentido.
+
+Aprenderemos os conceitos básicos de formulário numa aplicação com Django nesse curso, direcionado, provavelmente, para quem ainda não é um super desenvolvedor Django que já trabalha com a ferramenta há algum tempo.
+
+Ele tem como base os principais passos de como trabalhar com as requisições, formulários, tabelas, como vincular tabelas com informações que queremos inserir fora do admin. Então, é bastante indicado fazer o treinamento para quem quer dar continuidade aos cursos de Django 1 e 2.
+
+Sabendo de tudo isso, vamos começar.
+
 ### Saudações e ambiente
+
+É muito bom receber você nesta terceira parte do curso. Espero que seja uma experiência de aprendizado incrível e que possamos vencer todos os desafios e continuar o desenvolvimento utilizando o Django.
+
+Divisão das aulas
+Aula	O que vamos aprender nesta aula?
+App de usuários	Vamos criar um formulário para cadastrar usuários no nosso site
+Formulários no Django	Vamos aprender como trabalhar com formulários no Django
+Autenticação de usuários	Vamos autenticar os usuário efetuando o login e logout
+Formulário de receita	Vamos permitir que usuários logados criem suas próprias receitas
+Refatoração e mensagens	Vamos exibir mensagens de sucesso e de erro, além refatorar nosso código
+Preparando ambiente
+Este curso é a terceira parte dos treinamentos de Django 2 da Alura. Portanto, é recomendado que você tenha feito a segunda parte do curso – Integração de modelos no Django 2: Filtros, buscas e admin.
+
+Para conseguir acompanhar este curso, é recomendado que você tenha o Python3 instalado.
+
+Caso necessite ajuda para instalação do Python, recomendamos os seguintes links:
+
+Passo a passo para instalar o Python3 no Windows.
+
+Passo a passo para instalar em outros sistemas operacionais.
+
+Além disso, para que tenhamos o mesmo resultado, é recomendado que você faça o download da mesma versão do Python e do Django que utilizei quando o curso foi gravado, que poderá ser encontrada aqui:
+
+Python 3.7.4
+Django 3.0.3
+
+O Django pode ser instalado através do comando:
+
+    pip install Django==3.0.3
+
+Em caso de dúvida na instalação ou durante o curso, conte sempre com o fórum da Alura!
+
+Vamos começar?
+
+:)
+
 ### Criando o app de usuários
-### Material do curso
+
+Daremos continuidade no desenvolvimento da nossa aplicação em Django.
+
+Temos nosso site, que está bonito, porém, sempre que precisamos criar uma nova receita, temos que acessar a parte do Administrador e digitar nome e senha.
+
+Depois, acessamos "Receitas", onde veremos as receitas que já estão publicadas, e selecionamos "Adicionar receitas", para preencher os campos e gerar a nova receita.
+
+Quando marcamos a flag de "Publicada", a receita então aparece no site.
+
+Há 3 receitas publicadas, o Suco verde, o Bolo de chocolate e a Sopa. Se voltarmos às receitas no admin, veremos que as 3 publicadas estão com a flag de publicação corretamente selecionada. A "Receita teste" não está publicada, e portanto, não a visualizamos na nossa página.
+
+Mas queremos que qualquer pessoa que faça um cadastro no site e realize um login possa criar e visualizar suas próprias receitas, como se esse fosse um diário de receitas de cada um, não-vinculadas com as receitas publicadas na nossa aplicação.
+
+Para isso, um caminho que poderemos utilizar será o "auth_user", uma tabela para conseguir vincular um usuário na aplicação, que depois será validado para poder criar uma receita.
+
+Aprenderemos várias maneiras de exibir as receitas de cada usuário não vinculando com a aplicação. E caso nós administradores do projeto acharmos alguma receita específica interessante, marcando a flag "Publicada" ela passará a aparecer também na nossa página.
+
+Para começar, vamos ao nosso código, onde o terminal estará aberto, rodando nossa aplicação. Abriremos mais um terminal.
+
+Como queremos abrir nossa aplicação para que mais usuários utilizem nosso site, criaremos um novo app, sem vinculá-lo com o app de pessoas. Vamos vincular com o app de usuários, para utilizar as características do "auth_user" do Django.
+
+Para gerar o novo app usaremos o comando python manage,py startapp e daremos um nome para ele. Como queremos um app de usuários, vamos chamá-lo de usuarios. Pressionaremos o "Enter" e ele será criado para nós.
+
+Assim que criamos o app e queremos vinculá-lo com a aplicação, vamos ao "alurareceita", onde estão as configurações. Abriremos "settings.py" e minimizaremos nosso terminal.
+
+Scrollaremos o código um pouco para baixo e conseguiremos observar que alguns apps já estarão instalados,pessoas' e 'receitas'. Acrescentaremos mais um, 'usuarios', que acabamos de criar. Colocaremos uma vírgula após o nome dele, assim como fizemos com os demais.
+
+Então, criamos e registramos nosso novo app de usuários. Agora, observaremos nosso site novamente, e veremos que há o "Alura Receita", a "Home" e o campo de busca. Se digitarmos "sopa" nesse campo, aparecerá a sopa.
+
+Gostaríamos que na nossa tela mesmo houvesse um link para cadastrar e um para login, direcionando para novas páginas. Por isso, criaremos algumas rotas para conseguir esses links.
+
+Para começar, vamos a "usuarios", e já teremos dentro da pasta alguns itens criados por padrão do Django. Vamos gerar um novo arquivo .py. clicando no ícone de "New file". Nomearemos como "urls.py" e pressionaremos "Enter".
+
+Temos um "urls.py" em "receitas". Então, faremos a cópia do código desse arquivo, e colaremos no "urls.py" de "usuarios", para facilitar. Assim, só faremos algumas modificações.
+
+Apagaremos os paths, deixando apenas o primeiro, para criar nossas urls. Nossa intenção será criar uma url, por exemplo, para o 'cadastro'. Escreveremos ainda o método cadastro ao lado de views. e após name´=.
+
+Outra url será a de 'login. Para isso, também criaremos um novo path, com path('login', views.login, name='login').
+
+Assim que uma pessoa fizer o login, queremos que ela vá para uma determinada página. Essa página será chamada de 'dashboard'. Também terá um método dashboard em views e o name será dashboard.
+
+Além do login, será comum nas aplicações termos a possibilidade de deslogar, com o logout para sair do site. Por isso, também colocaremos um path para o 'logout', seguindo a mesma lógica de código dos demais.
+
+    from django.urls import path
+
+    from . import views
+
+    urlpatterns = [
+        path('cadastro', views.cadastro, name='cadastro'),
+        path('login', views.login, name='login'),
+        path('dashboard', views.dashboard, name='dashboard'),
+        path('logout', views.logout, name='logout'),
+    ]
+
+Assim que salvarmos, o erro de sintaxe nos alertará de que não há nas"views.py" nenhum item chamado logout. Então, precisaremos criá-lo.
+
+Abriremos "views.py" de "usuarios" e criaremos métodos para cada uma das nossas funções. Em primeiro lugar, teremos uma função que será o cadastro(), e terá como parâmetro a requisição request, como já vimos nos módulos anteriores do curso. Inicialmente, para todas as funções usaremos o pass como retorno.
+
+Depois, faremos uma função para nosso login(), que receberá request como parâmetro também. Usaremos o mesmo para todos os métodos.
+
+Na sequência, haverá a função logout(). Por fim, escreveremos a dashboard().
+
+    from django.shortcuts import render
+
+    def cadastro(request):
+        pass
+
+    def login(request):
+        pass
+
+    def logout(request):
+        pass
+
+    def dashboard(request):
+        pass
+
+Vamos salvar o código, voltar para "views.py" e salvar também.
+
+Porém, queremos conseguir visualizar essas páginas na nossa aplicação. Faremos isso no próximo vídeo.
+
 ### Cadastro e login
-### Faça como eu fiz na aula
+
+Agora que criamos nosso app de usuários e nossas views para cada url que queremos acessar, vamos em "alurareceita" e incluiremos novos paths de url.
+
+Vamos em "url.py" onde há a inclusão dospaths de receita e incluiremos mais um, 'usuarios/'. Na url, deve ficar marcado que estamos nesse path, por isso escreveremos uma / após o nome, assim como fizemos para o 'admin/'.
+
+    from django.contrib import admin
+    from django.urls import path, include
+    from django.conf import settings
+    from django.conf.urls.static import static
+
+    urlpatterns = [
+        path('', include('receitas.urls')),
+        path('usuarios/', include('usuarios.urls')),
+        path('admin/', admin.site.urls),
+    ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+Vamos salvar e agora precisaremos criar os templates das páginas, tanto do login, do cadastro e dashboard. Começaremos pensando no cadastro e login.
+
+Todos os nossos templates estão dentro do nosso app de receitas, pois anteriormente, só tínhamos ele, então fazia sentido mantê-los ali. Nesse caso, nossa aplicação está crescendo, então não será uma boa ideia todos os templates ficarem dentro desse app.
+
+A página de "templates" ficará agora no mesmo nível dos apps. Portanto, sempre que quisermos alterar um template ou alguma página html, não precisaremos entrar em nenhum app. Removeremos a página de "receitas" e vamos deixá-la no nível dos apps. Será perguntado se temos certeza da ação, e clicaremos em "*Move&".
+
+Porém, como mudamos a página de templates, precisaremos ir às configurações da aplicação e dizerem que local estarão os apps. Em "settings.py" de "alurareceita" teremos um diretório dizendo onde estarão os arquivos templates, páginas html da aplicação.
+
+Como não estaremos mais em "receitas", mas sim no mesmo nível do nosso projeto, deixaremos apenas a palavra 'templates' nas configurações, não mais 'receitas/templates'.
+
+Se voltarmos à aplicação e atualizarmos, tudo estará funcionando corretamente, mesmo após termos feito a alteração. Vamos testar, pesquisando "bolo" na barra de busca, e o Bolo de chocolate será trazido para nós sem problemas.
+
+Agora, já que temos a nossa pasta de "templates" com os templates da nossa aplicação e queremos vincular mais páginas relacionadas a usuários,criaremos uma nova pasta clicando no ícone de "New folder" e vamos chamá-la de "usuarios".
+
+Dentro da pasta de "usuarios", vamos criar os arquivos "login.html" e "cadastro.html". Colocaremos um `<h1>Cadastro</h1>` na página de cadastro e um `<h1>Login</h1>` na de login para visualizarmos melhor.
+
+Voltando à aplicação, se digitarmos "localhost 8000/login" e clicarmos "Enter", a página não será encontrada, porque criamos o método em "view.py" do app de usuário, mas não estamos pedindo para que essa página seja mostrada.
+
+Para fazer isso, colocaremos um return e diremos para que nossa página seja renderizada, com render(). O primeiro parâmetro será a requisição, request, e o segundo será o nome do template, 'cadastro.html'.
+
+Pediremos para o login ser renderizado também, e assim testaremos os dois, com `return render(request, 'login.html')`.
+
+    from django.shortcuts import render
+
+    def cadastro(request):
+        return render(request,'cadastro.html')
+
+    def login(request):
+        return render(request, 'login.html')
+
+    def logout(request):
+        pass
+
+    def dashboard(request):
+        pass
+
+Vamos salvar e voltar à aplicação. Atualizaremos a página com o endereço "localhost 8000/login" e teremos a página com o título, Buscaremos por "localhost 8000/cadastro" e da mesma forma, veremos a página do cadastro.
+
+Porém, não fará sentido, porque como comentamos anteriormente, a intenção é que o usuário não saia da aplicação para se logar ou se cadastrar. Já temos o administrador do Django que sai da aplicação, mas nesse momento, a pessoa deverá se manter na aplicação para gerar suas receitas num ambiente com a mesma aparência na parte superior, no rodapé e assim por diante.
+
+Para ganhar tempo, teremos disponível nas atividades da aula um link para fazer download dos arquivos de páginas "login.html" e "cadastro.html". Assim, não precisaremos nos estender falando sobre html, e focaremos no Django.
+
+Vamos copiar esses arquivos baixados e colaremos no nosso projeto. Poderemos usar o "Ctrl + A" para selecionar tudo, e na sequência o "Ctrl + C" e o "Ctrl + V" para colar os códigos em "login.html" e "cadastro.html".
+
+Visualizando o arquivo html por cima, estamos estendendo um arquivo base.html, indicando que temos arquivos estáticos, além dele indicar que temos arquivos para ser renderizados.
+
+Criamos partials de busca e de menu, o que fará sentido, já que na nossa aplicação não temos partial de menu com esses links. Nosso menu mostrará apenas um link, o da Home, e o objetivo é que haja o link tanto da página do login quanto do cadastro.
+
+Então em "partials > _menu.html", copiaremos a linha responsável pelo link da Home duas vezes. Chamaremos a Home de "Página Principal". Na segunda linha, colocaremos o título de "Cadastro", e na terceira, "Login".
+
+Voltando na nossa aplicação, quando atualizarmos, teremos links para a Página Principal, Cadastro e Login. Se clicarmos na Página Principal, vamos para a página.
+
+Clicando no Cadastro, veremos o formulário, com campos para digitar nome, e-mail, criar uma senha e confirmá-la, além do botão para criar uma conta.
+
+Clicando no Login, também veremos a opção de logar com e-mail e senha criada, e o botão para acessar a conta. Caso ainda não tenhamos uma conta, há o botão para criar, que direciona para o cadastro.
+
+Nossas duas páginas ficaram interessantes. A seguir, daremos vida a elas, pois vamos de fato criar uma conta, cadastrando com um novo usuário, e depois realizar o login. `
+
 ### Renderizando as páginas
+
+Uma pessoa decidiu criar um formulário não vinculado ao Django admin para realizar o login de seus usuários criando duas telas: cadastro e login, com os respectivos códigos abaixo:
+
+views.py
+
+    def cadastro(request):
+    return render(request,'usuarios/cadastro.html')
+
+    def login(request):
+    return render(request, 'usuarios/cadastro.html')
+
+urls.py
+
+    from django.urls import path
+    from . import views
+
+    urlpatterns = [
+    path('cadastro', views.cadastro, name='cadastro'),
+    path('login', views.login, name='login'),
+    ]
+
+usuarios/login.html
+
+    <h1>Tela de Login</h1>
+
+usuarios/cadastro.html
+
+    <h1>Tela de Cadastro</h1>
+
+Com base no código acima, podemos afirmar que:
+
+a) Apenas a página de login será exibida.
+
+b) A pessoa terá o resultado esperado, visualizando as duas páginas.
+- Com base no código acima, não será possível visualizar as duas páginas.
+
+c) Alternativa correta: Apenas a página de cadastro será exibida.
+- _Certo! Quando chegar uma requisição para login, é possível ver que o método encontrado na views.py irá devolver como retorno a renderização de cadastro, gerando o comportamento não esperado. Sendo assim, esse código deveria ser:_
+
+    def login(request):
+        return render(request, 'usuarios/login.html')
+
 ### O que aprendemos?
 ## 02. Formulário no Django
 ### Requisições no Django
