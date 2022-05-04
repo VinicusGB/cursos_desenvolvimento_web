@@ -2090,14 +2090,247 @@ c) Alternativa correta: Apenas a página de cadastro será exibida.
     def login(request):
         return render(request, 'usuarios/login.html')
 
-### O que aprendemos?
 ## 02. Formulário no Django
 ### Requisições no Django
+
+Agora que conseguimos visualizar nosso formulário de criação de campos, vamos preencher nossos campos, e no momento em que clicarmos no botão "Criar sua conta", a tabela "auth_user" deverá inserir esses dados e criar o novo usuário.
+
+Depois, conseguiremos realizar o login no site e criar nossas próprias receitas.
+
+Mas como pegaremos as informações inseridas nos campos para de fato criar um novo usuário? Pesquisaremos isso na documentação do Django.
+
+Escreveremos "forms Django" na busca do Google e clicaremos no primeiro link da própria documentação e nele veremos uma descrição detalhada de como trabalhar com os formulários no Django.
+
+Scrollando um pouco mais a página haverá um ponto muito importante, o get e o post. É informado que no Django são utilizados apenas esses dois métodos.
+
+O método post nós usaremos sempre que queremos recuperar informações enviadas pela requisição e processá-las para criar algum tipo de recurso, seja, no nosso caso, um usuário, seja uma nova receita, ou até mesmo um novo produto ou cliente.
+
+Então, para recuperar ou processar informações que estão num formulário, usaremos o verbo post do http.
+
+No caso do get, vamos utilizá-lo quando queremos obter um determinado dado de uma requisição.
+
+Como na situação atual desejamos processar informações e criar um novo usuário, especificaremos que nosso formulário será do tipo post.
+
+Em "cadastro.html", na linha 27, há um form action e um method="" em branco. Nesse ponto, especificaremos method="POST".
+
+Uma outra ação necessária será fazer com que nosso formulário de cadastro converse com a função de cadastro em "views.py" de usuário. Ou seja, precisaremos alinhar as duas informações, dizendo que quem cuida das requisições do formulário é a função.
+
+Para isso, escreveremos que a url para a ação do form action será nossa função de cadastro, com form action="{$ url 'cadastro' %}".
+
+Dessa forma, conseguiremos especificar que trabalharemos com as informações para a criação de um novo recurso por meio do método POST e quem cuidará das requisições será o cadastro.
+
+Para verificar se realmente receberemos o método POST na requisição criaremos uma checagem simples no "views.py", verificando que se o request.method for == ´´POST, ocorrerá alguma ação, por exemplo, imprimir uma mensagem.
+
+Criaremos um print 'Usuário criado com sucesso' se o método for POST. Então, assim que clicarmos em "Criar sua conta", se isso for verdadeiro, a mensagem será exibida no nosso terminal.
+
+Para redirecionar ainda para nossa página de login, faremos um `return redirect ('login').
+
+    def cadastro(request):
+        if request.method == 'POST':
+            print('Usuário criado com sucesso')
+            return redirect('login')
+        return render(request, 'usuarios/cadastro.html')
+
+Vamos salvar e receberemos uma notificação relacionada à palavra redirect, pois ainda não teremos esse módulo importado, apenas o render. Para importar, bastará escrever redirect após render e uma vírgula, nos imports, e o grifo vermelho desaparecerá.
+
+Se o método não for o POST, vamos renderizar mais uma vez a página de cadastro.
+
+    from django.shortcuts import render, redirect
+
+    def cadastro(request):
+        if request.method == 'POST':
+            print('Usuário criado com sucesso')
+            return redirect('login')
+        else:
+        return render(request, 'usuarios/cadastro.html')
+
+Salvaremos as modificações no terminal, assim como em "cadastro.html" e voltaremos à aplicação, na página de cadastro. Colocaremos "Gui Lima" como nome, e o e-mail "guilima@alura.com", com a senha 123, o mesmo para a confirmação.
+
+Quando clicarmos em "Criar sua conta", veremos uma página dizendo que isso foi Proibido, e a verificação CRSF falhou. O que isso significa? Aprenderemos no próximo vídeo.
+
 ### CSRF, token e dados
+
+Assim que clicamos em "Criar sua conta" recebemos a página do Erro 403, Proibido. Lemos ainda "Verificação CSRF falhou. Pedido cancelado".
+
+Há também um Help, informando que a falha foi que o CSRF token foi perdido ou está incorreto. Mas o que significa CSRF?
+
+Pesquisaremos no Google e veremos que o cross-site request forgery, em Português, significará "falsificação de solicitação entre sites", também conhecido como "ataque de um clique". Ou seja, o Django fornecerá um tipo de proteção contra esse tipo de ataque.
+
+Para não cair nesse erro e enviar o token, pesquisaremos novamente na documentação do Django, buscando no Google por "csrf django". O site da documentação terá uma descrição bem completa do que o erro se trata e como o Django funciona quanto ao ataque de site cruzado.
+
+É falado no tópico sobre o modo de utilizar a proteção que ela é um middleware, que utilizamos por meio de uma template tag dentro do nosso form.
+
+Então, teremos nosso form no método post, e inseriremos csrf_token na nossa aplicação para enviar o token necessário.
+
+Portanto, em "cadastro.html", onde teremos o form, pularemos uma linha após o método POST e colocaremos o token com {% csrf_token %}, enviando-o conforme está descrito na documentação.
+
+Salvaremos o código e voltaremos à aplicação. Atualizaremos a página e digitaremos o e-mail e a senha para a criação da conta. Assim que clicarmos no botão para criar, desta vez, vamos para a página de login.
+
+Voltando ao código, no "views.py", na função de cadastro. estamos verificando. Se o método for POST, imprimiremos que o usuário foi criado com sucesso( o que ainda será apenas uma mensagem para o teste) e redirecionaremos para a página de login.
+
+Por isso, aparentemente o método foi POST em nossa tentativa, pois fomos para a página esperada. Conferiremos o terminal, e de fato haverá a mensagem "Usuário criado com sucesso". Assim, conseguimos buscar as informações que estão no nosso formulário.
+
+Mas como visualizaremos o token? Se formos até a página e clicarmos com o botão direito do mouse e selecionarmos a opção "Inspect" ou "Inspecionar", aparecerá a aba com o código na lateral direita da tela.
+
+Clicaremos no ícone da seta nessa seção, e veremos que no nosso formulário haverá o token e o valor que passará para cada requisição. Se atualizarmos a página e conferirmos de novo, esse value já será diferente. Essa será uma forma de proteção dos ataques.
+
+Então, incluímos as template tags necessárias para trabalhar com o formulário, mas a intenção ainda será a de que quando preenchermos e-mail e senha e clicarmos para criar uma conta, conseguiremos de fato visualizar essas informações de usuário, enviados para "views.py".
+
+Faremos isso de forma muito parecida com o request.method == 'POST'. No nosso formulário de cadastro, teremos uma label de nome, bem como um input que tem um name="nome". Por meio desse name conseguiremos recuperar as informações que desejamos.
+
+Então, em "views.py" buscaremos as informações e vamos atribuí-las a uma variável chamada nome. Verificaremos a request.POST e digitaremos 'nome' entre chaves. No print exibiremos a variável nome para conferência.
+
+    def cadastro(request):
+        if request.method == 'POST':
+            nome = request.POST['nome']
+                    print(nome)
+            return redirect('login')
+        else:
+            return render(request,'usuarios/cadastro.html')
+        return render(request,'usuarios/cadastro.html')
+
+Voltaremos ao cadastro e novamente digitaremos o nome "Gui Lima", e-mail "gui@alura.com" e a senha e confirmação "123". Clicaremos em "Criar sua conta" e teremos acesso ao login.
+
+Voltaremos ao projeto com "Command + J" e veremos o nome "Gui Lima", ou seja, conseguimos obter essa informação. Sendo assim, vamos solicitar as outras informações do usuário,email, senha e senha2.
+
+Verificaremos "cadastro.html" e veremos que na senha, o nome está diferente, pois name="password". Assim, não conseguiríamos buscá-la, pois o nome deverá ser o mesmo. Por isso. em "views,py", dentro da chave, escreveremos password.
+
+Quanto a Confirmação de senha, no html do cadastro o nome será password2, o mesmo que usaremos dentro das chaves em nosso código também.
+
+Exibiremos todos os valores (nome, email, senha, senha2) por meio do print, e salvaremos.
+
+    def cadastro(request):
+        if request.method == 'POST':
+            nome = request.POST['nome']
+                    email = request.POST['email']
+            senha = request.POST['password']
+            senha2 = request.POST['password2']
+                    print(nome, email, senha, senha2)
+            return redirect('login')
+        else:
+            return render(request,'usuarios/cadastro.html')
+        return render(request,'usuarios/cadastro.html')
+
+Atualizaremos a página da nossa aplicação e nos cadastraremos no formulário mais uma vez, sendo direcionados para a página do login. Abriremos o terminal e veremos todas as informações fornecidas: "Gui Lima", o nome; "gui@alura.com", e-mail; "123 123", e referentes à senha e à confirmação.
+
+Recuperamos todos os valores do nosso formulário. A seguir criaremos algumas validações simples para de fato termos o usuário na nossa base de dados.
+
 ### Criando usuários
-### Faça como eu fiz na aula
-### Token CSRF
-### O que aprendemos?
+
+Agora que conseguimos recuperar os valores da nossa requisição, criaremos de fato nosso novo usuário.
+
+Fecharemos o terminal e faremos algumas validações simples. No nosso "cadastro.html" temos para cada campo input um required, ou seja, se clicarmos no botão para criar a conta sem preencher nenhum campo, será requerido o preenchimento com a mensagem em Inglês "Please fill out this field", ou "Preencha este campo" em Português, dependendo do sistema operacional.
+
+O mesmo acontecerá se preenchermos apenas um ou mais campos, mas deixarmos algum ou alguns deles vazios. Preencheremos todos, nome, e-mal, senha e confirmação de senha, clicaremos no botão para criar a conta e seremos direcionados para a página de login.
+
+Entretanto, isso não será suficiente para nossa validação. Vamos digitar 3 espaços no campo de nome e clicar no botão da página, e o que acontecerá? O campo não será considerado como nulo, pois a mensagem solicitando o preenchimento aparecerá apenas relacionada ao campo seguinte, de e-mail.
+
+Por isso, precisaremos validar esses campos no nosso back-end, pois apenas o required não será o suficiente. Vamos ao "views.py" do app de usuários e escreveremos a verificação.
+
+Vamos começar pelo nome. Se ele for nulo, colocaremos um strip() e printaremos no terminal a mensagem 'O campo nome não pode ficar em branco'. E assim que tivermos uma mensagem de erro, redirecionaremos o usuário para o cadastro, com o return.
+
+def cadastro(request):
+    if request.method == 'POST':
+        nome = request.POST['nome']
+                email = request.POST['email']
+        senha = request.POST['password']
+        senha2 = request.POST['password2']
+                if not nome.strip():
+                    print('O campo nome não pode ficar em branco')`
+                    return redirect('cadastro')
+                print(nome, email, senha, senha2)
+        return redirect('login')
+    else:
+        return render(request,'usuarios/cadastro.html')
+    return render(request,'usuarios/cadastro.html')COPIAR CÓDIGO
+Atualizaremos nosso formulário e vamos colocar 3 espaços no lugar do campo de nome, um e-mail e uma senha, e tentaremos criar a conta. Clicaremos no botão, mas continuaremos na página de criação de conta. Vamos ao nosso terminal, e agora veremos a mensagem de que o campo de nome não poderá ficar em branco.
+
+Faremos o mesmo para o campo de e-mail, e poderemos copiar e colar o trecho de código referente ao nome para alterá-lo de acordo com o necessário. Mais para a frente no curso, vamos refatorar o código para torná-lo melhor.
+
+Então, faremos a validação if not email.strip() e imprimiremos que o campo não poderá ficar em branco no terminal.
+
+Também teremos que verificar o preenchimento da senha e da confirmação de senha, mas nesse caso, faremos diferente. Será mais interessante checarmos se a primeira senha será igual a segunda.
+
+A verificação será simples, se as senhas não forem iguais if senha != senha2 vamos imprimir 'As senhas não são iguais' e vamos redirecionar para a página de cadastro.
+
+Outra validação importante será nos certificar de que o usuário tentando realizar o cadastro já está na nossa base de dados. Caso ele já esteja, não permitiremos o cadastro, pois ele já existe.
+
+Importaremos User do Django por meio de um modelo chamado auth.models, com from django.contrib.auth.models import User. Dessa forma, o modelo de usuários será trazido para o nosso arquivo, e conseguiremos criar o código para a verificação.
+
+Escreveremos if User.objets.filter() e passaremos os filtros do objeto. Conferindo a tabela de usuários, nela teremos geralmente um ID, uma senha, a última vez que foi feito o login, se é um superusuário, primeiro e último nome, e-mail e mais alguns campos.
+
+Queremos que as pessoas façam o login na aplicação pelo e-mail, então perguntaremos se o e-mail já existe, com (email-email).exists().
+
+Caso o usuário já exista, printaremos na tela o erro 'Usuário ja´cadastrado', e redirecionaremos para a página de cadastro também.
+
+Se o usuário não existir, vamos de fato permitir gerar o cadastro, então atribuiremos esses valores ao user com user = User.objects.create_user(). Dentro dos parâmetros, passaremos username=nome, email=email, password=senha. É importante destacar que a senha está com o nome em Inglês no auth_user, apesar de termos chamado nosso campo de senha.
+
+Assim, criamos um objeto do nosso usuário com os devidos campos. Agora, salvaremos esse usuário na nossa base de dados com a função user.save(), e poderemos ainda printar que o usuário foi cadastrado com sucesso, por fim.
+
+    def cadastro(request):
+        if request.method == 'POST':
+            nome = request.POST['nome']
+            email = request.POST['email']
+            senha = request.POST['password']
+            senha2 = request.POST['password2']
+            if not nome.strip():
+                print('O campo nome não pode ficar em branco')
+                return redirect('cadastro')
+            if not email.strip():
+                print('O campo email não pode ficar em branco')
+                return redirect('cadastro')
+            if senha != senha2:
+                print('As senhas não são iguais')
+                return redirect('cadastro')
+            if User.objects.filter(email=email).exists():
+                print('Usuário já cadastrado')
+                return redirect('cadastro')
+            user = User.objects.create_user(username=nome, email=email, password=senha)
+            user.save()
+            print('Usuário cadastrado com sucesso')
+            return redirect('login')
+        else:
+            return render(request,'usuarios/cadastro.html')
+
+Incluímos as validações, portanto, vamos ao site conferir os principais erros. Já verificamos o nome, então escreveremos "Gui Lima". Quanto ao e-mail, deixaremos apenas com espaços, e preencheremos normalmente a senha e a confirmação.
+
+Clicaremos no botão e o cadastro não será criado, pois de acordo com a nossa alteração no código, se o e-mail não for preenchido, seremos redirecionados à tela de cadastro.
+
+Voltaremos à aplicação e preencheremos nome e e-mail corretamente, porém dessa vez deixaremos as senhas diferentes, "123" na senha e "1234" na confirmação. Clicaremos em "Criar sua conta" e voltaremos para a página de criação.
+
+Voltando ao código, se olharmos o terminal veremos o aviso de que as senhas não são iguais.
+
+Atualizaremos nosso auth_user e clicaremos sobre ele com o botão direito, selecionando em seguida "View/Edit Data > All Rows" para visualizar todas as linhas. Ainda não teremos o novo usuário.
+
+Vamos à aplicação novamente e criaremos um usuário com os dados todos sem problemas. Clicaremos em "Criar sua conta" e vamos para a tela de login.
+
+No terminal, aparecerá a mensagem "Usuário cadastrado com sucesso", e olhando nossa base de dados, quando visualizarmos todas as linhas veremos o usuário "Gui Lima" cadastrado agora.
+
+Assim, estamos reutilizando uma tabela do Django. No banco de dados não haverá o primeiro nem o segundo nome, pois priorizaremos o username e o e-mail.
+
+Conseguimos cadastrar uma nova conta tendo colocado validações simples, e já somos redirecionados para a tela de login. Na sequência vamos trabalhar na realização desse login de usuário.
+
+Mas antes, vamos tentar cadastrar o usuário com os mesmos dados mais uma vez, ou seja, preenchendo os campos de forma idêntica a que fizemos anteriormente. Clicaremos no botão e continuaremos na página de cadastro.
+
+No terminal, aparecerá a mensagem de que o usuário já está cadastrado conforme o esperado. Então, as principais validações para a criação do usuário na nossa aplicação já estão prontas. Caso elas passem, será criado um objeto e o novo usuário será salvo na nossa base de dados.
+
+### Exercício: Token CSRF
+
+O middleware CSRF e a template tag {% csrf_token %} fornecem proteção fácil de usar contra falsificações de solicitação entre sites.
+
+Esse token fica salvo na sessão do usuário no servidor e, quando o formulário é postado, o token enviado pelo formulário é comparado com o que se tem na sessão, lá no servidor. Sendo iguais, a requisição é aceita. Caso contrário, é recusada.
+
+Sabendo disso, é correto afirmar que:
+
+a) Alternativa correta: Este middleware é ativado por default no Django.
+- _Certo! Por padrão, o middleware CSRF já vem ativado na configuração de MIDDLEWARE._
+
+b) Alternativa correta: Em qualquer formulário que utilize uma requisição POST, usamos a template tag dentro do formulário.
+- _Certo! Incluímos a template tag dentro do formulário, por exemplo:_
+    form method="post">{% csrf_token %}
+
+c) Este middleware não funciona com requisições POST.
+
 ## 03. Autenticação de usuários
 ### Login e dashboard
 ### Realizando o Login
