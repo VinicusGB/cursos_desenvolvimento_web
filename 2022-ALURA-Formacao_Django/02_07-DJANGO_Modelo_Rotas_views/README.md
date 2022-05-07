@@ -574,6 +574,7 @@ Como não aparecem alterações, precisamos informar ao template onde nome_da_re
             </div>
         </div>
     </section>
+
 Salvamos e atualizamos a página para ver o novo item gerado com o nome "Sola de legumes". Portanto, podemos passar um dicionário com todas as informações.
 
 Para ficar mais claro, criamos uma variável chamada dados em index() de views.py, passando 'nome_das_receitas' sendo do tipo dicionário receitas. Antes, passamos o dicionário no mesmo local como receitas sendo igual a {} e dentro desta, enumeramos 'Lasanha', 'Sopa de legumes' e 'Sorvete'.
@@ -1462,13 +1463,13 @@ Feito o upload da fotografia que queríamos para uma receita específica, precis
 
 Para isso, acessamos urls.py em "alurareceita" para indicar o uso das configurações de mídia recém incluídas em settings.py. Começamos incluindo + ao final de urlpatterns seguido de static() que recebe setting.MEDIA_URL onde estão os caminhos, seguido de document_root igual a settings.MEDIA_ROOT.
 
-from django.contrib import admin
-from django.urls import path, include
+    from django.contrib import admin
+    from django.urls import path, include
 
-    urlpatterns = [
-        path('', include('receitas.urls')),
-        path('admin/', admin.site.urls),
-    ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+        urlpatterns = [
+            path('', include('receitas.urls')),
+            path('admin/', admin.site.urls),
+        ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 Desta forma, indicamos que estes arquivos cujos uploads foram permitidos podem ter suas urls utilizadas pela aplicação.
 
@@ -2229,20 +2230,21 @@ Por isso, precisaremos validar esses campos no nosso back-end, pois apenas o req
 
 Vamos começar pelo nome. Se ele for nulo, colocaremos um strip() e printaremos no terminal a mensagem 'O campo nome não pode ficar em branco'. E assim que tivermos uma mensagem de erro, redirecionaremos o usuário para o cadastro, com o return.
 
-def cadastro(request):
-    if request.method == 'POST':
-        nome = request.POST['nome']
-                email = request.POST['email']
-        senha = request.POST['password']
-        senha2 = request.POST['password2']
-                if not nome.strip():
-                    print('O campo nome não pode ficar em branco')`
-                    return redirect('cadastro')
-                print(nome, email, senha, senha2)
-        return redirect('login')
-    else:
+    def cadastro(request):
+        if request.method == 'POST':
+            nome = request.POST['nome']
+                    email = request.POST['email']
+            senha = request.POST['password']
+            senha2 = request.POST['password2']
+                    if not nome.strip():
+                        print('O campo nome não pode ficar em branco')`
+                        return redirect('cadastro')
+                    print(nome, email, senha, senha2)
+            return redirect('login')
+        else:
+            return render(request,'usuarios/cadastro.html')
         return render(request,'usuarios/cadastro.html')
-    return render(request,'usuarios/cadastro.html')COPIAR CÓDIGO
+
 Atualizaremos nosso formulário e vamos colocar 3 espaços no lugar do campo de nome, um e-mail e uma senha, e tentaremos criar a conta. Clicaremos no botão, mas continuaremos na página de criação de conta. Vamos ao nosso terminal, e agora veremos a mensagem de que o campo de nome não poderá ficar em branco.
 
 Faremos o mesmo para o campo de e-mail, e poderemos copiar e colar o trecho de código referente ao nome para alterá-lo de acordo com o necessário. Mais para a frente no curso, vamos refatorar o código para torná-lo melhor.
@@ -2316,7 +2318,7 @@ No terminal, aparecerá a mensagem de que o usuário já está cadastrado confor
 
 ### Exercício: Token CSRF
 
-O middleware CSRF e a template tag {% csrf_token %} fornecem proteção fácil de usar contra falsificações de solicitação entre sites.
+O middleware CSRF e a template tag `{% csrf_token %}` fornecem proteção fácil de usar contra falsificações de solicitação entre sites.
 
 Esse token fica salvo na sessão do usuário no servidor e, quando o formulário é postado, o token enviado pelo formulário é comparado com o que se tem na sessão, lá no servidor. Sendo iguais, a requisição é aceita. Caso contrário, é recusada.
 
@@ -2333,12 +2335,245 @@ c) Este middleware não funciona com requisições POST.
 
 ## 03. Autenticação de usuários
 ### Login e dashboard
+
+Criamos uma nova conta. Agora queremos efetuar o login com a conta criada.
+
+Para isso, temos o e-mail e a senha no nosso formulário de login, e precisamos buscar essas informações na requisição. Já sabemos como fazer isso.
+
+No formulário de login, há uma ação na linha 27. Nossa função de login deverá ser vinculada à ação, por isso, dentro das aspas de form action="" colocaremos o código Python entre chaves e símbolos de porcentagem, além de url e quem deverá cuidar do nosso formulário, 'login', ou seja `{% url 'login' % }`.
+
+Também utilizaremos o método POST e pensando na segurança, passaremos o token de segurança `{% csrf_token % }`.
+
+Em "views.py" faremos um procedimento muito parecido com o que fizemos no cadastro, verificaremos se o método é POST e por meio do `request.method.POST[]` traremos as informações necessárias.
+
+Podemos copiar o código usado no cadastro para o login e fazer as alterações necessárias. Se a requisição for POST deveremos trazer o email e a senha, e para ter certeza do que passaremos para o `request.method.POST[]`, vamos visualizar o que diz o name no input. Nesse caso, teremos mesmo as palavras email e senha.
+
+Sabendo disso, para testar se os valores virão corretamente, printaremos o email e a senha, e se isso for verdade, precisaremos ainda redirecionar o usuário para outra página após fazer o login. Vamos fazer o return redirect() e ele irá para uma página 'dashboard'.
+
+Para conseguirmos renderizar a página, precisaremos atribuir na função dashboard. Mas ainda não temos essa página, de acordo com o nosso template de usuários, apenas o login e o cadastro. Então, vamos criá-la.
+
+Clicaremos na pasta de usuários e clicaremos no ícone para gerar um novo arquivo, que nomearemos como "dashboard.html". Para testar, escreveremos `<h1>Dashboard</h1>`.
+
+Em "views,py", quando recermos uma requisição para dashboard, retornaremos uma renderização, devolvendo a requisição request e pedindo para que ela seja renderizada da pasta 'usuarios/dashboard.html'.
+
+Portanto, não estaremos efetuando o login, mas verificando se o e-mail e a senha virão corretamente e direcionando para a página de dashboard. Na função de dashboard, pedimos para que a página seja renderizada.
+
+    def login(request):
+        if request.method == 'POST':
+            email = request.POST['email']
+            senha = request.POST['senha']
+            print(email, senha)
+                    return redirect('dashboard')
+        return render(request, 'usuarios/login.html')
+
+    def logout(request):
+            pass
+
+    def dashboard(request):
+        return render(request, 'usuarios/dashboard.html')
+
+Vamos salvar, voltar à nossa aplicação e atualizar. Digitaremos "gui@alura.com" no campo do e-mail, para testar, e no campo da senha, "123". Quando clicarmos no botão "Acessar sua conta", vamos para a página de dashboard.
+
+Voltaremos ao código e pressionaremos o atalho "Command + J" ou "Ctrl + J" para visualizar o terminal, onde estarão impressos o e-mail e a senha inseridos pelo usuário.
+
+Lembrando que os valores que buscamos estarão sensíveis, pois se acessarmos a página e atualizarmos sem preencher nenhum campo, se clicarmos em "Acessar sua conta", vamos para a página de dashboard do mesmo jeito, e nada será impresso no nosso terminal.
+
+Então, precisaremos garantir que o e-mail e a senha não ficarão em branco, o que faremos de forma muito simples. No login, assim que trazemos os valores, verificaremos, Se o campo email == ""ou seja, se for igual a uma string vazia, ou o mesmo para a senha, informaremos que os campos não deverão ficar em branco com um print.
+
+Assim que houver o erro, precisaremos redirecionar o usuário para algum lugar, e será mais uma vez para a página de login, por meio do return redirect('login'). Caso contrário, os campos não estejam em branco, serão impressos e-mail e senha e o direcionamento será para a página de dashboard.
+
+    def login(request):
+        if request.method == 'POST':
+            email = request.POST['email']
+            senha = request.POST['senha']
+            if email == "" or senha == "":
+                print('Os campos email e senha não podem ficar em branco')
+                return redirect('login')
+            print(email, senha)
+                    return redirect('dashboard')
+        return render(request, 'usuarios/login.html')
+
+    def logout(request):
+            pass
+
+    def dashboard(request):
+        return render(request, 'usuarios/dashboard.html')
+
+Voltaremos para a página e atualizaremos. Colocaremos o mesmo e-mail e senha de antes. Clicaremos no botão para acessar a conta e seremos direcionados para a página de dashboard conforme o esperado. Olharemos o terminal e os valores estarão impressos lá.
+
+Agora deixaremos os campos sem preenchimento e clicaremos no botão para o acesso. Vamos permanecer na página de login e o terminal mostrará a mensagem de que os campos não podem ficar em branco. Portanto, conseguimos fazer a validação de que esses valores serão trazidos para nós.
+
+Mas ainda precisaremos executar esse e-mail no banco de dados, ou seja, dizer que esse usuário com esse e-mail está tentando acessar a conta. Uma informação interessante é a de que, por segurança, o Django não nos deixará visualizar a senha dele.
+
+Assim, como saberemos se o e-mail e a senha, toda encriptada conferem? E se conferirem, encaminharemos o usuário para uma tela de dashboard com as informações dele. Veremos isso a seguir.
+
 ### Realizando o Login
-### Material do curso
+
+Quando digitamos os valores nos campos de e-mail e senha na nossa tela de login, acessamos a tela de dashboard e conseguimos visualizar esses valores no terminal.
+
+Agora, queremos autenticar, ou seja, confirmar se essas informações condizem com as que temos na base de dados, e assim, permitir ou não o login dessa pessoa.
+
+Pesquisaremos como utilizar a autenticação no Django na busca do Google por "auth django". Clicaremos no primeiro link, "User authentication in Django", ou "autenticando usuários no Django".
+
+A descrição no site dirá que o sistema de autenticação consistirá em usuários, permissões, grupos, exatamente o que precisamos. Haverá um detalhamento de que o django.contrib.auth é um modelo que podemos utilizar para realizar nosso login.
+
+Clicaremos para importar esse módulo, e voltaremos a nossa aplicação. Na parte dos imports do código do "views.py", escreveremos `from django.contrib import auth`, e salvaremos.
+
+Assim, instalamos o módulo de login na aplicação e veremos quais outros itens poderemos utilizar. Ainda na documentação do Django, teremos uma página extensa sobre como usar o sistema de autenticação, falando, dentre outras coisas, sobre o User objets, campos ou atributos que já temos para nosso usuário, como username, password, email, first_name, last_name.
+
+Todos esses campos poderão ser vistos no auth_user, ou seja, já temos todas essas informações na nossa base de dados e nosso usuário já está preparado.
+
+Veremos na página, ainda, como criar usuários, alterar senhas e fazer a autenticação desses usuários. Algo interessante será que para fazer a autenticação usando o django.contrin.auth, de acordo com o site, devemos atribuir um authenticate ao user passando o username e password.
+
+Porém, teremos um problema. Scrollando um pouco mais a tela, haverá o tópico sobre autenticação em Web requests com atributos muito semelhantes, username e password. Voltando à aplicação, no entanto, estamos utilizando o campo de e-mail.
+
+Então, precisaremos dizer que temos o e-mail do usuário, mas a informação importante para logar no sistema do Django será o username, tanto que se digitarmos "localhost 8000/admin" no campo de busca do navegador, a informação pedida será a de usuário.
+
+O sistema de login do Django, portanto, utiliza o username, mas queremos logar por meio do e-mail. De alguma forma precisaremos, em primeiro lugar, que haja uma conferência se o e-mail existe.
+
+No código, perguntaremos se o e-mal do usuário existe de forma similar a que fizemos no cadastro, e inclusive copiaremos o código de lá. Então, se esse e-mail existir, queremos de alguma forma trazer o username correspondente.
+
+Para isso, pegaremos o nome e atribuiremos User.objects.filter(email=email).values_list('username'). Assim, traremos o valor do nome por meio da propriedade values_list() e passaremos o 'username'.
+
+Sendo assim, com o objeto, vamos filtrar pelo e-mail que existe, e com base nas informações do objeto, traremos o username, mas queremos apenas o nome desse usuário. Por isso, passaremos como segundo parâmetro a propriedade flat=True, e pegaremos apenas esse valor.
+
+Para ter certeza de que ocorrerá tudo como o esperado, vamos printar o nome .
+
+    def login(request):
+        if request.method == 'POST':
+            email = request.POST['email']
+            senha = request.POST['senha']
+            if email == "" or senha == "":
+                print('Os campos email e senha não podem ficar em branco')
+                return redirect('login')
+            print(email, senha)
+            if User.objects.filter(email=email).exists():
+                nome = User.objects.filter(email=email).values_list('username', flat=True).get()
+                            print(nome
+            return redirect('dashboard')
+        return render(request, 'usuarios/login.html')
+
+Na aplicação, digitaremos o e-mail e a senha, clicaremos no botão de login e seremos direcionados para a página de dashboard. Abriremos o terminal e veremos que foi impresso o username "Gui Lima".
+
+Em nossa base de dados, conseguimos atestar que o nome do username é "Gui Lima". Então, por meio desse código, por maior do que ele esteja (e vamos refatorá-lo no final), trouxemos o username.
+
+Agora usaremos o padrão de autenticação que o Django oferece. Voltaremos à documentação e veremos que criaremos um usuário utilizando a função authenticate(), e como já importamos o auth, atribuiremos auth.authenticate() ao user.
+
+Nos parâmetros dessa função haverá o request, o username que será igual ao nome trazido, e o password, senha, que teremos mais acima no código.
+
+Perguntaremos, assim como mostra a documentação, se o user is not none, para nesse caso realizar o login. Ele será feito por meio da propriedade auth.login(), devolvendo a requisição e o user. Imprimiremos que o login foi realizado com sucesso e redirecionaremos a pessoa para a página de sucesso.
+
+    def login(request):
+        if request.method == 'POST':
+            email = request.POST['email']
+            senha = request.POST['senha']
+            if email == "" or senha == "":
+                print('Os campos email e senha não podem ficar em branco')
+                return redirect('login')
+            print(email, senha)
+            if User.objects.filter(email=email).exists():
+                nome = User.objects.filter(email=email).values_list('username', flat=True).get()
+                user = auth.authenticate(request, username=nome, password=senha)
+                if user is not None:
+                    auth.login(request, user)
+                    print('Login realizado com sucesso')
+                    return redirect('dashboard')
+        return render(request, 'usuarios/login.html')
+
+Atualizaremos a página da aplicação e novamente digitaremos e-mail e conta e iremos para a página de dashboard. Será que estamos logados? Voltaremos ao código, pressionaremos "Command + J", e o terminal nos mostrará a mensagem "Login realizado com sucesso", bem como os valores de e-mail e senha.
+
+Para ter certeza se conseguimos realizar de fato o login, o que podemos fazer é colocar o nome do usuário na nossa página de dashboard. Então, vamos ao html da página e em vez de escrever apenas o título "Dashboard", escreveremos `<h1>Dashboard, olá, {{ user.username }} </h1>`. Então, teremos um código Python com duas chaves para gerar o nome.
+
+Voltaremos à aplicação, atualizaremos a página e agora veremos "Dashboard, olá, Gui Lima" na dashboard, o que significará que estamos logados.
+
+Entretanto, todo o nosso site estará bonito e funcional, mas quando fazemos o login, vamos para essa página em branco escrito "Dashboard, olá, Gui Lima". Queremos continuar com os mesmos layouts que já temos. É o que faremos a seguir.
+
 ### Menu, logout e dashboard
-### Faça como eu fiz na aula
+
+Assim que realizamos o login vemos uma página em que está escrito "Dashboard, olá, Gui Lima". Queremos manter os templates que já temos na nossa aplicação.
+
+Então, podemos fazer com que na página de dashboard o usuário consiga visualizar as receitas que ele mesmo cria. Mais para a frente trabalharemos no formulário das receitas do usuário, mas a intenção é que a visão, ao realizar o login, seja semelhante com a que temos na página index.
+
+Vamos à página index e copiaremos todo o html. Na sequência, vamos ao código da dashboard, deletaremos o título que tínhamos colocado e colaremos. Salvaremos, e se voltarmos na aplicação e realizarmos o login, acessaremos uma página em que nada será exibido.
+
+Não era nosso objetivo. Quando realizarmos o login queremos mostrar o template da página, mas devemos mostrar um "Olá" e o nome do username.
+
+Para ganhar tempo no html haverá um trecho de código disponibilizado em que importamos algumas classes, criamos um container e exibimos o Olá (( user.username}}. Colaremos o código no html da dashboard, antes da exibição da lista de receitas.
+
+Se voltarmos e atualizarmos a página, veremos escrito "Olá Gui Lima" dessa vez, o que fará mais sentido, pois o usuário verá que está logado.
+
+Só que ainda aparecerão os links de cadastro e login, e depois que já logamos, não interessará mais vê-los, e sim um link para criar as receitas, por exemplo.
+
+Vamos em "partials > _menu.html" no nosso projeto e haverá três links, o da index, do cadastro e do login. São links úteis caso não estejamos logados, mas precisaremos de uma forma de verificar se o usuário esta logado ou não.
+
+Para saber se uma pessoa está logada, usaremos o código Python com chaves e símbolos de porcentagem e verificaremos se o user está logado com user.is_authenticated. Se sim, queremos visualizar alguns links. Caso contrário, else, os links serão outros.
+
+Outra coisa que faremos para deixar mais claro será fechar nossa verificação com {% endif %}. Então, se estamos logados, um link interessante será o da index, mas também visualizaremos outros links.
+
+Por exemplo, queremos um link que vá direto para a dashboard, então escreveremos 'dashboard' na url, da mesma forma que temos cadastrado. O nome deste link será "Minhas receitas".
+
+Outro link que criaremos será o de logout, pois se realizamos o login, devemos ter a opção de deslogar. O nome da url será escrito em minúsculas e o título do link com a primeira letra maiúscula.
+
+    <ul>
+        {% if user.is_authenticated %}
+            <li><a href="{% url 'index' %}">Página principal</a></li>
+        <li><a href="{% url 'dashboard' %}">Minhas receitas</a></li>
+        <li><a href="{% url 'logout' %}">Logout</a></li>
+        {% else %}
+        <li><a href="{% url 'index' %}">Página principal</a></li>
+        <li><a href="{% url 'cadastro' %}">Cadastro</a></li>
+        <li><a href="{% url 'login' %}">Login</a></li>
+    {% endif %}
+    </ul>
+
+Vamos salvar, e ir para "views.py", onde nosso método de logout não realiza nenhuma função ainda. Para o usuário conseguir se deslogar, utilizaremos o método auth.logout(), quando escrevermos auth. o próprio editor de texto sugerirá o logout.
+
+Passaremos a requisição, único parâmetro esperado, e retornaremos um redirect para nossa página 'index'.
+
+    def logout(request):
+        auth.logout(request)
+        return redirect('index')
+
+Assim, criamos alguns links. Caso o usuário esteja logado, visualizará uns, caso não esteja logado, visualizará outros. Também possibilitamos o logout.
+
+Atualizaremos a página estando logados, e veremos os links Página Principal, Minhas Receitas e Logout. Sempre que clicarmos em Minhas Receitas, veremos somente as receitas do próprio usuário.
+
+Clicando na Página Principal, veremos todas as receitas da aplicação, que estarão com a flag de publicadas. Clicando no Logout, vamos nos deslogar e ser direcionados para a Página Principal.
+
+Vamos logar mais uma vez e observar que quando acessamos a conta, teremos uma url "localhost 8000/usuarios/dashboard". Realizaremos o logout, e acessaremos mais uma vez este mesmo link.
+
+Apesar de não estarmos logados e de não ser exibida nenhuma receita, a página mostrará um "Olá", mas o objetivo é exibir essa página de dashboard somente se a pessoa estiver logada. Caso alguém utilize o link para a dashboard sem estar logado, deverá aparecer somente nossa página de index.
+
+Em "views.py" nós estamos sempre renderizando a página de dashboard. Caso o usuário não esteja logado (else), vamos redirecioná-lo para a página 'index'.
+
+def dashboard(request):
+    if request.user.is_authenticated:
+        return render(request, 'usuarios/dashboard.html')
+    else:
+        return redirect('index')COPIAR CÓDIGO
+Copiaremos o link da dashboard para garantir. Abriremos a página principal sem logar, observando que aparecerão o Cadastro e o Login. Quando tentarmos acessar o link, seremos redirecionados para a Página Principal.
+
+Agora realizaremos o login e acessaremos a conta. A partir do momento que estivermos logados, veremos a página da dashboard com a mensagem "Oi Gui Lima" e os links para a Página Principal, Minhas Receitas e o Logout.
+
+Vamos nos deslogar mais uma vez e novamente veremos os links de Cadastro e Login na index.
+
+Portanto, sempre que fizermos o login visualizaremos links diferentes e conseguiremos verificar na requisição se o usuário está logado ou não.
+
+A seguir, criaremos mais um link no menu para haver um formulário de criação de receitas, e na página Minhas Receitas serão exibidas apenas as receitas da pessoa que estiver logada.
+
 ### Menu dinâmico
-### O que aprendemos?
+
+Geralmente, após realizarmos o login em alguma aplicação, a exibição do menu de navegação é alterada. Por exemplo, alguns links de navegação ficam disponíveis e visíveis.
+
+Sabendo disso, podemos afirmar que:
+
+a) Não é possível saber se o usuário da requisição está logado.
+
+b) Alternativa correta: É possível verificar em um template se o usuário está logado com o código {% if user.is_authenticated %}.
+- _Certo! Com esse código, verificamos se o usuário está logado, criando uma sequência de if e {% else %}, exibindo os links do menu que desejamos._
+
+c) Não podemos criar este comportamento no Django, já que só podemos realizar o login no admin.S
+
 ## 04. Formulário de receita
 ### Material do curso
 ### Criando formulário de receita
