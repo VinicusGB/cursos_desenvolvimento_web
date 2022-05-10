@@ -2575,16 +2575,475 @@ b) Alternativa correta: É possível verificar em um template se o usuário est�
 c) Não podemos criar este comportamento no Django, já que só podemos realizar o login no admin.S
 
 ## 04. Formulário de receita
-### Material do curso
 ### Criando formulário de receita
+
+Na nossa aplicação, assim que realizamos o login, temos a Página Principal mostrando todas as receitas; Minhas Receitas, que ainda não mostrará nenhuma receita, já que ainda não fizemos a criação; e o Logout.
+
+Para criar as receitas, ainda não temos um caminho. Incluiremos um link "Criar receita" em Minhas Receitas, e assim vamos para um formulário que, conforme preenchido, criará minhas receitas, que aparecerão nessa página, de forma separada das receitas do site.
+
+Para começar, vamos a "usuarios > urls.py", onde temos cadastro, login, url e logout. Criaremos um novo path e escreveremos 'cria/receita'. Quem cuidará dessa requisição será uma função em views chamada cria_receita. Também colocaremos um name='cria_receita'.
+
+    urlpatterns = [
+        path('cadastro', views.cadastro, name='cadastro'),
+        path('login', views.login, name='login'),
+        path('dashboard', views.dashboard, name='dashboard'),
+        path('logout', views.logout, name='logout'),
+        path('cria/receita', views.cria_receita, name='cria_receita')
+    ]
+
+Quando salvarmos, receberemos a notificação de que não há cria_receita em "views.py". Então vamos para esse arquivo e criaremos uma nova função cria_receita() e passaremos como parâmetro a requisição.
+
+Vamos renderizar uma página como retorno, devolvendo a requisição. A página estará em 'usuarios/' e agora precisaremos de uma página .html para isso.
+
+Criaremos essa página em "templates > usuarios". Vamos gerar um novo arquivo clicando no ícone de "New file", e o chamaremos de "cria_receita.html". Escreveremos como título <h1>Crie sua receita</h1>.
+
+Voltaremos para "urls.py" e salvaremos o código. Na sequência, vamos em "views.py" e salvaremos também. Novamente, vamos para "urls.py" e salvaremos, e aquele erro quanto a views.cria_receita desaparecerá.
+
+Assim, criamos um path novo. Mais uma vez abriremos "views.py" e vamos renderizar a página cria_receita.html que criamos, apenas com o título. Depois, veremos como torná-la mais interessante.
+
+    def cria_receita(request):
+        return render(request, 'usuarios/cria_receita.html')
+
+Voltando à aplicação, ainda não teremos um link para o formulário de criação de receitas. Então vamos criá-lo em "templates > partials > _menu.html".
+
+Pressionaremos "Ctrl + C" para copiar a linha de código referente ao link para o logout que o usuário verá quando estiver autenticado, e colaremos abaixo com o "Ctrl + V".
+
+Vamos deixar o link para o logout por último e alterar a linha abaixo do link para a dashboard. Na url, escreveremos 'cria_receita'. O título para deixar visível no link será Criar receita.
+
+    <li><a href="{% url 'dashboard' %}">Minhas receitas</a></li>
+    <li><a href="{% url 'cria_receita' %}">Criar receita</a></li>
+    <li><a href="{% url 'logout' %}">Logout</a></li>
+
+Voltando na aplicação e salvando, teremos um link a mais. Clicaremos no link "Criar receita" e veremos a mensagem "Crie sua receita" que colocamos na página html.
+
+Será que teremos que gerar o formulário do zero, pensar no html, CSS, bootstrap e Javascript para tornar nossa página interessante? Nas atividades da aula já estará disponível um trecho do código html que usaremos para o formulário.
+
+Portanto, vamos copiar todo esse trecho, removeremos o título anterior, colaremos o código e salvaremos o novo html. Entenderemos um pouco como ele foi criado.
+
+Assim como nas outras páginas, extendemos do 'base.html', carregamos dos estáticos, incluímos partials de busca e de _menu.html. Há uma mensagem dizendo "Crie sua receita,", com o nome do usuário na sequência.
+
+Temos uma mensagem informando que o preenchimento de todos os campos é obrigatório e um form action chamado 'cria_receita'. Nele há um método POST sendo utilizado, e também passamos um token de segurança.
+
+Além de tudo, há o Título da receita, Ingredientes, Modo de preparo, Tempo de preparo, Rendimento e Categoria, além da Foto. Os campos foram criados com base no nosso modelo de receitas. Se formos em "receitas > models.py", o modelo terá uma Pessoa criada ao fim do nosso segundo treinamento.
+
+Esse modelo é vinculado com o app que criamos para manter Pessoas. Nesse caso, vamos fazer uma alteração, pois cada receita deverá ser vinculado com um Usuário.
+
+Faremos isso adiante, mas para visualizar como ficou a criação do formulário, voltaremos à aplicação e atualizaremos a página. Já teremos um formulário bem desenvolvido.
+
+Na página estará escrito "Cria sua receita, Gui Lima", nome do usuário com o qual nos logamos, e todos os campos que já vimos que ela teria no html. Quando submetemos a criação da receita, nossa intenção é que ela seja exibida na página de dashboard do usuário.
+
+Na sequência, buscaremos as informações para validar, colocar nesses campos ou inputs, e depois veremos como salvar uma receita vinculando-a não mais a uma Pessoa, mas sim a um Usuário.
+
 ### Dados da requisição
+
+Nossa intenção agora é preencher os campos do formulário e de fato criar uma receita, vinculando-a com o usuário.
+
+Porém, se acessarmos nosso app de receitas e formos em "models.py", observaremos que existe um relacionamento da receita com o nosso app de pessoas. Fizemos um import de pessoas.models e dissemos que toda Receita terá uma Pessoa como uma ForeignKey.
+
+Queremos alterar nosso negócio para que toda receita passe a pertencer a um usuário. Então, vamos remover o import de pessoas e importaremos de django.contrin.auth.models o User, trazendo o modelo de usuários do Django para nossa utilização.
+
+Depois vamos alterar. Toda Receita terá uma pessoa, mas o relacionamento não virá mais do app de Pessoa, ele virá do nosso User.
+
+    from django.contrib.auth.models import User
+
+    class Receita(models.Model):
+        pessoa = models.ForeignKey(User, on_delete=models.CASCADE)
+
+Vamos salvar e não teremos problemas. Mas essa alteração deverá refletir em nossa base de dados, pois quando visualizamos todas as linhas no app "receitas_receitas" da base, há um vínculo com "pessoa_id", o que não é o que desejamos.
+
+Deverá haver um relacionamento de "pessoa_id" com o "auth_user", ou seja, queremos que apareça o ID dos usuários. Para a alteração do modelo aparecer na base de dados, abriremos mais uma aba do terminal.
+
+Na primeira aba, rodaremos o servidor. Abrindo mais uma, a (venv) deverá estar ativada. Pediremos para o Python gerar as migrações para nós, por meio do comando python manage.py makemigrations.
+
+Pressionaremos "Enter" e será gerada uma migração. Leremos no terminal que o campo "pessoa" foi alterado, conforme a nossa solicitação. Na sequência, vamos executar a migração na base de dados com python manage.py migrate.
+
+As aplicações serão aplicadas, e veremos um "Ok". Agora, nossas receitas estarão diretamente vinculadas a um usuário e já poderemos preencher os campos e mandar as informações.
+
+Já teremos algumas imagens baixadas do site pixabay.com para gerar as receitas com as imagens. É possível fazer o download de novas imagens para utilizar.
+
+Como a preocupação não será se a receita estará correta, usaremos um texto "lorem ipsum" apenas para nossos testes, copiando e colando nos campos .
+
+Pegaremos a imagem "torta.jpg" e chamaremos nossa receita de "Torta de morango". Para os ingredientes e o modo de preparar será usado o texto copiado. Usaremos o tempo de preparo "40", diremos que ela servirá 2 pessoas e entrará na categoria "doces".
+
+Clicaremos no botão "Criar Sua Receita" e nada acontecerá, voltaremos para a página do formulário. Voltaremos para a página de trás para não perder os dados de preenchimento dos campos, mas vamos ao código.
+
+No "views.py", traremos as informações. Já sabemos que elas vêm da requisição por meio do método POST. Se a requisição for POST, serão trazidas.
+
+Poderíamos também criar validação para todos os campos, e já temos uma ideia de como fazer as validações. Entretanto, para ganhar tempo, deixaremos isso para a última aula, quando fizermos a refatoração e organizarmos melhor o código.
+
+Então, a receita terá o nome, o título dela, que chamaremos de nome_receita. Precisaremos conferir o name de cada campo no html. No caso, será realmente nome_receita, e faremos nome_receita = request.POST´['nome_receita'].
+
+O mesmo servirá para os demais campos. O próximo será ingrediantes, depois modo_preparo e na sequência tempo_preparo, rendimento e categoria e foto_receita. Os names no html serão correspondentes.
+
+Em foto_receita haverá uma diferença. Os demais campos serão do tipo string, pois quando colocamos um form action no html, sempre haverá também um tipo de input.
+
+A maioria dos campos será um text, mas a foto da receita será do tipo file. Para trazer um tipo file, não escreveremos request.POST[], mas sim request.FILES[], de "arquivos" em Português, para trazermos os arquivos.
+
+Com base nesses valores, faremos um teste printando todas essas informações para conseguirmos visualizá-las no terminal, com print(nome_receita, ingredientes, modo_preparo, tempo_preparo, rendimento, categoria, foto_receita).
+
+Após fazer a inclusão da receita, devemos redirecionar o usuário para algum lugar, então colocaremos um return redirect() para a página de dashboard, pois fará sentido criarmos a receita e depois podermos visualizá-la.
+
+Caso isso não aconteça e ocorra um erro, faremos um procedimento parecido com o que fizemos em cadastro, redirecionando para a própria página em que o usuário estará.
+
+Escreveremos um else e um return redirect() para encaminhar para o próprio formulário 'cria_receita'. Ou seja, caso o preenchimento dos campos e inclusão da receita não funcione, por não ser uma requisição no método POST, o retorno vai renderizar para a página de criação de receitas.
+
+    def cria_receita(request):
+        if request.method == 'POST':
+            nome_receita = request.POST['nome_receita']
+            ingredientes = request.POST['ingredientes']
+            modo_preparo = request.POST['modo_preparo']
+            tempo_preparo = request.POST['tempo_preparo']
+            rendimento = request.POST['rendimento']
+            categoria = request.POST['categoria']
+            foto_receita = request.FILES['foto_receita']
+                    print(nome_receita, ingredientes, modo_preparo, tempo_preparo, rendimento, categoria, foto_receita)
+            return redirect('dashboard')
+        else:
+            return render(request, 'usuarios/cria_receita.html')
+
+Vamos salvar e voltar para a aplicação. Criaremos a Torta de morango, e novamente colaremos o texto nos Ingredientes e no Modo de preparo, com o Tempo de preparo "40", rendimento para duas pessoas e categoria "doce". Escolheremos a foto da torta e clicaremos em "Open".
+
+Clicaremos no botão para criar a receita e seremos direcionados para a página de dashboard. Provavelmente funcionou tudo corretamente. Olharemos nosso terminal e veremos que na primeira aba recuperamos todos os valores relacionados aos campos, por isso há todo o texto lá.
+
+Agora que trouxemos todos esses valores, precisaremos salvá-los na nossa base de dados. Será o que faremos a seguir.
+
 ### Receita de cada usuário
-### Faça como eu fiz na aula
+
+Para conseguirmos criar as receitas e elas ficarem registradas no nosso banco de dados, precisamos gerar um objeto para a receita, importando do modelo os atributos da classe Receita.
+
+Em "views.py", importaremos de receitas.models o modelo de Receita. Feita a importação, faremos a criação dizendo que receita será uma Receita.objects.create(), e então passaremos as propriedades.
+
+Observando nosso modelo, uma receita terá uma pessoa. Mas vamos nos deparar com um problema. Em nenhum dos outros campos teremos uma pessoa. Mas na requisição, haverá a pessoa que cria a receita.
+
+Então, antes de gerar o objeto de criação da receita, encontraremos quem é o user que gera a receita. Importaremos o novo modelo do Python, from django.shortcuts, e utilizaremos o get_object_or_404, pois a intenção é obter um objeto.
+
+No código, na linha acima da receita, escreveremos user = get_object_or_404() e passaremos algumas propriedades para ele. O primeiro será a classe User, e a segunda que precisaremos especificar será quem é o ID do objeto.
+
+Podemos especificá-lo como pk=request.user.id. Dessa forma, trazemos o ID do usuário na requisição e atribuímos o ID para a variável user.
+
+Voltaremos aos atributos de Receita.objects.create() e agora poderemos dizer que a pessoa criando a receita corresponde ao user, e assim conseguiremos fazer a associação.
+
+Além do usuário, teremos os outros campos para passar. Além da pessoa que vai gerar a receita, teremos nome_receita que será igual a nome_receita, ingredientes = ingredientes, modo_preparo=modo_preparo, tempo_preparo=tempo_preparo, rendimento=rendimento, categoria=categoria e foto_receita=foto_receita.
+
+Sendo assim, buscamos nosso user e criamos o objeto de receita. Agora o que teremos que fazer para de fato gravar a receita no banco de dados será um comando simples, receita.save(). Dessa forma a receita será registrada na base de dados também.
+
+Para o código ficar mais claro, apagaremos nosso print, pois não precisamos mais dele, apenas buscar o usuário da receita e criar a receita em si, cuja linha de código ficou bem grande, mas depois pensaremos em como melhorar isso.
+
+    def cria_receita(request):
+        if request.method == 'POST':
+            nome_receita = request.POST['nome_receita']
+            ingredientes = request.POST['ingredientes']
+            modo_preparo = request.POST['modo_preparo']
+            tempo_preparo = request.POST['tempo_preparo']
+            rendimento = request.POST['rendimento']
+            categoria = request.POST['categoria']
+            foto_receita = request.FILES['foto_receita']
+            user = get_object_or_404(User, pk=request.user.id)
+            receita = Receita.objects.create(pessoa=user,nome_receita=nome_receita, ingredientes=ingredientes, modo_preparo=modo_preparo,tempo_preparo=tempo_preparo, rendimento=rendimento,categoria=categoria, foto_receita=foto_receita)
+            receita.save()
+            return redirect('dashboard')
+        else:
+            return render(request, 'usuarios/cria_receita.html')
+
+Salvaremos as informações e voltaremos a nossa aplicação. Vamos atualizar e tentar criar a "Torta de morango" novamente. Passaremos os ingredientes e o modo de preparar como o texto "lorem ipsum", definiremos o tempo de preparo de 40 min. e o rendimento para 2 pessoas, além da categoria "doce".
+
+Escolheremos a foto "torta.jpg" e clicaremos no botão "Criar sua receita". Aparentemente ela terá sido criada, mas vamos conferir no nosso banco de dados.
+
+No banco, teremos 4 registros de receitas. Clicaremos com o botão direito do mouse em "receitas_receita", optaremos por visualizar todas as receitas e aparecerão 5 registros, pois o banco será atualizado e a receita da Torta de morango aparecerá.
+
+Então conseguimos armazenar a receita na nossa base de dados, mas ainda não podemos vê-la no site que estamos desenvolvendo. Nossa intenção é visualizá-la na nossa página de dashboard.
+
+Voltaremos para "views.py" e na nossa função de dashboard(), atualmente só o que verificamos é que se o usuário tiver autenticado, vamos renderizar o dashboard. Caso contrário, vamos direcioná-lo sempre para a index.
+
+Passaremos a exibir as receitas do usuário na dashboard caso o usuário esteja autenticado com receitas = Receita.objects.order_by(), trazendo todas as receitas. Passaremos '-date_receita' como atributo.
+
+Queremos colocar primeiro as últimas receitas cadastradas, então adicionaremos um filtro que exibirá as receitas, que no entanto, devem ser exclusivamente do usuário criado. Então filtraremos a pessoa que tenha um id igual a determinado id.
+
+Já sabemos como encontrar o id da pessoa que faz a requisição. Na linha acima de receitas, escreveremos id = request.user.id. Portanto, se o usuário estiver autenticado, vamos obter o id dele, que será atribuído a essa variável id.
+
+Assim, o filtro será criado para mostrar apenas as receitas do usuário com esse id, com .filter(pessoa=id). Depois, precisaremos passar as informações para o nosso template. Atribuiremos, entre chaves 'receitas' : receitas'a dados, ou seja, tiparemos 'receitas' como do tipo receitas.
+
+Quando retornarmos a requisição, devolvendo o request e a dashboard do usuário, passaremos dados.
+
+    def dashboard(request):
+        if request.user.is_authenticated:
+            id = request.user.id
+            receitas = Receita.objects.order_by('-date_receita').filter(pessoa=id)
+
+            dados = { 
+                'receitas' : receitas
+            }
+            return render(request, 'usuarios/dashboard.html', dados)
+        else:
+            return redirect('index')
+
+Vamos salvar , voltar à aplicação e atualizar. Veremos agora a Torta de morango, criada pelo usuário Gui Lima. Conferiremos se essa receita será exibida na nossa Página Principal.
+
+Conseguimos visualizá-la em Minhas Receitas, mas quando clicamos em Página Principal, ela não aparecerá. Isso significa que ela está visível para o usuário, mas não para toda a aplicação.
+
+Criaremos mais uma receita para ter certeza. O título da receita será "Pão". Mais uma vez, usaremos o "lorem ipsum" para os ingredientes e para o modo de preparo. Colocaremos 60 min, no modo de preparo e o rendimento "serve 10 pessoas". A categoria será "salgado", e vamos abrir a foto do pão.
+
+Clicaremos no botão para criar a receita e agora veremos o pão e a torta de morango na dashboard. Entretanto, na Página Principal, nenhuma das duas aparecerá.
+
+Voltaremos para Minhas Receitas e clicaremos numa das receitas, como a Torta de morango, e nos certificaremos que conseguimos visualizar as informações referentes a ela. Funcionará da mesma forma para a receita do pão.
+
+Se fizermos o logout, não teremos mais essas informações e veremos a Página Principal, o que não faz muito sentido. Por isso, vamos a "templates > partials > _menu.html", e tiraremos a página principal da opção de aparecer quando o usuário não estiver logado, deixando apenas o cadastro e o login.
+
+Voltaremos à página, vamos atualizá-la, e agora o usuário que não estiver cadastrado conseguirá visualizar as receitas e até conferir informações clicando nelas, mas não verá mais o link da Página Principal.
+
+Vamos fazer o login novamente como gui@alura.com, e quando acessarmos, conseguimos ver a Página Principal, Minhas Receitas, Criar Receitas e Logout.
+
 ### Cada receita com seu dono
-### O que aprendemos?
+
+Para exibir a receita de cada usuário, incluímos o seguinte código:
+
+    id = request.user.id
+    receitas = Receita.objects.order_by('-date_receita').filter(pessoa=id)
+
+Sabendo disso, analise as seguintes informações e marque as verdadeiras:
+
+a) Alternativa correta: Teríamos o mesmo resultado alterando essas duas linhas por receitas = Receita.objects.filter(pessoa=request.user.id).
+- _Certo! O resultado seria o mesmo. Porém, da outra forma, apenas fragmentamos os passos, primeiro pegando o id do usuário da requisição, depois buscando a receita do usuário._
+
+b) Não seria possível visualizar as receitas de cada usuário, alterando o código para:
+
+    id = request.user.id
+    todas_as_receitas = Receita.objects.order_by('-date_receita')
+    receitas = todas_as_receitas.filter(pessoa=id)
+
+c) Alternativa correta: Teríamos o mesmo resultado removendo o order_by, por exemplo: receitas = Receita.objects.filter(pessoa=id)
+- _Certo! A ordenação não está alterando o resultado do filtro da ordenação. Sendo assim, teríamos o mesmo resultado._
+
 ## 05. Refatoração e mensagens
 ### Mensagens de sucesso e erro
+
+Há um ponto que podemos melhorar na nossa aplicação.
+
+Nesse momento, criaremos a conta da Ana. O nome será Ana, o e-mail será ana@alura.com, e na senha, digitaremos "123". Na confirmação de senha, porém, digitaremos "12". Clicaremos em "Criar sua conta" e continuaremos na página de criação da conta, e os campos serão limpos.
+
+Entretanto, em nenhum momento foi exibida uma mensagem informando que as senhas não estavam iguais. Quando abrimos o terminal, vemos o print que deixamos em "usuarios > views.py" dizendo que as senhas não são iguais, gerado quando senha!= senha2.
+
+Seria interessante podermos exibir a mensagem de erro na nossa aplicação, para o usuário conseguir identificar o problema. E caso ele conseguisse completar o cadastro e ser direcionado para a página de login, a mensagem poderia ser algo como "Seu cadastro foi realizado com sucesso".
+
+Para descobrir como o Django trabalha com a exibição de mensagens assim, digitaremos "message django" na busca do nosso navegador. O primeiro link já será uma explicação de como funcionará esse sistema de mensagens.
+
+O Django trará esse sistema para nossa utilização por padrão, com uma explicação bem detalhada dos níveis de mensagens e as message tags. Podemos indicar, por exemplo, que uma mensagem é de erro, e dentro da mensagem, criar nossas message tags.
+
+Na nossa aplicação, também utilizamos o bootstrap, então conseguiremos utilizar tags do bootstrap para criar alertas. Buscaremos na internet por "bootstrap alertas" e no primeiro link teremos algumas formas de exibir as mensagens de erro e de sucesso.
+
+A diferença entre as mensagens de erro ou sucesso será a classe delas. Na primeira, a classe utilizada será danger (perigo, em Inglês) e na segunda, success. Criaremos nossas próprias message tags para vinculá-las ao bootstrap e deixá-las com um visual interessante no momento da exibição.
+
+Como faremos a criação, no entanto, se já temos o django.conrib.messages na nossa aplicação? Copiaremos o trecho de código responsável pela criação das tags e abriremos o "alurareceita > settings.py", onde estão as configurações.
+
+Em MIDDLEWARE já teremos um messages, assim como em TEMPLATES há um messages.context_processors. Esses são recursos que podemos utilizar. Ao fim do código, colocaremos um comentário para identificar que essa é a parte de # Messages, e criaremos duas message tags.
+
+Uma delas será para sucesso e outra para erro. Começaremos com messages.ERROR, e a tag que essa mensagem armazenará para nós será um nome que temos no bootstrap, 'danger'. A de sucesso será messages.SUCCESS: 'success'. Depois delas, colocaremos vírgulas, pois poderemos criar outras message tags, apesar de para nós, as duas serem suficientes.
+
+#### Messages
+    from django.contrib.messages import constants as messages
+    MESSAGE_TAGS = {
+        messages.ERROR: 'danger',
+        messages.SUCCESS: 'success',
+    }
+
+Agora precisamos criar um template html para exibir as mensagens. Como não é um html complexo, podemos criá-lo dentro de "partials" uma nova partial "_alertas.html".
+
+Dentro dele, em primeiro lugar verificaremos se há alguma mensagem, com `{% if messages %}` e fecharemos com o `{% endif %}`. Caso haja alguma mensagem, faremos um for(e também fecharemos com `{% endfor %}`) e assim, cada mensagem será exibida conforme o alerta do bootstrap, que variará a depender da mensagem ser de erro ou de sucesso.
+
+Vamos copiar do site do bootstrap o código para a mensagem de erro, e colaremos no nosso arquivo; Criamos as message tags no "settings.py", então, faremos algumas alterações no código trazido.
+
+Não exibiremos mais todo o conteúdo que diz "This is danger alert-check it out!". Em vez disso, exibiremos {{message}}. com chaves duplas. Já criamos as message tags em "settings.py" e não queremos que todas mensagens de erro venham com um alerta de danger.
+
+Por isso, no lugar de class="alert alert-danger"colocaremos class="alert alert={{message.tags}}". Dessa forma, conseguiremos criar tanto mensagens de sucesso quanto de erro.
+
+    {% if messages %}
+        {% for message in messages %}
+        <div class="alert alert-{{message.tags}}" role="alert">
+            {{ message }}
+        </div>
+        {% endfor %}
+    {% endif %}
+
+Por enquanto, incluiremos essa partial em dois lugares em nossas páginas, primeiramente no login. Em "login.html" teremos as partials de menu, e antes da linha onde temos a classe row e começa nosso formulário digitaremos {% include 'partials/_alertas.html' %}.
+
+Adicionaremos a partial também no cadastro, no mesmo lugar, antes da classe row, e salvaremos ambos os arquivos. Agora criaremos duas mensagens para testar, uma de erro e uma de sucesso.
+
+Abriremos "usuarios > views.py" e teremos que importar as mensagens para o código. Importaremos de django.contrib. Já fizemos antes o import de auth, agora digitaremos uma vírgula na sequência e escreveremos messages. e vamos salvar.
+
+Podemos colocar as mensagens de erro em vários lugares. Escolheremos dois exemplos simples. Exibiremos uma mensagem de erro quando as senhas fornecidas não forem iguais. Para tal, escreveremos messages.error() logo após a verificação if senha!- senha2 e passaremos alguns parâmetros.
+
+O primeiro deles será o request. O segundo será a mensagem, a mesma que exibíamos no terminal, 'As senhas não são iguais'. Depois, se conseguirmos cadastrar um usuário, exibiremos uma mensagem de que o cadastro foi realizado com sucesso.
+
+Logo após o print do cadastro, escreveremos messages.success() e passaremos a request e a mensagem 'Cadastro realizado com sucesso' para os parâmetros. Então, teremos duas mensagens, uma de erro quando as senhas forem diferentes, e uma de sucesso quando conseguirmos realizar o cadastro.
+
+    def cadastro(request):
+        if request.method == 'POST':
+            nome = request.POST['nome']
+            email = request.POST['email']
+            senha = request.POST['password']
+            senha2 = request.POST['password2']
+            if not nome.strip():
+                print('O campo nome não pode ficar em branco')
+                return redirect('cadastro')
+            if not email.strip():
+                print('O campo email não pode ficar em branco')
+                return redirect('cadastro')
+            if senha != senha2:
+                            messages.error(request, 'As senhas não são iguais')
+                print('As senhas não são iguais')
+                return redirect('cadastro')
+            if User.objects.filter(email=email).exists():
+                print('Usuário já cadastrado')
+                return redirect('cadastro')
+            user = User.objects.create_user(username=nome, email=email, password=senha)
+            user.save()
+            print('Usuário cadastrado com sucesso')
+                    messages.success(request, 'Cadastro realizado com sucesso')
+            return redirect('login')
+        else:
+            return render(request,'usuarios/cadastro.html')
+
+Agora vamos testar. Lembrando que não colocaremos mensagens de erro e sucesso para todas as possibilidades, mas é interessante tentar fazer isso. Voltaremos à aplicação e começaremos com o cadastro.
+
+Colocaremos o nome Ana, o e-mail ana@alura.com, a senha "123" e a confirmação "12". Quando clicarmos no botão para a criação de conta, leremos a mensagem de erro "As senhas não são iguais".
+
+Agora tentaremos criar o cadastro colocando senhas correspondentes e quando clicarmos em "Crie sua conta" leremos "Cadastro realizado com sucesso, e teremos sido direcionados para a página do login.
+
+Agora, a sugestão será criar as mensagens por conta própria, e será possível copiar o texto sendo exibido pelos prints para isso, e apagá-los, porque não serão mais necessários. Utilizávamos eles para nos ajudar a desenvolver nossa aplicação, mas agora podemos nos basear no próprio site. A ideia valerá tanto para o cadastro, quanto para o login.
+
 ### Refatoração e ajustes finais
-### Faça como eu fiz na aula
+
+Vamos melhorar um pouco a legibilidade do nosso arquivo "views.py"?
+
+Algo que poderemos fazer será isolar algumas funções que repetimos em outras funções, para reutilizá-las. Copiaremos o trecho not nome.strip(), após o if, que verifica se um campo está vazio.
+
+Ao fim do código, criaremos uma função chamada campo_vazio(), na qual receberemos campo como parâmetro, e retornaremos a verificação copiada. No lugar de nome, passaremos campo, ou seja, o retorno será return not campo.strip().
+
+No nosso formulário de cadastro, em vez de fazer a verificação para o nome, para o e-mail e assim por diante, perguntaremos se campo_vazio(), e passaremos o nome do campo (por exemplo, nome) para os parâmetros.
+
+No lugar de exibir um print, exibiremos messages.error(), devolvendo a requisição e a mensagem que já tínhamos anteriormente, Portanto, se o campo nome estiver vazio, será exibida a mensagem de erro e o usuário será redirecionado para a página de cadastro.
+
+A função campo_vazio() servirá para o email na sequência, e também alteraremos o print para messages.error(), devolvendo um request e a nossa mensagem. Dessa forma já conseguiremos melhorar nosso código.
+
+Teremos a validação de senha senha != senha2. Para saber se devemos removê-la e isolá-la em determinada função reutilizável, será necessário sempre analisar cada situação nos nossos projetos. Caso seja uma função que utilizamos várias vezes, ou um trecho de código que repetimos, será interessante isolar.
+
+Porém, a legibilidade de senha != senha2 não será tão simples. Podemos tornar esse trecho de código mais compreensível criando uma função que verifica se as senhas não são iguais, senhas_nao_sao_iguais(). Receberemos a senha e senha2, e o return será a verificação.
+
+Então, no lugar de if senha != senha2, usaremos nossa função, com if senhas_nao_sao_iguais(senha1, senha2), tornando muito mais claro o que estamos fazendo. Se não forem iguais, vamos redirecionar o usuário para o cadastro.
+
+    def cadastro(request):
+        if request.method == 'POST':
+            nome = request.POST['nome']
+            email = request.POST['email']
+            senha = request.POST['password']
+            senha2 = request.POST['password2']
+            if not nome.strip():
+                print('O campo nome não pode ficar em branco')
+                return redirect('cadastro')
+                    if campo_vazio(nome):
+                messages.error(request,'O campo nome não pode ficar em branco')
+                return redirect('cadastro')
+            if campo_vazio(email):
+                messages.error(request,'O campo email não pode ficar em branco')
+                return redirect('cadastro')
+            if senhas_nao_sao_iguais(senha, senha2):
+                messages.error(request, 'As senhas não são iguais')
+                return redirect('cadastro')
+            if User.objects.filter(email=email).exists():
+                print('Usuário já cadastrado')
+                return redirect('cadastro')
+            user = User.objects.create_user(username=nome, email=email, password=senha)
+            user.save()
+            print('Usuário cadastrado com sucesso')
+            return redirect('login')
+        else:
+            return render(request,'usuarios/cadastro.html')
+
+    // trecho do código ocultado
+
+    def campo_vazio(campo):
+        return not campo.strip()
+
+    def senhas_nao_sao_iguais(senha, senha2):
+        return senha != senha2
+
+Assim garantimos que a leitura do código ficará muito mais clara, e isolamos essas pequenas ações em funções menores. Vamos agora testar esses valores.
+
+Deixaremos o campo de nome vazio, usaremos um e-mail inventado e uma senha e verificação de senha iguais. Quando clicarmos no botão para criar a conta, veremos a mensagem na tela de que o nome não pode ficar em branco.
+
+Então, preencheremos o nome como "Teste". Colocaremos um e-mail que já existe, pois temos no nosso projeto uma validação para redirecionar para o cadastro quando o e-mail do usuário já estiver cadastrado. Usaremos o gui@alura.com.br, e a senha "123", a mesma para a confirmação.
+
+Tentaremos criar a conta e não receberemos a mensagem de erro, porque para o caso do e-mail já cadastrado, teremos apenas um print. Vamos substituí-lo pelo messages.error(), passando a requisição e a nossa mensagem.
+
+    if User.objects.filter(email=email).exists():
+        messages.error(request,'Usuário já cadastrado')
+        return redirect('cadastro')
+
+Vamos testar de novo com o nome Teste, o e-mail do Gui e a mesma senha. Agora, clicaremos no botão "Criar sua conta" e veremos na tela a mensagem "Usuário já cadastrado".
+
+Veremos nesse momento algo que poderíamos deixar passar na nossa aplicação e ficaria confuso. Vamos colocar o nome de um usuário que já existe com o e-mail de um usuário que não existe.
+
+Por exemplo, a Ana, que já existe na nossa aplicação se olharmos na nossa base de dados. Porém usaremos um e-mail diferente, teste@teste.com, com as senhas "123". Quando tentarmos criar a conta, teremos um erro de integridade.
+
+Isso acontecerá, porque o auth_user_username_key utilizará sempre o nome do usuário para fazer a verificação se ele já existe ou não. Para não cairmos nesse tipo de erro, verificaremos, além da existência do e-mail, a do nome de usuário também.
+
+Logo abaixo da verificação do e-mail, colocaremos a última verificação. Se o username=nome, ou seja, se já existir, nesse caso não permitiremos o cadastro de um usuário já cadastrado, pois dificilmente teremos um usuário com o mesmo nome e o mesmo e-mail.
+
+Pode soar um pouco confuso porque o Django usa o username para fazer as validações, mas dessa forma evitaremos o erro de integridade.
+
+    if User.objects.filter(username=nome).exists():
+        messages.error(request,'Usuário já cadastrado')
+        return redirect('cadastro')
+
+Voltaremos à página do cadastro e colocaremos o nome "Ana" e o e-mail teste@teste.com, com senha "123". Quando tentarmos criar, não conseguiremos, e veremos a mensagem de que o usuário já estará cadastrado.
+
+Então ficará como desafio detectar se há outras funções ou ações realizadas várias vezes, e pensar se valeria a pena isolá-las numa determinada função e apenas reutilizá-la em partes diferentes da aplicação, como campo_vazio() ou senhas_nao_sao_iguais().
+
+Isolar funções também poderá nos ajudar em questões de legibilidade. Antes tínhamos o senha != senha2, dizendo que as senhas não eram iguais, agora se as senhas não são iguais, além da função com um nome mais legível, exibiremos uma mensagem de erro para o usuário.
+
+Refatoramos o cadastro, agora também podemos pensar em alguns trechos do login. Por exemplo, fazemos a verificação se o e-mail e a senha estão em branco na hora do login, portanto podemos utilizar também campo_vazio(). para a validação.
+
+Faremos if campo_vazio(email) or campo_vazio(senha), e diremos que os campos não podem ficar em branco para o usuário. Por isso, não poderemos usar o print, e vamos trocá-lo pela messages.error(), que receberá um request e a mensagem que já tínhamos na impressão.
+
+Caso haja um erro, redirecionaremos o usuário para a página do login, deixando o código mais claro.
+
+    def login(request):
+        if request.method == 'POST':
+            email = request.POST['email']
+            senha = request.POST['senha']
+            if campo_vazio(email) or campo_vazio(senha):
+                messages.error(request,'Os campos email e senha não podem ficar em branco')
+                return redirect('login')
+
+    // trecho do código ocultado
+
+Vamos à página de login e deixaremos o campo de e-mail vazio. Colocaremos apenas alguns espaços na senha e tentaremos nos logar. Veremos a mensagem de que os campos e-mail e senha não podem ficar em branco.
+
+Desta vez digitaremos o e-mail a@a.com e deixaremos a senha em branco. Quando tentarmos acessar, novamente seremos alertados de que os campos e-mail e senha não podem ficar em branco.
+
+Assim, de forma simples, conseguimos garantir um resultado melhor para nossa aplicação. Agora realizaremos o login corretamente, com o email gui@alura.com.
+
+Vamos observar que na aplicação há um espaço grande entre as boas vindas "Olá Gui Lima" e as receitas, o que poderá ser melhorado. Entraremos em "templates > dashboard.html", onde há um padding de 0 e depois um de 80. Podemos diminuí-lo para um valor melhor, ou diminuir o mb.
+
+Deixaremos o padding como 0, e quando atualizarmos a página já conseguiremos uma visualização melhor. Isso significa que mesmo quando terminamos uma etapa de desenvolvimento da nossa aplicação, podemos pensar em como melhorá-la.
+
+Nesse momento já fizemos grandes avanços e conseguimos criar e visualizar as receitas, assim como visualizar a página principal da aplicação.
+
+É importante lembrar que em "views.py", na função cria_receita(), não fizemos nenhuma validação porque não teríamos tempo de validar todos os campos durante nosso curso. Mas como já sabemos como reutilizar funções para saber se um campo está vazio, por exemplo, e redirecionar o usuário exibindo uma mensagem de erro ou uma mensagem de sucesso, poderemos deixar o sistema do nosso projeto Django muito melhor configurado.
+
 ### Mensagem não exibida
+
+Para tornar a experiência do usuário de um site melhor, uma pessoa decidiu incluir mensagens de validações no formulário de novos usuários. Caso os dados não sejam válidos, uma mensagem de erro é exibida.
+
+Sabendo disso, analise as afirmações abaixo e marque as verdadeiras.
+
+a) No Django não podemos criar nossas próprias messages tag.
+
+b) Podemos utilizar o código messages.error('O campo nome não pode ficar vazio') para exibir uma mensagem de erro informando que o campo nome está vazio.
+
+c) Alternativa correta: Quando criamos uma partial para manter o código de alertas e mensagens, não podemos esquecer de incluir tais partials nas páginas onde queremos exibir.
+- Certo! Ao criar uma mensagem de sucesso ou de erro, precisamos garantir que a partial será exibida.
+
 ### O que aprendemos?
+
+[GitHUB]('https://github.com/alura-cursos/alura_receitas_django_parte3/tree/aula_5')
