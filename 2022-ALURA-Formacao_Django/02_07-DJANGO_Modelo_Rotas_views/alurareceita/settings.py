@@ -32,7 +32,6 @@ ALLOWED_HOSTS = []
 
 INSTALLED_APPS = [
     'usuarios',
-    'pessoas',
     'receitas',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -76,7 +75,7 @@ WSGI_APPLICATION = 'alurareceita.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/2.2/ref/settings/#databases
 
-heroku = True
+heroku = False
 
 if heroku:
 

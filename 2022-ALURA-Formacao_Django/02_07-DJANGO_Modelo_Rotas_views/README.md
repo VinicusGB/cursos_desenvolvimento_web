@@ -3047,3 +3047,255 @@ c) Alternativa correta: Quando criamos uma partial para manter o código de aler
 ### O que aprendemos?
 
 [GitHUB]('https://github.com/alura-cursos/alura_receitas_django_parte3/tree/aula_5')
+
+# 4. Boas práticas no Django: apps, pastas e paginação
+**Fonte:** Guilherme LIma<br>
+**Disponível:** <a href="https://cursos.alura.com.br/course/fundamentos-django-2" target="_blank">ALURA</a><br>
+**Conteúdo:**
+- Aprenda a editar, atualizar e remover objetos
+- Saiba como trabalhar com formulários no Django
+- Desenvolva uma boa arquitetura em seus projeto Django
+- Entenda como incluir paginação no Django
+- Crie uma aplicação inspirada num produto real
+## 01. Deletando objetos e apps no Django Ver primeiro ### ### Introdução
+
+[00:00] Meu nome é Guilherme Lima, eu sou instrutor da Alura e seja muito bem-vindo à esta quarta parte do treinamento "Utilizando o Django 2."
+
+[00:07] Neste curso, o que vamos aprender? Vamos finalizar o CRUD de receitas da nossa aplicação, vamos melhorar a arquitetura do nosso código e também vamos incluir paginação no nosso site.
+
+[00:20] Na nossa aplicação, vamos incluir aqui nas minhas receitas esses dois botões: um para editar as receitas e outro para deletar. Anteriormente, nós só conseguíamos criar. Agora vamos conseguir editar as nossas receitas, também. Além disso, na página principal, vamos adicionar esse menu de navegação aqui, para que nós tenhamos paginação no nosso site.
+
+[00:40] Pensando em tudo isso, também vamos alterar a arquitetura do nosso site para que fique mais fácil a edição e manutenção dos nossos códigos. Vamos criar uma pasta de “apps”, aprender a trabalhar com mais de uma “view”, ter uma pasta de “views” para trabalhar com mais de uma “view” no Django, pensando em manter o nosso código de forma mais simples, conseguir dar a manutenção de forma mais simples.
+
+[01:05] Quais são os pré-requisitos desse treinamento? É muito recomendado que você tenha feito os cursos anteriores de Django 2, - utilizando a versão 2 - para que você entenda bem onde nós paramos e para onde estamos indo na nossa aplicação.
+
+[01:20] Fazendo esse curso, você vai aprender a trabalhar com formulários, vai aprender como manter o seu código Django mais organizado, a arquitetura do seu código Django bem dividida.
+
+[01:31] E para quem é esse curso? Esse curso é recomendado para as pessoas que não tiveram contato com a linguagem Python para web utilizando o Django e que fizeram as outras partes do treinamento. É muito recomendado que você tenha feito as outras partes.
+
+[01:47] Se você fez as outras partes e chegou neste curso, ele é super recomendado para você. Caso queira ver um ponto ou um tópico deste curso, você também pode.
+
+[01:56] Então, sabendo de tudo isso, vamos começar?
+
+### Saudações e Ambiente
+
+Olá!
+É muito bom receber você nesta quarta parte do curso. Espero que seja uma experiência de aprendizado incrível e que possamos vencer todos os desafios e continuar o desenvolvimento utilizando o Django.
+
+Divisão das aulas
+Aula	O que vamos aprender?
+Deletando receitas e apps	Vamos criar um botão para deletar as receitas e remover o app de pessoas
+Editando e atualizando	Vamos finalizar o CRUD de receitas possibilitando a atualização dos dados
+Melhorando arquitetura do código	Vamos alterar os pacotes e arquivos para manter o código organizado
+Paginação no Django	Vamos aprender como incluir paginação na página principal do site
+Refatoração de código	Vamos criar uma pasta para manter nossos apps e adicionar docstrings
+Preparando ambiente
+Este curso é a terceira parte dos treinamentos de Django 2 da Alura. Portanto, é recomendado que você tenha feito a terceira parte do curso – Integração de modelos no Django 2: Filtros, buscas e admin.
+
+Além disso, para conseguir acompanhar este curso, é recomendado que você tenha o Python3 instalado.
+
+Caso necessite ajuda para instalação do Python, recomendamos os seguintes links:
+
+Passo a passo para instalar o Python3 no Windows.
+
+Passo a passo para instalar em outros sistemas operacionais.
+
+Para que tenhamos o mesmo resultado, é recomendado que você faça o download da mesma versão do Python e do Django que utilizei quando o curso foi gravado, que poderá ser encontrada aqui:
+
+    Python 3.7.4
+    Django 3.0.3
+
+O Django pode ser instalado através do comando:
+
+    pip install Django==3.0.3
+
+Em caso de dúvida na instalação ou durante o curso, conte sempre com o fórum da Alura!
+
+Vamos começar?
+
+:)
+
+### Deletando receitas
+
+[00:00] Vamos iniciar a nossa quarta parte do treinamento de Django? Para começar, eu tenho aqui a minha aplicação funcionando. Se eu clico aqui no suco verde, eu consigo visualizar o suco verde, e todas essas receitas que estão na página principal são as receitas que estão publicadas para que qualquer pessoa, logada ou não, possa ver.
+
+[00:19] Além disso, eu tenho uma aba de minhas receitas, onde as receitas que eu criei só estão disponíveis para mim, então, aqui é o meu “dashboard”. O dashboard da pessoa que eu estou, que se chama Gui Lima.
+
+[00:32] Eu consigo visualizar o pão, ou a torta de morango. Eu clico aqui, tem a torta de morango e os detalhes da torta de morango, então, nós conseguimos criar as nossas próprias receitas e deixar essas receitas visíveis apenas para nós.
+
+[00:46] O que eu quero fazer agora é - nós conseguimos criar uma nova receita mas não conseguimos remover uma receita. Por exemplo, se eu quero alterar ou colocar uma outra receita de pão e eu não quero guardar essa receita de pão aqui, eu quero armazenar outra receita de pão. Do jeito que está a nossa aplicação, nós não conseguimos tirar essa receita, então, vamos criar uma forma de conseguirmos remover, também, as receitas da nossa aplicação.
+
+[01:08] Nós conseguimos criar, nós trabalhamos bastante na parte 3 com formulário, como nós salvamos e criamos as nossas receitas. Agora, o que eu quero fazer é deletar algumas receitas.
+
+[01:18] O que nós podemos fazer é colocar embaixo do nome da receita um botão escrito “deletar”. Quando clicamos, aquela receita simplesmente é removida do nosso dashboard. Vamos fazer isso?
+
+[01:30] Então, no nosso código, o que eu vou fazer? Vamos criar primeiro esse botão. Eu vou colocar em “templates”. No template de usuário, eu vou na página de dashboard, que é onde nós estamos. Aqui, olhe: “dashboard”, que é onde eu estou vendo o meu dashboard.
+
+[01:44] Deixe-me minimizar. Aqui, eu tenho a página de dashboard e, aqui, eu tenho o nome da receita. O que eu quero fazer? Eu quero criar embaixo do nome da receita, um botão, e esse botão vai ser um link para deletar uma receita.
+
+[01:56] Então, eu vou colocar aqui a tag “” e a URL que eu vou utilizar através de código Python – deixe-me colocar aqui. A URL que eu vou utilizar vai ser essa aqui, olhe: "url". Nós precisamos criar uma URL que delete a receita.
+
+[02:10] Então eu vou criar aqui, olhe: “<a href=“{% url deleta_receita %}”>”. Maravilha, mas qual receita ele vai deletar? Deixe-me colocar esse aqui entre aspas simples. Qual receita ele vai deletar? Eu preciso informar qual é a receita.
+
+[02:25] Se nós observarmos, se eu seleciono, aqui, o “Pão”, observe no canto da minha tela. Olhe ele mostra ali "localhost:8000/10" e se eu venho na torta de morango, - "localhost:8000/9," - eu consigo pegar o ID dessa receita.
+
+[02:38] Então eu posso falar: para cada receita, eu quero “<a href=“{% url ‘deleta_receita’ receita.id %}”>”. Então, cada receita que eu quiser deletar vai ter um ID associado a ela, para sabermos qual é a receita que queremos deletar.
+
+[02:52] Além disso, eu quero que esse nosso link tenha uma cara de botão, então eu vou colocar aqui o 'type="button' e, para deixá-lo com um visual mais legal, nós podemos usar as propriedades do bootstrap.
+
+[03:05] Então, eu vou colocar aqui em "class," e vou chamar o "btn btn-danger" para ficar um botão com a cara vermelha, e aqui dentro desse espaço, eu vou escrever o que eu quero exibir nesse botão. Vou colocar "Deletar."
+
+[03:20] Vou salvar. Quando eu volto na minha aplicação e atualizo, nós recebemos uma mensagem de erro porque nós não cadastramos essa rota. Nós precisamos cadastrar essa rota na nossa aplicação, também.
+
+[03:30] Então, venho aqui. Como estamos trabalhando com o app de usuários, eu venho em “usuarios”, venho em “urls.py”, e observe que, em “urls.py”, nós temos uma de “cadastro”, “login”, “dashboard”, “logout”, “cria/receita” e agora, eu vou ter uma para deletar a minha receita.
+
+[03:47] Eu vou criar aqui um novo “path” – deixe-me colocar a vírgula, não posso esquecer. Vírgula, agora sim - eu vou chamar esse path de "deleta." Então, eu vou chamar aqui "deleta" e eu preciso passar o ID. Lembra que nós passamos aqui na URL? Olhe, nós vamos passar o ID da receita que queremos deletar.
+
+[04:11] E precisamos informar esse nosso ID aqui na função que vamos deletar, também, então eu faço isso com o sinal “<”, vou escrever "int:receita_id" e fecho com o sinal “>”. Agora sim, nós passamos aqui para conseguirmos deletar essa nossa receita. Além disso, o que precisamos informar conforme o padrão que nós já vimos? Olhe, ele até nos fala.
+
+[04:41] Além do path que nós colocamos, algum controle - que aqui no Django, chamamos de “views” - vai ter que ser responsável por realizar essa ação de deletar, então eu vou falar aqui.
+
+[04:53] Vamos lá! Criar em “views.” E u vou criar uma função que se chama "deleta_receita," e vou dar um “name= ‘deleta receita’", também. Eu vou chamar, aqui: “deleta_receita”.
+
+[05:14] Fechamos o nosso parênteses, não podemos esquecer, então a nossa linha ficou com essa cara. Eu vou salvar, ele vai dar uma marcação vermelha, que vai falar "não existe ninguém em “views” que se chama deleta receita." Olhe lá: “Module ‘usuarios.views’ has no deleta_receita’ member pylint(no-member)”.
+
+[05:30] Então vamos criar: venho aqui em “views.py” de “usuarios”. Nós temos uma função de “cadastro”, uma função de “login”, uma função de “logout”, “dashboard”, “cria_receita”, “campo_vazio”, “senhas_nao_sao_iguais” e agora, eu vou criar quem? O “deleta_receita”.
+
+[05:45] Então, eu vou colocar aqui embaixo uma nova função, “def deleta_receita” e nós vamos receber um parâmetro, que qual é? A requisição, como de costume, que já temos. A requisição, a "request" e a "receita_id," o ID da receita que nós queremos deletar, então “(request, receita_id):”
+
+[06:10] Agora, o que nós queremos fazer é: assim que essa função for chamada, eu quero pegar essa receita e deletar. Para eu conseguir pegar essa receita, eu vou fazer o seguinte: vou chamar aqui "receita =" e vou usar a propriedade “get_object_or_ 404”. Eu quero que pegue o objeto dessa receita. Legal mas qual receita?
+
+[06:28] Ele vai falar, assim: “qual é o modelo que estamos utilizando? Qual o objeto?” Vamos pôr objeto de “(Receita, ) aqui e quem eu quero deletar. O objeto que eu quero buscar é esse, eu vou passar a “(Receita, pk=receita_id)”.
+
+[06:47] Tenho a receita que eu quero deletar, está armazenada aqui dentro de receita. Eu uso agora o “receita.delete”, dessa forma. Depois que essa função é executada, eu preciso direcionar a pessoa para algum lugar, então eu vou direcionar, dar um “return” ou “redirect” para a página de dashboard mais uma vez. “dashboard”, só que precisa estar entre aspas simples: 'dashboard'.
+
+[07:17] Eu vou salvar. Salvei. Volto na minhas “urls.py”, salvo mais uma vez. Percebam que o erro já não aparece mais. O que nós fizemos? Criamos o botão, criamos esse link de "deleta_receita." Depois, registramos essa URL e a direcionamos para ser atendida pela “view.deleta_receita”, criamos em “deleta_receita” essa nossa função, que pega esse objeto que queremos deletar e depois o redireciona para a página “dashboard”. Vamos lá?
+
+[07:54] Voltando à nossa aplicação e salvando, nós teremos um botão “Deletar” aqui embaixo. Quando passamos o mouse em cima, ele até tem uma animação. O que eu quero fazer? Eu vou deletar o “Pão”. Quando eu clicar em deletar pão, nós não temos mais a receita do pão, só a torta de morango, então dessa forma, nós conseguimos remover algumas receitas.
+
+[08:14] Agora, nós temos quase o nosso CRUD completo e nós conseguimos criar as nossas receitas, conseguimos visualizá-las, lê-las e, agora, também conseguimos deletá-las.
+
+### Deletando um app
+
+[00:00] Estou logado com um usuário que tem permissão de acessar o administrador do Django e, quando eu acesso esse administrador, digito “localhost:8000/admin/”, tenho acesso ao administrador e nós conseguimos visualizar o nosso app de pessoas.
+
+[00:12] Só que, na nossa aplicação, não estamos utilizando mais esse app. Se nós voltarmos no nosso código e abrir as divisões, a parte estrutural do nosso código, que temos o “alurareceitas”, “media”, “pessoas”, - observe que “pessoas” já tem um monte de arquivo, um monte de coisas, um “models.py” e mais. Nós temos esses dados no nosso banco de dados, também. Aqui, olhe: “pessoas_pessoa”.
+
+[00:34] O que eu quero fazer agora é remover esse app da minha aplicação. Isso é uma tarefa que demanda bastante cuidado e vamos aprender como que conseguimos remover um app do nosso projeto.
+
+[00:45] A primeira coisa que nós vamos fazer vai ser no nosso “alurareceita”, onde ficam as configurações do nosso site, da nossa aplicação, nós temos esse app cadastrado e instalado nesse nosso projeto.
+
+[00:58] O que eu vou fazer vai ser tirar. Eu vou remover o app de pessoas e salvar. Quando eu salvar, se eu voltar na nossa aplicação e atualizar a página, observe que vai ter um erro e nós não vamos conseguir logar. Por quê?
+
+[01:10] Quando abrimos o nosso terminal com o comando command+J, observe que, nas dependências, ele fala que existe uma migração que depende desse app, então nós tiramos o app dos apps instalados aqui do “alurareceita”. Só que, aqui no nosso app de receita, em “migrations”, nós temos a “0002_receita_pessoa.py”.
+
+[01:29] Deixe-me minimizar, para visualizarmos melhor, - na “migrations”, nós temos a migração “0002_receita_pessoa.py”, ainda dependemos desse app de pessoas, e mais!
+
+[01:36] Nós falamos para ele procurar no app de pessoas uma pessoa para vincular porque nessa “migrations”, nós temos a migração “0002_receita_pessoa.py”, o que tínhamos feito? Nós adicionamos um novo campo para dizer que toda receita vai ter algum criador ou uma criadora, uma pessoa que publicou aquela receita.
+
+[01:52] E conforme foi aumentando e desenvolvendo a nossa aplicação, nós alteramos. Quando manter agora as pessoas na nossa aplicação, - as pessoas que publicaram as receitas - não vai ser mais o app de pessoa, e sim o nosso modelo de usuários do Django.
+
+[02:10] Então nós vinculamos primeiro a pessoa, depois nós vinculamos com o usuário e não utilizamos mais o app de pessoa, então, o que nós podemos fazer?
+
+[02:19] Nós temos algumas opções aqui. O que nós podemos fazer: nós removemos do apps instalados e, agora, precisamos remover todas as partes que contem vínculo com esse app. Nós vamos alterar.
+
+[02:35] Eu vou pegar esse “field” aqui da nossa migração “0005_auto_20191219_1500.py”, vou copiar essa nossa migração, teclas “Ctrl + C”. Vamos voltar na migração “0002_receita_pessoa.py”, onde temos o vínculo com pessoa e vou alterar.
+
+[02:48] Vou remover toda essa linha aqui até o “field”, - essas duas linhas - e vou usar as teclas “Ctrl + V”, agora utilizando do “to=settings.AUTH_USER_MODEL),”. Assim que nós salvamos, temos uma mensagem de erro no “settings” porque precisamos importar esse modelo para utilizarmos os modelos do Django.
+
+[03:04] Então o que eu vou fazer? Aqui em cima, podemos ver que nós temos “from django.conf import settings”. Nós temos que passar isso também para o nosso “settings”, para a nossa importação.
+
+[03:18] Salvando, o erro não acontece mais. O que precisamos fazer além disso? Nós vamos tirar esse app de pessoas, não queremos vínculo com pessoas e, no nosso caso, isso já seria suficiente da parte do nosso projeto.
+
+[03:32] Lembrando que, se você criou vínculos nos templates, nos modelos ou em alguma outra parte da aplicação, se você deseja tirar esse app, esse vínculo com o app, é necessário que você garanta que nenhuma parte do seu projeto vai utilizar esses vínculos.
+
+[03:50] Então nós alteramos aqui, só que temos um problema. No nosso projeto, nós alteramos na nossa base de dados, nós precisamos remover esse nosso app de pessoas também.
+
+[04:06] Então o que eu vou fazer? Vamos fazer algo a mais. Observe que, na nossa aplicação, - deixe-me atualizar aqui - nós conseguimos visualizar. Vamos ver se conseguimos visualizar a página principal.
+
+[04:16] Observe que, na nossa aplicação, teoricamente, tudo está funcionando. As dependências do app de pessoas não existem mais porém esses arquivos que temos na nossa base de dados são arquivos de teste, nós estamos testando. Criamos algumas receitas. Eu tenho, aqui, uma receita publicada na forma de teste.
+
+[04:35] E nosso projeto não tem vínculo com o app de pessoas, com o nosso modelo de pessoas, só que, na nossa base de dados, ainda existe essa tabela de pessoas. O que eu vou fazer?
+
+[04:45] Para nós conseguirmos manter o histórico das nossas migrações, podemos ver em “migrations” que nós temos um histórico: a migração “0001_initial.py”, criamos a receita. A migração “0002_receita_pessoa.py”, adicionamos o campo pessoa no nosso modelo de receita e falou que ele agora tem vínculo com o “AUTH_USER_MODEL”.
+
+[05:04] É necessário que nós passemos essas migrações, essas alterações para o nosso banco de dados, também, então o que eu vou fazer? Eu vou abrir o meu terminal. Vou parar a minha aplicação com as teclas “Ctrl + C”. Parei a minha aplicação.
+
+[05:17] O que eu vou fazer vai ser assim: vou deletar o meu banco de dados, “Delete Drop”. Vou dar um “OK” e ele deletou o banco de dados. Vou clicar com o botão direito aqui em cima do “Database”, vou dar um “Database...”, “Create – Database”. Com o botão direito eu dei “Create – Database”.
+
+[05:32] Aqui no nome, eu vou chamar de “alura_receita”, o mesmo nome do banco que tínhamos anteriormente. Criei, o “alura_receita”. Se nós acessarmos o banco de dados, vamos ver que não temos nenhuma informação, nenhuma tabela nessa nossa base de dados. Por quê?
+
+[05:47] Porque nós temos as migrações, já criamos as migrações, só que não migramos, de fato, para o banco de dados. O que eu posso fazer é falar assim: “python manage.py migrate”. Eu já tenho as migrações. Agora, eu quero que você migre com essas informações, com esses dados que eu tenho aqui.
+
+[06:04] Quando eu aperto a tecla “Enter”, observe que ele vai subir todas as migrações que nós já tínhamos e agora, de fato, nossa tabela de pessoa não existe mais. Olhe só: se clicarmos aqui - eu vou dar um “refresh” - abrindo aqui, podemos ver que não temos mais a nossa tabela de pessoa. Nós temos, aqui, 11 tabelas.
+
+[06:25] Então dessa forma, nós conseguimos remover um app porém nós tivemos uma perda, nós perdemos os dados da nossa aplicação. Se eu acessar aqui, observe que eu não consigo acessar a nossa loja, o nosso site, o nosso “dashboard”. Por quê?
+
+[06:40] Quando perdemos os dados da nossa aplicação, perdemos um membro muito importante que era o “superuser”, o super usuário do Django, então, eu vou criar aqui um super usuário. – Deixe-me fechar essas informações. Agora, sim. - O que eu vou fazer agora vai ser criar um super usuário para que ele possa criar outros usuários e nós possamos criar as nossas receitas, também.
+
+[07:03] Então, o que eu vou fazer? Eu vou dar um “python manage.py createsuperuser”. Vou atribuir um nome, vou chamar de “gui”. O endereço de e-mail vai ser “gui@alura.com” e a minha senha vai ser essa aqui. Maravilha, ele falou que a senha é curta. Eu vou manter essa senha, mesmo. Criei o meu super usuário.
+
+[07:26] Quando eu volto para a minha aplicação, vou atualizar. Observe que não está rodando a aplicação porque eu esqueci de subir o meu servidor, “python manage.py runserver”. Agora sim, subi o servidor. Quando eu atualizar, vou conseguir visualizar a nossa aplicação.
+
+[07:49] Vou realizar o login por aqui – “gui@alura.com” - e vou digitar a minha senha. Quando eu acesso - "Olá, Gui" - não tem nenhuma receita. Eu posso acessar o administrador porque sou superusuário, então, “localhost:8000/admin/”. Eu tenho aqui os usuários.
+
+[08:04] Observe que agora, nós já não temos nem aquele visual no administrador aqui do Django do app de pessoas. Nós conseguimos, de fato, tirar esse app da nossa aplicação.
+
+### ORM e deletando um registro
+
+Patrícia está desenvolvendo uma aplicação web com Django e foi solicitada excluir o registro do seu banco de dados com id=1:
+
+    delete from table_name where id = 1;
+
+Para utilizar o ORM do Django e obter o resultado acima, qual comando ela pode utilizar?
+
+a) Alternativa correta: instancia = NOMEdoObjeto.objects.get(id=1)
+instancia.delete()
+- _Certo! Podemos deletar a partir de uma instância do objeto através da função deletar._
+
+b) instancia = NOMEdoObjeto.objects.get(id=1) 
+instancia.deletar()
+
+c) instancia = NOMEdoObjeto.objects.get(id=1) 
+instancia.exclude()
+
+### O que aprendemos?
+## 02. Editando e atualizando formulários
+### Preparando o ambiente
+### Dados para editar
+### Método para atualizar
+### Atualizando receitas
+### Faça como eu fiz na aula
+### Atualizando ou salvando
+### O que aprendemos?
+## 03. Melhorando a arquitetura
+### Refatorando a pasta template
+### Refatorando as views
+### Modularizando as views
+### Faça como eu fiz na aula
+### Mantendo o código organizado
+### O que aprendemos?
+## 04. Paginação no Django
+### Preparando o ambiente
+### Importando Paginator
+### Preparando o ambiente
+### Paginação no template
+### Faça como eu fiz na aula
+### Django paginator
+### Para saber mais: Admin link
+### O que aprendemos?
+## 05. Refatoração de código
+### Pasta apps e docstring
+### Faça como eu fiz na aula
+### Boa qualidade de código
+### O que aprendemos?
+### Conclusão
+### Parabéns
+### Logo da alura
+### SOBRE A ALURA
+### DÚVIDAS FREQUENTES
+### SUGIRA UM CURSO
+### SUGIRA UMA FUNCIONALIDADE
+
+
+
