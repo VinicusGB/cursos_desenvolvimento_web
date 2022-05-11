@@ -3259,15 +3259,169 @@ instancia.deletar()
 c) instancia = NOMEdoObjeto.objects.get(id=1) 
 instancia.exclude()
 
-### O que aprendemos?
 ## 02. Editando e atualizando formulários
-### Preparando o ambiente
 ### Dados para editar
+
+[00:00] Na nossa aplicação, conseguimos criar receitas, deletá-las, visualizá-las mas não conseguimos editar uma receita. Por exemplo, se eu quiser alterar o nome dessa minha receita que só está "Sopa” manter todas as outras informações, eu não consigo. Nós não temos uma forma tranquila de fazer isso.
+
+[00:18] O que eu poderia fazer, do jeito que a nossa aplicação está? Criar uma receita exatamente igual a essa com algumas alterações. Ficaria com duas receitas duplicadas, e eu viria aqui, deletaria essa receita e ficaria só com a receita que eu quero.
+
+[00:30] Observe que, para conseguirmos atualizar as informações de alguma receita, está muito complicado, então vamos pensar em um jeito bem legal de conseguirmos editar as nossas receitas e finalizar o nosso CRUD.
+
+[00:42] Bom, o que eu vou fazer? Nós podemos pensar essa forma de editar as receitas em dois passos. O primeiro passo é: eu vou criar uma forma de conseguir visualizar as informações da receita que eu quero editar, então aqui, eu posso criar um botão escrito "Editar".
+
+[00:59] Quando eu clico nesse botão editar, abre um formulário parecido com esse nosso de criação de receita mas todos os campos da receita que eu quero editar estão preenchidos.
+
+[01:10] Aqui, eu posso editar alguma informação que eu quero e aqui embaixo, eu clico no botão "Atualizar Receita". Aí sim, nós alteramos os valores na nossa base de dados.
+
+[01:20] Então nessa primeira parte, vamos focar em buscar esse formulário, preenchendo todas as informações da receita que queremos editar. Para começar, eu vou criar aqui um botão que eu vou chamar de “Editar", para editarmos as receitas.
+
+[01:35] Então, selecionando a nossa aplicação dentro da pasta “templates”, eu vou aqui no “dashboard.html”. Observe que no “dashboard.html”, nós temos aqui um link para deletarmos. Nós vamos ter um link parecido para nós conseguirmos editar as nossas receitas. Eu copiei e colei. Observe que nós temos aqui, agora, os dois links. Eles estão exatamente iguais e nós vamos editar esses links.
+
+[01:59] No lugar de “deleta_receita”, o que eu quero fazer é editar a minha receita. Antes de atualizar, eu vou precisar editar a minha receita, então eu vou chamar de "“edita_receita”." Vou passar também o ID da receita que eu quero editar, vai ser do tipo botão também e no lugar do “btn-danger”, eu quero uma cor diferente. Pode ser um azul. Eu vou chamar aqui de “class=”btn-info”>”.
+
+[02:21] E vou chamar, no lugar de deletar, esse botão de “Editar”. Quando eu salvo, o que eu preciso fazer? Nós precisamos ir na URL e cadastrar essa URL de ““edita_receita””.
+
+[02:32] Eu vou fechar o meu “template”. Já abri em “usuarios”. Aqui na minha pasta de “urls.py, eu tenho um “path” que deleta a minha receita. Agora, eu vou ter um novo path. Eu copiei, vou colocar uma tecla “,” aqui no final, vou ter um novo path que vai editar as minhas receitas.
+
+[02:49] Vai chamar “edita”. Eu vou receber o ID da receita que eu quero editar, só que, em “views”, quem vai ser responsável não vai ser o “deleta_receita”, vai ser o “edita_receita” e o “name”, também, eu vou chamar de “edita_receita”. Quando eu salvo, ele vai falar "Module ‘usuarios.views’ has no ‘edita_receita’ member pylint (no-member)”. Vamos criar.
+
+[03:12] Abrindo o nosso usuários, aqui em “view.py” nós temos todos os nossos campos. – Deixe-me minimizar, só para não nos confundirmos, vamos fechando todas as nossas funções. - O que eu quero fazer agora é criar uma forma de conseguir editar as minhas receitas.
+
+[03:30] Então, aqui dentro eu vou criar o meu novo método, que eu vou chamar de “edita_receita”, mesmo nome que nós demos para o URL. Nós vamos ter a requisição e o ID, então, nós vamos ter o “request” e vai ter, também, “receita_id”.
+
+[03:56] Dentro do nosso “receita_id”, a primeira coisa que temos que fazer é: "quem nós estamos querendo editar?" Nós temos que saber qual é a receita que estamos querendo editar.
+
+[04:03] Então eu vou atribuir, em “receita”, um objeto, a receita que nós estamos querendo editar: “receita=get_object_or_404” do nosso modelo de receita, -deixe-me alterar aqui, só para conseguirmos ver -eu quero buscar essa determinada receita.
+
+[04:26] Observe que, no “deleta_receita”, o que fizemos? Nós passamos a “primary key”, ou seja, o identificador único de cada receita, e aqui, eu posso fazer a mesma coisa. Vou passar o “pk”, que vai ser o “pk=receita_id”.
+
+[04:40] Nós já sabemos qual receita que queremos editar. O que eu preciso fazer agora? De alguma forma, passar essa receita que queremos editar para o nosso formulário que edita as receitas, então, eu vou criar aqui uma variável.
+
+[04:52] Por exemplo: “receita_a_editar” - e essa “receita_a_editar”, eu vou criar dicionário, que eu vou chamar a chave de “{ ‘receita’: receita}” e essa receita vai ser do tipo receita que nós buscamos ali em cima.
+
+[05:12] Agora que nós já buscamos a receita que queremos editar e criamos uma forma de passar isso para o contexto, para a nossa página HTML, nós vamos colocar aqui um “return render” - ele vai renderizar. Nós vamos devolver sempre no “render” o primeiro parâmetro, a requisição que queremos.
+
+[05:31] Agora chegamos em uma parte importante, olhe só: nós precisamos renderizar. Lembra que eu disse que nós queremos renderizar um formulário parecido com esse nosso de criação de receita? - Opa! Aqui, eu não terminei. O “views” estava errado, eu já vou mostrar. Deixe-me salvar, aqui. Deixe-me ver se ele abre.
+
+[05:50] Agora sim, criação de receita. Observe que eu quero esse formulário de criação de receita um pouco diferente. Só mostrando, por exemplo, a foto da receita que a pessoa quer utilizar, e o que eu quero fazer é popular todos esses campos aqui, certo? Só que eu preciso desse formulário, eu preciso desse “edita_receita”.
+
+[06:09] Então, esse formulário de edição de receita, eu vou deixar disponível para vocês na atividade anterior. Na atividade anterior você vai ter acesso a esse nosso formulário de edição de receita.
+
+[06:20] Então eu vou armazenar esse formulário em “templates” na pasta de “usuarios”, eu vou chamar de “edita_receita.html” e vou passar também, por contexto. Ele até fala qual é o contexto, vai ser o “receita_a_editar”.
+
+[06:38] Salvei. O que eu vou fazer? Volto aqui em “urls.py”, salvo porque agora, nós temos esse método que edita. O que eu vou fazer agora é criar esse nosso formulário para editar as receitas.
+
+[06:48] Então eu vou fechar aqui. – deixe-me fechar esses aqui, só para nós não nos confundirmos. - Dentro de “templates” e de “usuarios”, eu tenho “cadastro.html”, “cria_receita.html”, “dashboard.html” e “login.html”. Vou criar mais um arquivo: "New File." Aqui dentro, eu vou chamar de “edita_receita.html”, e aqui dentro, eu vou criar o meu formulário.
+
+[07:08] Nós não vamos criar esse formulário na mão, eu vou deixar disponível para vocês todo esse código do formulário para editarmos a receita, vou copiar ele todo aqui e vou colar ele na nossa aplicação. Salvei. Vamos visualizar um pouco como esse formulário está?
+
+[07:23] Super parecido com o que nós já vimos, incluindo as “partials”, o menu. Para ele ficar com um visual legal, está escrito "Edite aqui sua receita" e, aqui, nós temos uma parte importante do nosso formulário. Olhe só.
+
+[07:35] Nós temos aqui um “form action”. Nós ainda não temos uma ação para esse formulário, que a ação será atualizar. Nós vamos ver no vídeo a seguir, vamos atualizar e temos aqui outras informações.
+
+[07:48] Nós estamos indicando que o método é “post”, está passando o token de segurança e aqui, tem o “imput” de “receita_id”. Esse nosso “imput” de “receita_id”, observe que tem o “id=“receita_id”, o “class=“form-control”, o “name=“receita_id” e o “value={{receita.id}}”, o valor mesmo, o “receita.id”, e ele está com o tipo “hidden”, o tipo escondido.
+
+[08:09] Outra coisa que nós temos aqui, também, nesse nosso formulário é - observe que todos os campos estão preenchidos. Todo lugar, nós falamos assim: olhe, valor é esse.
+
+[08:18] No “text area”, nós falamos: "o valor do “text area” é esse aqui: “receita.ingredientes", ou “receita.” e o nome da receita, e nós fizemos isso para todos os outros campos. Vamos visualizar esse formulário na nossa aplicação?
+
+[08:29] Então se eu acessar minhas receitas, agora nós temos um botão que edita e um botão que deleta. Eu vou clicar aqui no botão “Editar”. Aparece o nosso formulário, olhe: “Sopa”. Aqui tem os “Ingredientes”, o “Modo de preparo”, o “Tempo de preparo”, o “Rendimento”, a “Categoria dessa receita”, a “Foto utilizada” e uma outra foto que nós quisermos alterar.
+
+[08:49] Quando eu clico aqui, em “Atualizar”, o que acontece? Não acontece nada porque no nosso “form action”, - se nós voltarmos aqui - nós não atribuímos nenhuma ação para esse nosso formulário, que é o que vamos ver no nosso próximo vídeo.
+
+[09:00] Depois que editamos a nossa receita, nós queremos alterar esses valores no banco e é aqui que vamos começar a criar os passos para, de fato, atualizar as nossas receitas.
+
 ### Método para atualizar
+
+[00:00] Agora que conseguimos visualizar todas as informações da receita que queremos editar, o que eu quero é alterar algum campo. Por exemplo, eu vou editar "Sopa de mandioquinha”. Alterei o título dessa receita. Quando eu clicar em “Atualizar”, eu quero voltar para a página do dashboard e visualizar, "Sopa de mandioquinha". Vamos fazer isso?
+
+[00:19] Então eu vou clicar em "Editar" e vou deixar nessa tela. Na nossa aplicação, observe que no nosso formulário de “receita_id”, na linha 29, nós temos um “form action” que não tem nada, nós não vinculamos o nosso formulário com nenhuma ação, então nós precisamos criar uma URL que seja capaz de atender essa nossa requisição e, de fato, atualizar a nossa receita.
+
+[00:45] O que eu vou fazer? Aqui dentro, através do "{%", eu vou colocar uma URL que vai ser capaz de atualizar nossa receita, então, eu vou chamar aqui de URL e vou chamar aqui de "form action=”{% url ‘atualiza_receita’ %}". Vou salvar.
+
+[01:05] O que eu preciso fazer? Preciso registrar essa nova URL que eu criei, então, dentro de “usuarios”, eu venho aqui “urls.py” e – deixe-me minimizar aqui - observe que nós temos nesse nosso path, vários paths, então eu preciso colocar aqui o formulário que atualiza a receita.
+
+[01:24] Eu vou criar um novo path, - colocar uma “,” aqui no final, não pode esquecer da vírgula, - um path que vai ser capaz de -"path(‘atualiza_receita’,)" - atualizar a receita. Quem vai ser responsável vai ser alguém em “views”, eu vou chamar essa nossa função de "atualiza_receita" e eu vou dar um name para ela, também de "name=’atualiza_receita’"
+
+[01:56] Salvei, ele vai falar que não tem ninguém em views. Vamos em “views.py” e vamos criar essa nossa função que atualiza as receitas com "def". Então: "def atualiza_receita." Nós vamos receber como parâmetro “request” apenas para conseguirmos atualizar a nossa receita.
+
+[02:20] O que nós vamos fazer? – Deixe-me minimizar aqui só para focarmos bastante nessa nossa função que atualiza as receitas. Eu vou colocá-la aqui embaixo, assim não vamos confundir.
+
+[02:32] Deixe-me jogar esse aqui para cima. Essa minha função que atualiza a receita, para ela conseguir atualizar, o que nós precisamos verificar? Primeira coisa: se o método que está sendo utilizado é o método “post”, então vamos perguntar. Se o método da requisição é "if request.method == ‘POST’:", e agora sim, nós começamos a atualizar a nossa receita.
+
+[03:06] O que eu preciso fazer agora é buscar qual é a receita que eu quero atualizar, então, observe que no nosso “edita.html”, nós temos um “imput” que está escondido com o ID da receita, então nós podemos pegar essa informação.
+
+[03:21] Eu vou falar assim: aqui, o "receita_id = request.POST," para nós buscarmos aquela informação que está ali e eu vou chamar aqui de "receita_id." Dessa forma, nós trouxemos a informação que está nesse campo que não está sendo exibido na tela para esse nosso método.
+
+[03:47] Nós trouxemos o “receita_id”. Agora, o que eu vou fazer? Para conseguirmos atualizar a receita, não vamos utilizar um outro “método update”, nós vamos utilizar o “método save”, também para atualizar as nossas receitas aqui no Django. É um pouco interessante isso.
+
+[04:04] O que nós fazemos? Nós vamos alterando os campos que tem a necessidade de alterar, então, por exemplo: se eu alterei o título da receita, eu vou falar: o novo título da receita é esse e vou colocando todos os campos. Na sequência, eu dou um "Save" e ele atualiza, ele já sabe que aquela receita já existe e vai atualizar os valores.
+
+[04:27] Para nós conseguirmos atualizar uma receita, nós não vamos utilizar um método update, o que é muito comum em outros frameworks, em outras linguagens. Nós vamos utilizar o método save, também.
+
+[04:38] O que eu vou fazer? Eu vou chamar a receita que nós queremos atualizar de “r” e do meu modelo de receita, - "receita.objects.get" - para eu buscar essa minha determinada receita, eu vou falar: “(pk =receita_id)". Essa é a receita que eu quero editar.
+
+[05:06] Agora, fica bem tranquilo. O que eu preciso fazer? Falo assim: “r.nome_receita = request.POST” e, aqui dentro, eu trago a informação do nome da receita que está no nosso formulário, "[‘nome_receita’]", então: "nome_receita.".
+
+[05:30] Desta forma, nós vamos trazer todas as informações, também, então eu vou usar aqui as teclas “Ctrl + V”. Nós temos o nome da receita e também temos os “r.ingredientes”. Eu quero trazer aqui os "[‘ingredientes’]". Tenho que tomar cuidado para eu não errar na escrita.
+
+[05:47] Nós temos, também, o “r.modo_preparo = request.POST”, - deixe-me copiar só esse trecho para ganharmos tempo - ele vai ser "[‘modo_preparo’]".
+
+[06:07] Além do modo de preparo, nós temos o tempo de preparo. “r.tempo_preparo = request.POST”. Copiei o igual. Aqui, "request.POST['tempo_preparo']. Nós temos o rendimento, "r.rendimento", que vai ser igual, - não, vou colocar igual, quase caí na pegadinha que eu mesmo criei para mim mesmo. “r.rendimento = request.POST[‘rendimento’]”.
+
+[06:40] E para finalizar, nós também temos a categoria. A “r.categoria = request.POST[‘categoria’]”. Maravilha.
+
 ### Atualizando receitas
-### Faça como eu fiz na aula
+
+[00:00] E aqui, um ponto interessante: nós chegamos na foto. Caso a pessoa inclua uma nova foto, nós atualizamos a foto; se não, nós mantemos a foto que a pessoa está utilizando. Como vamos fazer esse código?
+
+[00:12] Nós vamos fazer uma verificação. Vou colocar aqui: "if ‘foto_receita’”. Se tiver alguma coisa dentro dessa requisição e nós pegamos aqui através do 'in request.Files', ou seja, se eu tiver alguma foto dentro de “request”, dentro dessa requisição, ele vai saber. Opa! Nós temos uma foto aqui dentro de “request.Files."
+
+[00:45] Então, o que eu vou fazer? Se eu tiver uma foto, eu vou falar "r. foto_receita = request.Files” - não “POST”, mas sim “request.Files”, com o “F” maiúsculo, está bom? "[‘foto_receita’]". Trouxe todas essas informações. Caso tenha uma foto, eu faço isso.
+
+[01:16] Se não tiver nenhuma foto, nós mantemos a mesma foto que nós já estávamos utilizando. No final, eu alterei todos esses valores, - olhe que interessante - dou um "r.save" e o que eu posso fazer para deixar mais legal ainda, esse nosso código é dar um “return” aqui. Deixe-me dar "return redirect( ‘dashboard’ )”.
+
+[01:49] Então, assim nós criamos um meio de atualizar as nossas receitas. Vou salvar. Volto em “urls.py” e salvo. O que eu vou fazer agora? Vamos abrir a "MINHAS RECEITAS" Vamos ver se aqui está certinho? "Sopa de mandioquinha.", e aqui, eu coloquei “sopas". Quando eu dou “Atualizar”, nós recebemos uma mensagem estranha falando do atributo “Files” e isso eu fiz de propósito. Por quê?
+
+[02:12] Observe que nós não escrevemos o “Files” apenas com o “F” maiúsculo, e sim com todas as letras maiúsculas, então aqui, olhe: "FILES," de arquivos, todos os arquivos com as letras maiúsculas. Salvei.
+
+[02:27] Voltando a nossa aplicação e nós temos "Sopa de mandioquinha." Na categoria sopas, quando eu dou um “Atualizar” e agora sim: “Sopa de mandioquinha," nós conseguimos editar. Será que dá para editar mesmo? Vamos ver.
+
+[02:38] Vou colocar aqui uma outra imagem na nossa “Sopa de mandioquinha”. Vamos ver se conseguimos editar também as nossas fotos? Eu tenho aqui o "Sopa de mandioquinha," vou colocar "Sopa de mandioquinha 2" para termos certeza disso, então eu vou alterar. Eu estou utilizando essa foto, vou utilizar essa aqui, a "sopa 2.jpg"
+
+[02:56] Quando eu clico em "Atualizar," aparece uma outra foto e nós conseguimos editar. Eu vou tirar esse "2" da frente, agora. Vou colocar aqui "Sopa de mandioquinha." Maravilha.
+
+[03:05] Quando eu dou "Atualizar," nós conseguimos atualizar agora, também, as nossas receitas, finalizando o nosso CRUD tanto de criação, de visualização, de editar, atualizar os nossos dados e deletar, também, as nossas receitas. Maravilha.
+
 ### Atualizando ou salvando
-### O que aprendemos?
+
+Para finalizar o CRUD (sigla em inglês para criar, ler, atualizar e deletar) de receitas, Marina criou uma página para editar os dados e um método, que de fato atualiza as informações no banco de dados, com o seguinte código:
+
+    def atualiza_receita(request):
+        if request.method == 'POST':
+            receita_id = request.POST['receita_id']
+            r = Receita.objects.get(pk=receita_id)
+            r.nome_receita = request.POST['nome_receita']
+            r.ingredientes = request.POST['ingredientes']
+            r.modo_preparo = request.POST['modo_preparo']
+            r.tempo_preparo = request.POST['tempo_preparo']
+            r.rendimento = request.POST['rendimento']
+            r.categoria = request.POST['categoria']
+            if 'foto_receita' in request.FILES:
+                r.foto_receita = request.FILES['foto_receita']
+            r.save()
+            return redirect('dashboard')
+
+Analisando o código acima, podemos afirmar que:
+
+a) Alternativa correta: Utilizamos a função save() para criar e atualizar a partir de uma instância.
+- _Certo! Podemos utilizar a função save() tanto para criar um novo objeto como para atualizar a partir de uma instância, conforme mostra o código acima._
+
+b) Caso não haja alteração na foto da receita, a foto antiga será apagada.
+
+c) Este trecho de código irá criar uma nova receita, pois utiliza a função save().
+
 ## 03. Melhorando a arquitetura
 ### Refatorando a pasta template
 ### Refatorando as views
