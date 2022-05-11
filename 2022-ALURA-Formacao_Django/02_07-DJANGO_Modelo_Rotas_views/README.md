@@ -3424,10 +3424,179 @@ c) Este trecho de código irá criar uma nova receita, pois utiliza a função s
 
 ## 03. Melhorando a arquitetura
 ### Refatorando a pasta template
+
+[00:00] Vamos pensar, agora, como podemos melhorar a parte de arquitetura, como estão as nossas pastas e nossos arquivos da nossa aplicação. Para começar, na pasta "templates", observe que nós temos a “partials”, temos uma parte de “usuarios” e temos alguns arquivos soltos.
+
+[00:18] Seria legal se pudéssemos manter a responsabilidade de cada página referente aos apps que temos, então se nós temos apps de receita, todos os templates relacionados com receita, nós podíamos manter dentro desse arquivo.
+
+[00:33] Se temos um template relacionado com o usuário, nós podíamos manter todo template relacionado de usuário dentro do app de usuário, não é? E esses nossos outros arquivos - por exemplo, o “base.html”, - todas as páginas vão possuir, não é? Temos, aqui, o “head”, temos os códigos de Java script. Nós podíamos deixar fora, ele não faz parte de nenhuma responsabilidade nem de usuários, nem de pessoas.
+
+[01:00] Então, o que eu vou fazer? O que eu sugiro? Vamos fazer o seguinte: eu vou criar uma pasta. Nós temos uma pasta de “partials”, nós temos uma pasta de “usuarios”. Eu vou criar uma pasta, agora de “receitas”, vou apertar a tecla “Enter”, e então, nós temos três pastas aqui.
+
+[01:16] O que eu vou passar dentro de “receitas”? Vamos observar. Aqui nas “partials”, nós temos “partial” de “alertas.html”, de “busca.html”, do “footer.html” e do “menu.html”. Na “partial” de “receitas”, nós ainda não temos nada.
+
+[01:28] Antes de vermos de usuários, vamos ver o “base.html”, que esse é o nosso código. Esse, nós podemos deixar aqui na raiz da nossa pasta de “templates”, mesmo. A busca – “buscar.html” - o que estamos buscando? Uma receita, então faz sentido nós o mantermos dentro de “receitas”. Pediu se eu quero mover, não quero perguntar de novo, pode mover.
+
+[01:53] A busca, nós vamos manter aqui dentro de receitas. O “index.html” - que é a nossa página principal da aplicação, exibe o quê? Uma lista de receitas, então faz sentido mantermos esse nosso index de receitas aqui dentro, e a “receita.html”, dentro de “receita”. Essa, nós não temos nenhuma dúvida.
+
+[02:11] Agora, o que vamos precisar fazer? Agora que alteramos o caminho dessas rotas, se formos na nossa aplicação e tentar atualizar, ele vai falar que o template não existe, então, o que eu tenho que fazer?
+
+[02:22] Eu preciso alterar o local da página que eu quero renderizar. Eu não estou mais dentro na pasta “templates”, só digitando “buscar.html”, ou “index.html”. O que eu preciso colocar? Essa referência, “receitas/ buscar.html”, “receitas/index.html” e “receitas/receita”.
+
+[02:43] Dentro do nosso app de receitas, vou vir em “views.py” e nós temos a nossa “index”. O “index”, vai estar dentro de “ 'receitas/index.html' “. A nossa função que exibe cada receita vai estar dentro de “ 'receitas/ receita.html' “ e a nossa função de busca, também. Buscar vai estar em “ 'receitas/buscar.html' ”.
+
+[03:10] Se eu volto na nossa aplicação e atualizo, nós temos o nosso site aqui funcionando. Se eu clico na receita, ele exibe a receita e se eu quiser fazer uma busca, por exemplo: eu não lembro qual receita eu tenho na página principal. “Suco” e o “Bolo de chocolate”. Eu vou digitar: "suco." Exibiu o “Suco”, legal. Se eu digitar aqui "bolo," vai exibir o nosso “Bolo de chocolate”, maravilha.
+
+[03:35] Para essa parte, para “views.py”, essas principais “views” de receita, parece que está tudo legal no nosso template. O que eu quero fazer? Agora, dentro de “usuarios”, vamos ver o que é relacionado com usuários e o que é relacionado com receitas. O “cadastro.html” de usuários. Legal.
+
+[03:51] O “cria_receita.html”, ele não faz parte da responsabilidade de “receitas”, não é? Do nosso template de receitas. “dashboard.html”, do usuário, faz sentido. “edita_receita.html”, não, ele faz parte do escopo de receita, né?
+
+[04:07] E aqui, nós temos o “login.html” de usuário, o “cadastro.html” de usuário e o “dashboard.html” do usuário. Legal. Vou fechar, aqui, a pasta “usuario”, quem vamos precisar alterar agora? Quem cria a receita e edita a receita, então, volto a colocar esses dois, também, vou fechar esses aqui.
+
+[04:24] Observe que, na nossa “view.py” de receita, nós vamos precisar alterar algumas coisas, também porque temos aqueles campos de editar a receita e de atualizar a receita, eles não estão na “views.py” da receita, estão nas “views.py” de usuários. Nós vamos alterar isso nos próximos vídeos, também.
+
+[04:42] Então, o que eu vou fazer? Aqui no nosso cadastro, “login”, “logout” e “dashboard” - isso referente ao “usuarios” – “def cria_receita(request) : ...” não é mais uma responsabilidade do nosso “usuarios/cria_receita”, vai ser responsabilidade "receitas/cria_receita”. Eu até vou copiar esse trecho aqui, só para nós alterarmos, para nós visualizarmos bem, então olhe: “cria_receita”, responsabilidade de “receitas/cria_receita”. Maravilha.
+
+[05:11] Vamos ver da nossa outra parte. “def deleta_receita (request, receita_id):”, nós redirecionamos para o dashboard do usuário, está certo. “def edita_receita (request, receita_id):” – Opa! “usuarios", não. Não vai ser mais “ ‘usuarios/edita_receita.html’ ”. Vai ser o “receitas/edita_receita.html’ ”.
+
+[05:25] Onde nós editamos vai ser as próprias receitas. “ def campo_vazio (campo) : ...”, “def atualiza_receita(request) : ...”, redireciona para dashboard, maravilha. Vamos ver se está certo?
+
+[05:33] Se eu clico em "MINHAS RECEITAS" nós temos a “Sopa de mandioquinha” e se eu clicar em “Editar”, eu consigo editar. “Sopa de mandioquinha” evoluiu, versão 2.0. Clico em “Atualizar”, nós temos “Sopa de mandioquinha 2.0”, parece que está funcionando. "CRIAR RECEITA” está funcionando. Se eu venho em "MINHAS RECEITAS", todos os outros links, parecem que estão todos certos. Parece que está tudo maravilha.
+
+[05:55] Então dessa forma, observe como nós alteramos a nossa pasta “templates”. Dentro da nossa pasta “templates”, nós temos três subpastas. Temos uma pasta só para “partials” da nossa aplicação, isso ficou bem legal, temos uma pasta de “receitas”, onde podemos buscar. Buscar o quê? Uma receita, “cria_receita.html”, “edita_receita.html”. A página “index.html” e a própria página que exibe a receita que nós queremos trabalhar, isso ficou legal.
+
+[06:26] Na parte de “usuarios", nós ficamos com três templates: o template do “cadastro.html”, o do “dashboard.html” e o do “login.html”. Nós podemos até testá-lo, vou dar um “LOGOUT” aqui.
+
+[06:34] Venho no cadastro. Maravilha. “LOGIN”. Vou realizar o login para vermos que está dando tudo certo: “gui@alura.com”, coloquei a minha senha. Agora sim, nós temos essa pasta dos nossos templates e a arquitetura dos nosso templates muito mais organizada.
+
+[06:49] Na sequência, o que nós vamos fazer? Melhorar os arquivos das nossas “views”, tanto de “usuario” quanto de “receitas”.
+
 ### Refatorando as views
+
+[00:00] Agora que melhoramos nossos templates, um ponto que podemos melhorar na nossa aplicação é o código das ““views.py””. Vamos dividir as responsabilidades para cada app.
+
+[00:10] Para começar, vou abrir o app de “usuarios” em ““views.py”. O que eu tenho? Eu tenho o “def cadastro(request): ...” de usuários, - legal, isso faz sentido - tenho o “def login(request): ...)”, temos até as validações, os campos vazios, isso está legal. O “def logout(request): ...” faz parte de “usuarios” e o “def dashboard(request): ...” faz parte de “usuarios”.
+
+[00:27] Agora, “def cria_receita(request):”? Isso não faz parte de usuário e “def deleta_receita(request, receita_id):” também não e “def edita_receita(request, receita_id):”, também não.
+
+[00:33] Então, - deixe-me minimizar para conseguirmos visualizar bem - eu vou pegar esses três métodos, vou dar um “[COMMAND + X]”, vou tirar esses métodos daqui da ““views.py” de “usuarios” e vou mandar para a ““views.py” correta, a de “receitas”.
+
+[00:48] Então, quem cria a receita, nós vamos encontrar esse código aqui na “view.py” de “receitas” – deixe-me ir minimizando - quem deleta receita, aqui na nossa ““views.py” de “receitas” e quem edita, também, na ““views.py” de “receitas”.
+
+[01:00] Aqui em “usuario”, vamos ver. Quem atualiza a receita, - opa! Atualizar a receita também é uma responsabilidade da ““views.py” de “receitas”, então eu vou colocar "def atualiza_receita(request): ..."
+
+[01:12] Quando eu salvo os dois campos, tanto na ““views.py” de “usuarios” quanto a “views.py” de receitas, nós podemos receber umas mensagens vermelhas. Por quê? Olhe só, eu vou abrir. Por exemplo, o “ def cria_receita(request): ...”. Nós não temos o “redirect” e o “User” importado para essa nossa “view”.
+
+[01:37] Na nossa “views.py” de “receitas”, o que nós vamos fazer? Vamos fazer um “import” do “User”, - “[COMMAND + X]” - vou colocar aqui embaixo, - “[COMMAND + V]”, - o “import” de “User” - e nós temos aqui o “import render”, “get_list_or”, “object_4, get”. Vamos colocar a tecla “,” aqui e eu vou colocar o “redirect”.
+
+[01:57] Fiz o “import” desses dois na “views.py” de “usuario”. Agora, nós vamos utilizar esses dois, nós enviamos mensagens, também. Vamos ver se nós estamos enviando mensagens na “receita” também, para garantirmos.
+
+[02:10] Nós criamos uma receita, a receita foi salva, nós não estamos enviando mensagens, deletando as receitas também não e atualizando as receitas também não. Nós não estamos trabalhando com as mensagens na receita mas podemos colocar da seguinte forma: faço o “import” desse método para o nosso app de receita e consigo utilizar da mesma forma que utilizamos para os usuários – deixe-me minimizar esses dois, essas validações que nós criamos.
+
+[02:38] Deixe-me voltar em campo, só para nós conseguirmos enxergar. Agora, sim. Agora, - deixe-me minimizar para nós vermos. - O que eu fiz? Olhe só: eu quero utilizar também as mensagens aqui na receita. Nós já temos a “partial” também, o que precisamos fazer? Incluir a “partial” nos templates que queremos. Nós já aprendemos a realizar isso, e depois do “import”, conseguir utilizar as mensagens para os nossos formulários conforme cada ação.
+
+[03:12] Vamos testar para ver se a nossa aplicação está funcionando? Vou atualizar a página “index”. Vou colocar aqui “localhost:8000”. Quando atualiza, deu um erro. Por quê? Observe que nós colocamos a “view” no lugar certo mas como essa função, ou esse método é executado? Quando ele é executado?
+
+[03:29] Ele é executado quando bate aquela URL e aquela URL fala "opa! Quem atende essa requisição aqui é esse método!" Nós não fizemos isso. Olhe só: nas URLs de “receitas”, nós só temos três paths: o path da nossa “index”, o que exibe a receita e o de busca. Nós não temos o path que edita, que atualiza, que estão onde? Estão no nosso app de usuário.
+
+[03:56] Então, selecionando aqui em URLs, quem cria a receita, deleta a receita, todas essas funções, nós não vamos manter aqui. Eu vou tirar, salvar, vou deixar só o “path( ‘cadastro’...”, “path( ‘login’,...”, “path( ‘dashboard’,...” e o “path( ‘logout’,...”. Maravilha
+
+[04:13] E no nosso URLs de receita no app de receita, nós vamos colocar uma tecla “,” e vamos usar as teclas “Ctrl + V” aqui - para essas nossas outras “views.py”, também.
+
+[04:26] Dessa forma, parece que tudo está certo. Voltando na nossa aplicação. Agora sim, eu vou conseguir visualizar. Opa! Deixe-me ver o que eu fiz de errado, aqui. Ainda não. “views.py” de receita, “views.py” de “usuario”. Opa! Deixe-me salvar. Aqui, vou salvar.
+
+[04:50] O nosso terminal não está rodando. Deixe-me rodar o terminal, senão fica difícil. "python manage.py runserver." Agora sim. Maravilha, estava executando o nosso terminal. Quando eu clicar para atualizar, ele vai atualizar.
+
+[05:07] O erro que ele mostraria - que o meu terminal não estava atualizado - era que ele não encontrou o “template”, justamente por causa disso. Nós tínhamos um link, fizemos a requisição, falamos "quero ver o suco verde." Só que ele não ia abrir por quê?
+
+[05:21] Porque, mesmo que nós tivéssemos, aqui na “views.py”, para exibir essa determinada receita, nós só conseguimos chegar e executar isso se no nosso “urlpatterns”, nós tivermos essa URL sendo direcionada para o método que nós queremos executar.
+
+[05:39] Dessa forma, nós dividimos muito melhor a nossa aplicação, então se eu quiser buscar qualquer coisa relacionada a receita, a buscar receita, atualizar receita, eu não vou mais no app de usuários, eu vou no app de receita.
+
+[05:49] E agora, se eu quiser algo relacionado com o dashboard do usuário, algo como o cadastro do usuário no login ou logout, eu já sei que eu preciso ir no app de usuários, então dessa forma, nós conseguimos manter o nosso código melhor.
+
+[06:04] Repare que, à medida que o nosso código vai aumentando para o mantermos compreensível e manter cada coisa no seu lugar correto, vai garantir que nós consigamos sempre atualizar o nosso código, corrigir alguns erros, de forma muito mais fácil do que o nosso código todo espalhado e só nós sabendo mexer, que é um cenário ruim.
+
+[06:31] É legal qualquer outra pessoa que falar "Ah! Eu preciso alterar a busca de receita." Então, ele já vai no “views.py” de “receitas”, e tem o método de busca. Vai ficar muito mais fácil.
+
 ### Modularizando as views
-### Faça como eu fiz na aula
+
+[00:00] Outro ponto que podemos melhorar ainda mais na nossa aplicação é modularizar as nossas “views”. Observe que a nossa “view” aqui do app de receitas possui muitas linhas e executa muitas coisas. O que podemos fazer é isolar alguns métodos para uma determinada “view”.
+
+[00:18] Em outras palavras, o que eu quero dizer é: eu quero criar uma pasta de “views” dentro do meu app de receita onde cada “view” é responsável por uma determinada ação. Isso ficaria muito mais fácil para mantermos nossa aplicação.
+
+[00:32] Então, a primeira coisa que eu quero fazer. Eu vou criar um folder novo, uma nova pasta, que eu vou chamar de “views”. Aqui dentro, eu vou manter todas as minhas “views”. Para começar, eu quero manter a minha “views.py” aqui dentro.
+
+[00:44] Então eu vou pegar aqui, vou soltar aqui dentro e agora eu tenho, dentro da minha pasta de “views”, um arquivo chamado “views.py”. Só que esse arquivo está com um nome estranho, né? "views.py" não é um nome muito legal para a pasta de “views”.
+
+[00:57] E ele deu uma outra mensagem, falou – opa! Dentro dessa pasta de “views”, eu não tenho nenhum arquivo com o nome “.models”. E faz sentido. Dentro de “views”, não tem nada. Porém, quando nós fazemos o “import” de “receitas.model”, nós temos esse arquivo funcionando. Ele consegue achar o nosso modelo de receita.
+
+[01:19] O que eu quero fazer agora é alterar. Eu não quero chamar essa “views” de “views.py”. Eu quero chamar de "receita.py." Faz muito mais sentido. Dentro da minha “views”, do meu app de receita, eu tenho um “receita.py” para manter todo o nosso código.
+
+[01:38] Porém, nossas URLs, o que nós fazemos? Nós fazemos um “import” assim: de onde nós estamos, queremos importar as “views”. Aqui, nós vamos mudar. nós vamos falar assim: "Das “views”, eu quero que você importe todas as coisas, importe tudo para mim."
+
+[01:55] E aqui, vai ter uma alteração porque nós não vamos precisar mais referenciar as “views” porque – opa! Aqui faltou um “.”, desculpa, agora sim - aqui nós já estamos na pasta de “views”, ele já sabe que vai da “views” buscar o “index”, a receita.
+
+[02:09] Então, eu vou usar as teclas “Ctrl + F”, chamar o “views”, eu quero substituir - vou dar aqui um “replace” - por nada, vou clicar nesse segundo ícone, o “Replace All” e ele vai substituir para mim.
+
+[02:20] Quando eu salvo, ele vai dar uma mensagem de erro indicando que não vai conseguir encontrar o “index”, a “receita”, o “buscar”. Por quê? Por mais que nós tenhamos referenciado o nosso arquivo aqui dentro de “views”, é necessário que nós coloquemos um inicializador nessa nossa pasta de “views”.
+
+[02:38] Então o que eu vou fazer? Eu vou criar um arquivo novo e vou colocar. Aqui, eu vou chamar de “init.py”. Dentro desse arquivo, – deixe-me fechar esse - aqui na pasta de “views”, o que eu quero fazer? Eu quero que ele consiga carregar a minha “receita.py”.
+
+[03:01] Então o que eu preciso fazer é "from .receita import" e eu quero importar todas as coisas que estão dentro dessa minha “”receita.py”. Eu vou salvar, volto em URL. Quando eu salvo, o erro não é acusado mais, nós conseguimos criar uma “view” chamada “receita.py” para ser atendida aqui.
+
+[03:27] Observe que a abstração do nosso código está ficando um pouco melhor, um pouco mais organizada, então, dentro do nosso app de receitas, nós temos uma “view” chamada “receitas.py”, e aqui dentro, nós temos os nossos métodos de receita.
+
+[03:42] Mas e se eu quiser criar um novo método? Por exemplo, esse “def buscar(request):” aqui. Eu quero alterar o nome. Eu vou chamar de “def busca(request):, então, alterei para busca. Na minha URL, eu vou chamar também de “busca”. Agora, eu não tenho mais esse erro.
+
+[03:59] Quando eu atualizar, ele deu até um “if buscar”. Nós podemos refaturar esse nosso código da busca aqui. Se tivermos alguma coisa na requisição para buscar, ele vai pegar o que está nessa requisição e vai nos trazer a lista das receitas que queremos exibir.
+
+[04:16] Salvei. Deixe-me garantir que o meu terminal está sendo executado. Está sendo executado. Voltando na nossa aplicação, observe que tudo está funcionando. O “Suco verde” está exibindo o suco verde. Voltar no “Alura Receita”, o “Bolo de chocolate” está exibindo o bolo de chocolate. Maravilha.
+
+[04:30] Se eu fizer uma busca por “suco”, eu consigo visualizar o “Suco verde”. Se eu fizer uma busca por “bolo”, eu consigo visualizar o ‘Bolo de chocolate”. Isso ficou legal. Só que eu quero fazer algo a mais. Eu quero colocar esse código de busca - que não é necessariamente ligado ao nosso app de receitas, seria legal se ele estivesse em outro lugar, se tivesse uma “view” só para essa nossa função de busca de receita.
+
+[04:56] O que eu vou fazer? Eu vou usar as teclas “Ctrl + X”, vou apertar a tecla “Enter” duas vezes aqui, - é só salvar - e vou criar uma nova “view”. Eu tenho uma “view” aqui de receita, vou criar uma nova “view” que eu vou chamar de "busca.py"
+
+[05:11] Nessa minha “view” de “busca.py”, eu vou fazer alguns “imports” e vou ter o código que faz a busca, de fato, então, o que eu preciso fazer? No nosso “init.py”, eu vou também realizar - aqui, eu quero também buscar.
+
+[05:30] Então, quero buscar no “busca” todos os métodos que eu tenho aqui dentro. Eu vou chamar assim "import *”, Então, "from .busca import". Tudo o que está dentro de busca, eu quero que você importe para mim.
+
+[05:45] Trouxe a busca para cá, o que eu preciso agora na busca é fazer os “imports” necessários para a nossa busca continuar funcionando, então, em “receita.py”, o que nós temos? Nós temos o “from receitas.models”, vamos precisar também do modelo de receita na nossa busca e precisamos também do “render” e do “redirect”. Vou copiar essa primeira linha aqui, vou voltar na nossa busca, apertar as teclas “Enter” e “Ctrl + V”, e Colei.
+
+[06:11] Agora sim, eu tenho essa busca. Aqui no “init.py”, eu salvei. No nosso “urls.py”, o que eu vou fazer? Deixe-me usar as teclas “Ctrl + V”, só para visualizarmos melhor. Observe que, no nosso “urls.py”, nós não vamos alterar mais nada. Nós já temos a nossa busca funcionando e ele já sabe que esse método já existe, ele já buscou aqui para nós. Ele consegue encontrar.
+
+[06:35] Assim que eu salvo, voltando para a nossa aplicação, quando eu clico aqui tudo está funcionando. “Bolo de chocolate”. Está funcionando o “Bolo de chocolate”. Vou fazer uma busca por “suco”. Pesquisar aqui, “Suco verde”. Quando eu aperto a tecla “Enter”, eu consigo visualizar.
+
+[06:48] Então olhe só que legal o que nós fizemos: nós criamos uma pasta para manter todas as nossas “views”. Dentro dessa pasta, nós conseguimos dividir quais metas queremos em cada “view”.
+
+[07:05] Então nós criamos uma “view” chamada “receita.py”. Dentro dessa receita, nós temos o “index”, a receita, a criação da receita, a edição da receita e isso ficou bem legal. Nós também isolamos dentro desse nosso “busca.py” só o método de busca, e para que nós consigamos referenciar esses métodos em “urls.py”, o que nós fizemos?
+
+[07:28] Dentro de “views”, traga tudo. Ele vai ver aqui "Opa! Dentro de “views” eu tenho “init.py”. O que eu preciso trazer? Traz todas as receitas e todas as buscas”. Assim, nós garantimos que o nosso código está funcionando.
+
+[07:39] Posso fazer o login para nós testarmos aqui dentro também com o usuário logado: “gui@alura.com”, “123”. - Opa! Falei a minha senha, não posso falar a minha senha! - Agora, sim. “PÁGINA PRINCIPAL”, as receitas estão funcionando. Eu posso navegar, olhe: “Bolo de chocolate” ou “Suco verde”, legal. Está tudo funcionando.
+
+[07:56] Se eu venho aqui nas “MINHAS RECEITAS”, eu tenho a “Sopa de mandioquinha”, posso visualizar a “Sopa de mandioquinha”, uma receita que só eu tenho acesso porque é uma receita que eu criei, não está publicada para o site. Posso editar. Todos os outros links estão funcionando.
+
+[08:09] Qual é a vantagem de nós utilizarmos o nosso código fragmentado, igual fizemos aqui modularizado em várias “views”? Nós isolamos a nossa aplicação. Observe que se alguém precisar alterar alguma busca do nosso app de receita, assim que a pessoa abre o app de receita, nós temos uma pasta de “views” e tem aqui “busca.py”, que é ter um método da busca.
+
+[08:34] Ou aqui em “urls.py” - "Ah! “uero alterar algo da URL, passar alguma coisa" - está muito mais fácil de identificar: "Opa! Tem alguém em “busca.py” que é capaz de alterar."
+
+[08:45] Então nós melhoramos o código da nossa busca, o modularizamos para uma determinada “view”, - uma específica só para realizar a busca – isolamos, também, a “receita.py”, e assim, conseguimos trabalhar com mais de uma “view” dentro de um app. Isso ficou bem legal.
+
 ### Mantendo o código organizado
+
+Melhoramos a distribuição do código, modularizando e alinhando a arquitetura da aplicação, tanto nos templates como no app de receitas.
+
+Sabendo disso e considerando que estamos usando o Django, podemos afirmar que:
+
+a) Alternativa correta: É possível ter mais de uma model por app.
+- _Certo! Da mesma forma que trabalhamos com mais de uma view, podemos também trabalhar com mais de um model por app._
+
+b) Não é possível ter mais de uma view por app.
+
+c) Alternativa correta: É possível ter mais de uma view por app.
+- _Certo! Podemos dividir os métodos de uma view em vários arquivos dentro do mesmo app._
+
 ### O que aprendemos?
 ## 04. Paginação no Django
 ### Preparando o ambiente
