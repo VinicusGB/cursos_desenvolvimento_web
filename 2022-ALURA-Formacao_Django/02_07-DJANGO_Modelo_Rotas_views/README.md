@@ -1,4 +1,4 @@
-# 1. Introdução ao Django: Modelo, Rotas e Views
+# 2. Introdução ao Django: Modelo, Rotas e Views
 **Fonte:** Guilherme LIma<br>
 **Disponível:** <a href="https://cursos.alura.com.br/course/fundamentos-django-2" target="_blank">ALURA</a><br>
 **Conteúdo:**
@@ -1029,7 +1029,7 @@ Se você quiser saber mais sobre o Django admin, confira a documentação do Dja
 
 - <a href="https://docs.djangoproject.com/en/2.2/ref/contrib/admin/" target="_blank">Django admin segundo a documentação oficial (texto em inglês)</a>
 
-# 2. Integração de modelos no Django: Filtros, buscas e admin
+# 3. Integração de modelos no Django: Filtros, buscas e admin
 **Fonte:** Guilherme LIma<br>
 **Disponível:** <a href="https://cursos.alura.com.br/course/fundamentos-django-2" target="_blank">ALURA</a><br>
 **Conteúdo:**
@@ -1808,7 +1808,7 @@ b) Dentro do template, devemos utilizar para carregar arquivos estáticos {% inc
 
 c) Para adicionar uma partial chamada minhapartial.html, poderia adicionar o código `{{ include 'partials/minhapartial.html' }}`
 
-# 3. Autenticação no Django? formulários, requisições e mensagens
+# 4. Autenticação no Django? formulários, requisições e mensagens
 **Fonte:** Guilherme LIma<br>
 **Disponível:** <a href="https://cursos.alura.com.br/course/fundamentos-django-2" target="_blank">ALURA</a><br>
 **Conteúdo:**
@@ -3048,7 +3048,7 @@ c) Alternativa correta: Quando criamos uma partial para manter o código de aler
 
 [GitHUB]('https://github.com/alura-cursos/alura_receitas_django_parte3/tree/aula_5')
 
-# 4. Boas práticas no Django: apps, pastas e paginação
+# 5. Boas práticas no Django: apps, pastas e paginação
 **Fonte:** Guilherme LIma<br>
 **Disponível:** <a href="https://cursos.alura.com.br/course/fundamentos-django-2" target="_blank">ALURA</a><br>
 **Conteúdo:**
@@ -3597,28 +3597,226 @@ b) Não é possível ter mais de uma view por app.
 c) Alternativa correta: É possível ter mais de uma view por app.
 - _Certo! Podemos dividir os métodos de uma view em vários arquivos dentro do mesmo app._
 
-### O que aprendemos?
 ## 04. Paginação no Django
-### Preparando o ambiente
 ### Importando Paginator
-### Preparando o ambiente
+
+[00:00] Nós pedimos para que você criasse algumas receitas na nossa aplicação - no mínimo, sete receitas - para conseguirmos realizar o teste que vamos incluir na nossa aplicação. Observe que, no meu site, na minha base de dados, eu tenho sete receitas. Tenho essas receitas aqui. O que eu quero fazer agora é criar uma paginação.
+
+[00:19] Vamos pensar que, à medida que o nosso sistema vai crescendo e eu tenho “MINHAS RECEITAS" eu tenho várias receitas que vão sendo publicadas na aplicação, vai chegar uma hora em que esse “scroll” de receitas vai ficar infinito. Isso é ruim.
+
+[00:33] Nós queremos manter a nossa página inicial, a nossa página “index” com uma paginação. Se tivermos mil receitas mas elas estiverem distribuídas entre páginas, vai ficar fácil para a pessoa encontrar, fora a nossa parte de busca também, então, o que eu vou fazer agora? Vamos trabalhar e ver como conseguimos colocar a paginação na nossa aplicação, na nossa página “index”.
+
+[00:57] Para começar, eu vou abrir aqui o meu código. Se nós vamos alterar a paginação da página “index”, que mostra as receitas, vamos aqui no app de receitas e o que eu vou fazer aqui na nossa “views”, observa que nós temos uma “busca.py” e nós temos uma que cuida das receitas, a “receita.py”, que cuida especificamente da nossa página “index”, e é essa “view” que vamos trabalhar agora.
+
+[01:21] Vou minimizar as outras, só para nós não deixarmos bastante código, linha de código na tela. Legal. Estamos, aqui, com a página “index”. O que eu quero fazer? Eu quero incluir paginação. Eu quero que, à medida que eu busco todas as receitas que estão com a “flag” de publicada verdadeira.
+
+[01:39] E eu crio aqui, depois, um dicionário que eu passo por contexto para ser renderizado, eu quero conseguir paginar essa quantidade de receitas que eu tenho e poder escolher se eu quero exibir três receitas por página ou se eu quero exibir seis receitas por página, e assim por diante. Nós vamos testar esses passos.
+
+[01:59] Primeira coisa que nós vamos ter que fazer vai ser importar o “Django Paginator”. Existe uma biblioteca que nós podemos utilizar para realizar esses “imports”, então eu vou escrever assim: "from django.core.paginator". Ele até dá. Nós vamos importar alguns módulos.
+
+[02:23] Nós vamos importar, primeiro, o “Paginator”. Vamos importar, também, o “EmptyPage” e nós vamos importar também o “PageNotAnInteger”. Importamos esses três módulos, que são necessários para utilizarmos na nossa aplicação e agora, o que vamos fazer é o seguinte:
+
+[02:47] Nós fazemos aqui a requisição para buscar todas as receitas, isso está certo. Agora, o que eu quero fazer é dizer quantas receitas eu quero exibir por página. Para isso, nós vamos usar o Django Paginator.
+
+[02:58] Eu vou colocar aqui o “paginator”, com letra minúscula, "paginator." Ele vai ser igual ao “Paginator”, a essa classe “Paginator”, e eu vou falar que preciso especificar dois parâmetros: qual é a lista de objetos que eu quero criar a paginação? É a lista que já buscamos, as nossas receitas. Essas receitas aqui.
+
+[03:22] Já busquei as receitas, agora o que eu preciso falar é quantas receitas eu quero exibir por página. Eu vou falar que eu quero exibir três. Nós ficamos com três páginas, no caso, se temos sete receitas cadastradas.
+
+[03:36] Além do “paginator”, é necessário que eu crie também uma função “page” com a seguinte característica: eu preciso identificar, exatamente, qual é a página que eu estou na minha navegação entre as páginas. Eu faço isso da seguinte forma: "page = request.GET.get”, e aqui, eu vou chamar essa paginação de “( ‘page’ )” também.
+
+[04:03] Além disso, o que eu preciso fazer é definir quantas receitas por páginas eu quero. Eu vou fazer isso da seguinte forma: "receitas_por_pagina = paginator.get_page" e aqui dentro, eu vou passar o “(page)” que nós criamos, só para nos dividirmos.
+
+[04:30] Entre cada página, nós vamos conseguir vincular a nossa lista de receitas com cada página e conseguiremos essas páginas por conta desse “page”.
+
+[04:43] O que nós vamos alterar agora é: no lugar de exibir os dados “ ‘receitas’ “ e passar esse dicionário de "receitas" o que eu vou fazer? Vou manter "receitas" porém, aqui eu vou passar o quê? “ ‘receitas’ : receitas_por_pagina”.
+
+[04:58] Vou salvar. Aparentemente, está tudo certo. O que vamos fazer no próximo vídeo vai ser alterar o nosso template para que ele exiba embaixo a quantidade de receitas que nós queremos e assim, nós conseguiríamos incluir, também, uma navegação: “Estou na ‘página 1’, estou na ‘página 2’”, e ele vai alterando as receitas.
+
 ### Paginação no template
-### Faça como eu fiz na aula
+
+[00:00] Nós alteramos a nossa “view” para exibir três receitas por página. Isso ficou legal, nós estamos visualizando as três receitas, só que como eu faço para navegar e encontrar as outras receitas da nossa aplicação?
+
+[00:10] Nós ainda não conseguimos fazer isso. Nós precisamos alterar o nosso template para conseguir visualizar, assim como fizemos no nosso administrador.
+
+[00:18] Observe que nós temos aqui a página “1”, onde eu estou eu não consigo clicar nesse link. Quando eu clico na página “2”, nós temos outras receitas, também. O que eu quero mostrar para vocês agora, que está bem interessante, é assim:
+
+[00:29] Eu consigo exibir só três receitas - o “Macarrão”, a “Salada” e a “Pizza”. No meu administrador, eu tenho outras receitas aqui publicadas, só que eu não estou conseguindo visualizar essas receitas.
+
+[00:41] Porém, se eu pesquisar, por exemplo, pelo “café”. Olhe só: não está aparecendo o “Café cremoso”. Se eu digitar aqui "café," eu consigo achar ele. A receita do “Café cremoso” está publicada, mas não está sendo exibida.
+
+[00:52] Isso não faz muito sentido. Vai tornar a experiência da pessoa que mexer na nossa aplicação ruim porque ela está vendo três receitas e quando ela pesquisa uma receita, aparece a receita que ela quer. Isso não está legal.
+
+[01:03] Então nós vamos criar, baseado no nosso administrador aqui. Até nós podemos colocar algumas coisas a mais, mas o menu de navegação onde tem as nossas receitas, aqui embaixo, nós teremos um menu de navegação para deixar a nossa aplicação melhor.
+
+[01:21] O que nós vamos fazer? Não vamos investir tempo em alterar as propriedades do CSS, para deixar a nossa página de navegação bonita, nem ficar criando todo o HTML na mão. O que vamos fazer vai ser utilizar um HTML que vamos disponibilizar para vocês, - está na atividade anterior a esse vídeo - e esse trecho de código, onde nesses espaços, nós vamos completar com as informações necessárias para criarmos a nossa navegação.
+
+[01:49] Então o que eu vou fazer? Nesse mesmo arquivo, eu vou usar as teclas “Ctrl + A”, para selecionar tudo. “Ctrl + C”. Vou abrir a minha aplicação. Vou fechar, aqui: “receitas”.
+
+[01:59] Dentro na pasta de “templates”, na pasta de “receitas” da nossa “index”, nós temos – deixe-me fechar aqui, teclas “Ctrl + B” – temos as nossas receitas, que estamos exibindo. Aqui onde fecha a área de exibição dessas receitas, eu vou usar as teclas “Ctrl + V”, para colocarmos a paginação.
+
+[02:18] Então, eu usei as teclas “Ctrl + V” para a paginação. Deixe-me só arrumar o layout. Segurando o “Ctrl” e selecionando o colchete para o lado direito, nós conseguimos alterar o nosso código. Maravilha.
+
+[02:30] Alterei o código e deixei ele alinhado com os outros, também, então nós temos aqui as propriedades do CSS, as propriedades do “Bootstrap” para deixar essa nossa navegação legal.
+
+[02:40] O que eu quero fazer agora é verificar, primeiro, se nós temos receitas em outras páginas. Vou utilizar o código Python apenas para processamento, então vou perguntar: “{% if receitas.has_other_pages %}”. Se tivermos receitas para serem exibidas em outras páginas, nós queremos fazer alguma coisa, não é?
+
+[03:01] E nós precisamos verificar, também, se temos receitas em páginas anteriores, então vou colocar mais uma tecla “-“ aqui e perguntar: “{% if receitas.has_previous %}”. Se nós tivermos receitas para serem exibidas anteriormente, outras páginas de receita, ele vai começar esse loop.
+
+[03:29] A primeira verificação que nós vamos fazer é para saber se nós temos páginas de receitas anteriormente. Se tivermos, nós queremos exibir o link dessa nossa página anterior. Como fazemos isso? Nós vamos fazer da seguinte forma: eu vou colocar: “ <a href=”?page=” ”, e agora, eu quero mostrar, de fato, para a pessoa o link dessa página.
+
+[03:51] Entã, eu vou utilizar aqui o “{ { } }“, e aqui dentro, eu vou colocar o código que vamos utilizar para exibir o número das páginas anteriores.
+
+[04:03] Então: “<a href=”page={ { receitas.previous_page_number } }”. Nós vamos exibir o número da página das receitas anteriores, caso nós tenhamos essas páginas anteriores. Caso não tenhamos essas páginas anteriores, o que vamos fazer? Vamos exibir um link desabilitado.
+
+[04:33] Então eu vou colocar essa opção aqui para nós verificarmos. Nós não temos páginas anteriores. Nós já criamos, aqui, uma forma para utilizarmos os links desabilitados que eu coloquei esse nosso “{% else %}”.
+
+[04:46] Continuando a nossa aplicação, depois desse nosso “{% else %}”, nós vamos fechar essa nossa validação aqui embaixo. Vou utilizar o “{% endif %}”. Nós fechamos essa nossa validação para sabermos se nós temos outras páginas para serem exibidas, páginas anteriores e páginas na sequência.
+
+[05:08] Fechando esse “{% endif %}, o que eu vou fazer? Eu vou verificar quantas páginas eu tenho, qual é o número de páginas que eu tenho, e vamos fazer isso da seguinte forma: vou utilizar código Python.
+
+[05:19] Então eu quero saber: “{% for pagina in receitas.paginator.page_range %}”. Eu vou pegar o “rage” de todas essas páginas e, para cada página, nós vamos criar uma verificação. Nós não queremos que a pessoa entre no link, e não queremos deixar habilitado o link da página em que a pessoa já está.
+
+[05:51] Se eu já estou na página “1”, eu não quero ficar na página “1”, exatamente como acontece aqui. Eu estou na página “1”, eu não consigo clicar no link da página “1”, eu consigo clicar no link da página “2”. Eu estou na “2”, não consigo clicar no link da página “2”, só no da página “1”. Nós queremos esse comportamento, também.
+
+[06:05] Então, para isso, nós vamos criar essa nossa verificação do “for”. Agora eu vou colocar o código Python. Aqui, eu vou fazer o seguinte: vou perguntar: “{% if receitas.number == pagina %}”. Nós queremos fazer o quê? Queremos que tenha dois comportamentos: ou nós vamos mostrar o link ativado ou vamos mostrar esse link desativado.
+
+[06:55] Então caso esse link esteja ativado, dentro desse nosso “page-link”, o que nós vamos fazer? Nós vamos exibir a página que queremos, então aqui dentro, eu vou colocar a página. Caso não tenhamos essa página: “{% else %}”, nós vamos exibir o link dessa página e vai exibir o link da nossa página anterior.
+
+[07:26] Então eu vou criar esse link: “a href=”?page={ {pagina} }” - no singular - vai ser igual abre chaves e fecha chaves. Eu vou colocar aqui a página e, dentro desse nosso “class”, nós temos o “class="page-link”>”. Aqui dentro, eu vou colocar quem? A nossa “{ { pagina} }”, também.
+
+[07:46] Agora, que criamos uma verificação para saber se podemos navegar nessa página ou não, eu vou colocar aqui, vou fechar o nosso “{ % endif %}” e fechar, também, o nosso “{% endfor %}” na linha de baixo.
+
+[08:08] Fechando o “{ % endif %}” e o “{% endfor %}”. Eu quero saber se tenho outras receitas para serem exibidas nas outras páginas, também, então eu vou colocar aqui “{ % %}”, porque aqui eu quero falar assim: "{% if receitas.has_next %}”, o que eu quero fazer?
+
+[08:30] Se tivermos receitas para serem exibidas nas próximas páginas, nós vamos criar um link para conseguirmos acessar essas receitas, então eu vou colocar aqui “<a href=”?page={ { receitas.next_page } }”, e aqui, nós temos o “class=”page-link”>”" com todas as outras informações, que vamos conseguir acessar a próxima página através de um link.
+
+[09:07] Para finalizar, agora que criamos esse, eu vou colocar um “{% else %}” para o link estar lá. Caso não tenhamos outras páginas para exibir, nós vamos deixar em um link desabilitado.
+
+[09:24] Para fechar o nosso “{% endif%}” dessa nossa verificação e o nosso primeiro “{% endif%}”. Fechando o nosso primeiro “{% endif%}”, olhe só. Colocá-lo, também: “{% endif%}”. Maravilha. Salvando. Voltando a nossa aplicação, quando eu atualizar, nós temos um menu de navegação e as receitas sendo exibidas aqui.
+
+[09:53] Só para entendermos uma coisa antes de eu executar, olhe só: aqui no nosso app de “receitas”, na nossa “receita.py”, nós temos as seguintes propriedades: nós pedimos para que cada página tenha três receitas. Isso ficou legal, está funcionando. Nós estamos visualizando três receitas.
+
+[10:14] Agora, eu tenho um link de navegação. Observe que o primeiro link aqui, eu não tenho páginas anteriores para exibir, então eu não consigo navegar. Só que, se eu clico aqui no “2”, eu vou para a segunda página: "Café cremoso", "Sopa de mandioquinha" e "Suco verde.", e eu estou marcando, deixando ativa a página em que nós estamos, na página “2”. Se eu clico na página “3”, eu tenho só o “Bolo de chocolate”. Isso ficou bem legal.
+
+[10:36] Vou clicar aqui na página “1”, vamos fazer a navegação, agora, através dessas nossas setas. Eu vou clicar nessa seta do lado, ele vai para a nossa página “1”. Não está indo. Vamos ver o que eu fiz de errado, aqui.
+
+[10:47] O que eu fiz de errado, que eu não estou conseguindo usar esse link para irmos para as páginas seguintes é: aqui, a partir da linha 68 quando fazemos a verificação de “{% if receita.has_next %}”, eu coloquei aqui "page={ { receitas.next_page } }".
+
+[11:01] Na verdade, é "page={ { receitas.next_page_number } }". Agora, sim, nós vamos conseguir. Eu vou atualizar. Nós vamos conseguir navegar através dos nossos números, através da seta, voltando para a página “2” ou indo para a página “3”. Legal. Dessa forma, nós conseguimos criar uma validação.
+
+[11:20] "Ah! Mas eu quero mais receitas! Eu não quero exibir três receitas, eu quero exibir seis receitas por página!”, então eu vou deixar aqui “6”, nessa segunda propriedade do Paginator, nesse segundo argumento.
+
+[11:29] Quando eu atualizar, nós temos seis receitas sendo exibidas. "Mas por que eu só estou vendo uma?" Porque eu estou na página “2”. Se nós viermos aqui para a página “1”, olhe: exibe as seis receitas. Se eu passo mais uma página, exibe só aquela receita do “Bolo de chocolate”.
+
+[11:44] Fique a seu critério quantas receitas você quer exibir, ou quando você estiver trabalhando com propriedade, saiba que esse valor é muito importante para saber quantos objetos queremos mostrar em cada página.
+
 ### Django paginator
+
+É comum encontrarmos paginação em diversos sites, melhorando a experiência da pessoa que navega. Em um projeto Django, é possível adicionar paginação, escolhendo quantos objetos serão exibidos em cada página.
+
+Analise as afirmações abaixo com os passos necessários para incluir paginação numa aplicação Django com um menu de navegação do lado do cliente e indique quais estão corretas:
+
+a) Alternativa correta: Podemos importar a classe Paginator na view que desejamos incluir a paginação
+- _Certo! Uma das formas de incluir paginação numa aplicação desenvolvida em Django é através da classe Paginator._
+
+b) Alternativa correta: Após importar a classe Paginator, é necessário executar o código abaixo na view: paginator = Paginator(nome_do_objeto, 6) page = request.GET.get('page') objetos_por_pagina = paginator.get_page(page)
+- _Certo! É preciso instanciar a classe Paginator, informando o nome do objeto e quantos objetos serão exibidos em cada página como argumento. Além de saber em qual página o cliente da requisição está e definir quais objetos serão exibidos em cada página._
+
+c) Podemos importar a classe Paginator e um menu de navegação será gerado no lado do cliente.
+
 ### Para saber mais: Admin link
-### O que aprendemos?
+
+Criamos um menu dinâmico que se comporta caso o usuário esteja logado ou não na aplicação. Porém podemos fazer mais.
+
+Verificando superuser
+O aluno João Pedro, compartilhou uma forma de verificar se o usuário logado é superuser e caso seja, um link é exibido para acessar a view de admin:
+
+    <ul>
+        {% if user.is_authenticated %}
+            <li><a href="{% url 'index' %}">Página principal</a></li>
+            <li><a href="{% url 'dashboard' %}">Minhas receitas</a></li>
+            <li><a href="{% url 'cria_receita' %}">Criar receita</a></li>
+            {% if user.is_superuser %}
+                <li><a href="{% url 'admin:index' %}">Admin</a></li>
+            {% endif %}
+            <li><a href="{% url 'logout' %}">Logout</a></li>
+        {% else %}
+            <li><a href="{% url 'cadastro' %}">Cadastro</a></li>
+            <li><a href="{% url 'login' %}">Login</a></li>
+        {%  endif %}
+    </ul>
+
+Desta forma, não precisamos digitar na url /admin para ter acesso a área do Admin, caso usuário logado seja uma superuser.
+
+: )
+
 ## 05. Refatoração de código
 ### Pasta apps e docstring
-### Faça como eu fiz na aula
+
+[00:00] Sempre que eu quero editar o app de receitas ou o app de usuários, o que eu preciso fazer? Eu preciso navegar. Eu estou na nossa aplicação, eu vim aqui navegando. Achei o app de receitas, faço as alterações que eu quero, seja em alguma “view” ou seja em algum modelo nas “urls.py”, faço as alterações.
+
+[00:19] Se eu quiser no app de usuários, eu tenho que procurar. Aqui, o app de usuários. Observe que não seria muito melhor se eu tivesse aqui uma pasta chamada “apps” e aqui dentro dessa pasta “apps”, eu mantivesse todos os apps da minha aplicação, tanto de “receitas” como de “usuarios”?
+
+[00:34] E à medida que o nosso projeto aumenta, repare que vai ficar cada vez mais difícil nós encontrarmos os apps que queremos alterar, então o que eu sugiro? Nós temos essa pasta “apps”. Seria legal se dentro dessa pasta, nós pudéssemos manter o código relacionado a “usuarios” e o código, também, relacionado a “receitas”. Eu vou colocar aqui as receitas.
+
+[01:00] E nós mantemos assim a nossa aplicação. O meu terminal está rodando, eu vou parar ele. Vou executar ele mais uma vez: “Python Manage Runserver” e acontece um erro.
+
+[01:11] Nós alteramos para a pasta “apps”. Se eu atualizar aqui, nós não conseguiremos ver a nossa aplicação porque ele não consegue encontrar esses módulos da pasta “apps”. O que nós precisamos fazer? Nós já alteramos a configuração da nossa aplicação mas não dissemos que, no nosso projeto, os nossos apps estão nesse arquivo. Não fizemos isso e precisamos fazer.
+
+[01:32] Mas onde eu faço isso? Aqui no “alurareceita”, nós temos em “settings.py” – deixe-me minimizar o terminal e essa nossa aba - dentro dessa parte da nossa aplicação, nós podemos especificar o que queremos marcar, a raiz dos nossos projetos, dos nossos apps.
+
+[01:56] E nós fazemos isso com o seguinte código: “PROJECT_ROOT”, e aqui, eu vou falar que ele vai ser igual a pasta em que nós estamos, então eu vou colocar aqui 'PROJECT_ROOT = os.path.dirname". Dentro dessa pasta, eu vou falar que a raiz desse nosso arquivo “(file)”. Aqui embaixo nós vamos precisar indicar que essa nossa pasta “apps”, - deixe-me minimizar - contém os apps da nossa aplicação.
+
+[02:39] E como nós faremos isso como? Nós vamos importar. Aqui nós temos o “import os”. Eu vou colocar o “import os, sys”. Ele até nos mostra o “import sys”, para conseguirmos navegar entre essas pastas e indicar onde vai estar essa raiz do nosso projeto.
+
+[02:58] Eu vou colocar aqui “sys.path.insert”, para ele colocar todos os nossos apps. O primeiro parâmetro vai ser o “index”, eu vou deixar como “sys.path.insert(0)” para ele colocar todos os apps. Eu vou colocar “sys.path.insert(0, os.path.join)” para ele indicar que essa vai ser a pasta do nosso projeto.
+
+[03:23] Vou passar esse caminho que nós colocamos ali, o “sys.path.insert(0, os.path.join(PROJECT_ROOT)” vou colocar aqui uma vírgula. Nesse nosso segundo parâmetro, vai ser os paths, onde de fato eles estarão.
+
+[03:36] Vou colocar uma aspa simples. Deixe-me minimizar aqui, só para visualizarmos melhor. Vou colocar “sys.path.insert(0, os.path.join(PROJECT_ROOT, ’../’)”. Ele vai sair da pasta do “alurareceita”, e agora, eu vou passar o caminho do nosso apps.
+
+[03:49] Então, saiu aqui. Ele está nesse nível. Eu vou falar para ele acessar quem? O “apps”. “sys.path.insert(0, os.path.join(PROJECT_ROOT, ’../apps’)”. Vou salvar. Vou abrir o meu terminal mais uma vez com “[COMMAND + J]”. Observe que o meu terminal já até rodou.
+
+[04:00] Mas só para garantir, eu vou parar o meu terminal, rodar mais uma vez e quando eu atualizar, nós conseguiremos acessar a nossa aplicação de forma certa. Conseguimos acessar uma receita, navegar entre outras páginas, acessar, o “Bolo de chocolate”. Maravilha.
+
+[04:17] Dessa forma, observe como vai ficar mais fácil para mantermos o nosso código. Vou fechar o “settings.py”, deixar assim, só para nós vermos. Esse foi o código que utilizamos. Vou fechar o “settings.py”.
+
+[04:29] Observe que agora, se eu quiser alterar algo relacionado a minha aplicação, às mídias ou a pasta “template”, está fácil. Se eu quiser algo relacionado às mídias, eu tenho aqui. A parte dos arquivos estáticos, aqui e os templates, aqui. "Mas e os meus apps?" Meus apps estão aqui, tanto “receita” quanto “usuario”. Vai ficar muito mais fácil de mantermos esses nossos apps.
+
+[04:49] Outra coisa que nós podemos fazer também para deixar o nosso projeto ainda mais claro é inserirmos algumas “docstrings” na nossa aplicação. Eu vou mostrar. Acessando o app de “usuarios”, por exemplo. Vou acessar a “views.py” de usuário. Observe que aqui nós temos vários métodos. Eu vou minimizar todos eles para visualizarmos.
+
+[05:12] Nós temos vários métodos: o método de cadastro, o de login e logout. Só que o que, de fato, cada método faz? É para isso que servem as “docstrings”. Elas são “strings” que nós vamos inserir dentro do nosso código Python, com o intuito de fornecer uma explicação sobre como esse método funciona. E esse “string” é colocado na primeira linha de cada classe, de cada método e de cada função.
+
+[05:37] O que eu vou fazer? Tenho aqui o meu método. Eu vou colocar três “strings”, vou escrever a minha “docstrings” aqui e vou colocar mais três “strings”, e aqui, eu vou descrever com um texto bem curto, o que esse método faz.
+
+[05:54] O que esse método de cadastro faz? Ele vai pegar, verificar se a requisição é “POST”, pegar o “nome”, “e-mail”, “password” e “passorwd 2”, vai cadastrar um novo usuário no sucesso, uma nova pessoa na nossa aplicação.
+
+[06:06] Então eu posso dizer assim: " " " Cadastra uma nova pessoa no sistema" " ", por exemplo. Vou salvar essa aplicação e nós temos aqui essa “docstrings”, e olhe o que é mais legal: quando eu minimizo e eu tenho todos esses outros métodos.
+
+[06:26] Observe que quando eu passo o “ def login(request):...”, fica escrito “login: login”. Agora, quando eu passo aqui no cadastro, ele fala "Cadastra uma nova pessoa no sistema" ou no “ def login(request):...” aqui. É bem óbvio, não é? O que o login faz? Realiza o login de uma pessoa no sistema, né?
+
+[06:38] Eu posso colocar aqui: " " "Realiza o login de uma pessoa no sistema" " ". Colocá-lo aqui e quando passamos o mouse em cima, nós temos o nome desse nosso método e uma descrição do que ele faz.
+
+[06:56] Essa descrição, geralmente, o melhor caminho dela é que seja uma descrição curta e fale direto o que esse nosso método faz. Por exemplo: nos outros casos, aqui no “ def logout(request):...”. Eu não vou colocar em todos para o vídeo não ficar muito grande e é simples o intuito disso.
+
+[07:15] Então eu aconselho, eu desafio você a colocar em todos esses nossos métodos, tanto na “views” de “usuario”, como nas “views” de “receitas”, essa “docstring” para deixarmos o nosso código ainda mais claro, para fornecermos para a pessoa que vai mexer no nosso código, qual é o objetivo dessa função, qual é o objetivo desse método e o objetivo dessa nossa classe.
+
+[07:41] Eu desafio você a colocar nas suas funções, também, essa “docstring”. Lembrando que ela é sempre utilizada na primeira linha da nossa função, da nossa classe, do nosso método.
+
+[07:56] Descrevendo de forma bem curta o que essa função e esse método faz, pensando sempre que outras pessoas que vão mexer na nossa aplicação vão conseguir entender rápido o que essa função faz, o que esse método faz.
+
+[08:09] Assim, nós mantemos tanto a parte de arquitetura da nossa aplicação organizada, como a parte, também, dos nossos códigos organizados.
+
 ### Boa qualidade de código
-### O que aprendemos?
-### Conclusão
-### Parabéns
-### Logo da alura
-### SOBRE A ALURA
-### DÚVIDAS FREQUENTES
-### SUGIRA UM CURSO
-### SUGIRA UMA FUNCIONALIDADE
 
+Toda empresa que desenvolve software busca criar sistemas com boa qualidade de código, facilitando a manutenção, edição e atualização. Porém, para que isso ocorra, é necessária a adoção de boas práticas.
 
+Durante o desenvolvimento de um site utilizando o Django 2, podemos dizer que boas práticas são:
 
+a) Alternativa correta: Manter a documentação nos métodos, funções ou classes através de docstrings.
+- _Certo! Desta forma, ajudamos outras pessoas que desenvolvem a entender melhor o objetivo de cada método, função ou classe._
+
+b) Ter apenas uma view e um model por app e no máximo 2 apps por projeto.
+
+c) Alternativa correta: Manter a organização de pastas e arquivos.
+- _Certo! Como vimos durante o curso, para manter o projeto mais organizado, podemos modularizar views para um app ou manter todos os apps em uma pasta. Fazemos isso porque, em desenvolvimento de software, a organização dos arquivos é imprescindível para nós e outras pessoas que trabalham na mesma aplicação._
