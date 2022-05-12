@@ -605,12 +605,184 @@ c) **Alternativa correta:** Viewsets incluem ações como criar, listar, atualiz
 - _Alternativa correta! Certo! Os Viewsets incluem essas ações ou operações por padrão._
 
 ## 4. Atualizando e deletando recursos
-### Projeto da aula anterior
 ### Métodos PUT e PATCH
+
+PUT: Utilizado para atualizar apenas um campo.
+PATCH: Utilizado para atualizar todos os campos.
+
+---
+
+[00:00] Nós utilizamos o método Get para recuperar um determinado recurso. Utilizamos o método Post para criar um novo recurso na nossa API. Só que aqui temos um problema.
+
+[00:10] Se você observar o CPF do aluno dois e o CPF do aluno três, estão iguais, então aconteceu um erro no cadastro. E a gente precisa atualizar esse nosso aluno três. O CPF dele é 22222222222. Certo?
+
+[00:26] Então, eu vou acessar o aluno três aqui. Então, “localhost:8000/aluno3”. Trouxe esse aluno três. Temos alguns métodos em cima. Quando a gente desce um pouquinho, aparecem duas informações: o PUT e o PATCH. Vamos descobrir, então, qual a diferença entre eles e o que eles fazem.
+
+[00:45] Para começar, o método PUT é usado também para atualizar, assim como o PATCH. Ou seja, existem dois métodos HTTP, dois verbos do HTTP, que a gente pode utilizar para fazer a atualização.
+
+[00:59] Então, vamos lá. Vamos começar com o PUT, primeiro. O PUT substitui todos os dados atuais de um recurso de destino pelos dados passados na requisição. Ou seja, a gente escolhe o PUT quando a gente pretende fazer uma atualização completa de um determinado recurso.
+
+[01:15] Tanto que quando a gente acessa o HTML Form, observe a gente só tem o PUT, e a gente pode fazer uma atualização completa desse recurso. Por outro lado, o PATCH permite que a gente atualize apenas um subconjunto de dados de um determinado recurso.
+
+[01:30] Como a gente tem apenas um recurso, a gente não tem mais recurso. Vamos supor que dentro de “aluno”, eu tenho também “profissão”; e dentro dessa “profissão”, existe um outro recurso, um subconjunto de dados. Se fosse assim, eu poderia usar o método PATCH para atualizar apenas um subconjunto dos dados de um determinado recurso.
+
+[01:51] Então, existem dois verbos. A gente pode utilizar o método PUT para fazer uma atualização completa, e a gente pode utilizar o método PATCH quando a gente quer atualizar apenas um subconjunto dos dados.
+
+[02:03] Certo? Mas vamos ver isso na prática, acontecendo? Eu quero atualizar o CPF do aluno três. Então, vamos começar. Eu vou colocar, no lugar desses números, a gente vai ter onze números dois. Legal. Vou atualizar com o PUT, e a gente atualizou.
+
+[02:31] Vou atualizar para o CPF para 3333 com o PATH, só para a gente ver. Então, selecionei tudo. Vou dar um PATH. E a gente também tem essa nossa atualização completa. Certo? A gente poderia atualizar também aqui no HTML Form. Vou atualizar com o quatro. Dou um PUT, atualizou com o quatro.
+
+[02:57] Se a gente observar lá na lista dos nossos alunos, o ID 3, CPF 444. Mas será que no Postman também vai funcionar assim? Vamos testar. Vou abrir o Postman, para a gente poder visualizar. Legal.
+
+[03:13] Então, vou trazer o aluno três., vou trazer esses recursos primeiro com o Get. Trouxe o aluno três, maravilha. Vou copiar esse nosso Json, e vou fazer, agora, um PUT desse nosso aluno. Então vou vir em body, vou colar aquele Json que eu copiei, e vou alterar para CPF cinco.
+
+[03:38] Vou dar um send, e a gente tem aqui o CPF cinco, mas será que atualizou? Observe que ele está com quatro, vou atualizar. Agora sim, com cinco. Então, existem dois verbos utilizados para a gente atualizar, o PUT e o PATCH, e essas são as diferenças entre eles.
+
 ### Método DELETE
+
+[00:00] O que eu quero fazer agora é remover um determinado aluno da minha API. E a gente vai ver isso, tanto na parte do admin, como na parte daqui do nosso Django Rest Framework, como utilizando o Postman, simulando outra aplicação.
+
+[00:12] Para começar, eu vou criar o aluno que eu vou deletar. Então eu vou aqui em “Escola > Adicionar novo aluno”, e vou chamar “aluno para deletar”. O RG dele vai ser o 000, o CPF dele vai ser o 000 também. Data de nascimento, vou colocar a data de hoje, e eu vou salvar.
+
+[00:29] Legal. A gente tem aqui um aluno para deletar. O que eu vou fazer? Eu poderia selecionar esse aluno aqui no admin, colocar “remover aluno selecionado”, vir aqui em “ir”, e ele vai falar “você quer remover um aluno”, que é o aluno para deletar. “Tem certeza que quer fazer isso?”, poderia clicar em “sim”, e eu ia remover esse meu aluno da base de dados.
+
+[00:46] Outra coisa que eu posso fazer, se eu atualizar, eu vou ver que eu tenho o “ID 4”, agora, que é o aluno para deletar. Se o acesso aqui o “ID 4” para ter informações desse recurso, desse determinado aluno, observe que aparece aqui para a gente o método “delete”.
+
+[01:00] Então, vou apertar o “delete”, e ele vai falar: “você tem certeza que quer deletar a instância desse aluno?”. Eu vou falar que tenho certeza, e aquele aluno não aparece mais.
+
+[01:09] Se eu der um outro “enter” aqui, observe que ele vai falar que não tem nada, a gente não encontrou nenhum aluno, nenhum recurso para essa requisição. Então eu vou voltar. A gente tem três alunos.
+
+[01:17] O que eu vou fazer? Eu vou deletar mais um aluno, agora. Eu vou deletar o aluno três, só que utilizando o Postman, está bom? Então, o que eu vou precisar fazer? Vou precisar acessar o meu aluno três, que é esse endereço aqui, vou lá no meu Postman, vou colocar o método que eu quero utilizar, é o método “delete”.
+
+[01:36] E já está aqui o aluno três. Se eu der um “send”, observe que aqui embaixo a gente vai ter uma notificação. Então, a gente colocou o aluno três para ser deletado, e aqui embaixo, a gente não tem absolutamente nada.
+
+[01:48] Eu vou voltar na nossa aplicação, no nosso Django Rest, vou atualizar, e a gente não tem nenhum detalhe aqui mais para esse aluno três. Se eu coloco aqui na nossa lista, a gente só tem dois alunos.
+
+[02:00] Certo? Então, dessa forma, a gente conclui o crud. A gente sabe criar um determinado aluno utilizando o Post, a gente sabe deletar um aluno utilizando o método delete, recuperar um recurso com o “get”, e atualizar utilizando o PUTT ou o PATH.
+
+[02:15] Legal? E aqui, só para a gente terminar. Se eu colocar aqui o método delete de novo para um aluno que não existe? Vamos ver. Eu vou dar aqui um “send”, e ele fala a mesma mensagem que a gente tem lá: não encontrado.
+
+[02:26] Nos próximos cursos, a gente vai aprender melhor como trabalhar com validações, como trabalhar com essas mensagens que retornam quando acontece algo não esperado para a nossa API.
+
+[02:35] Mas, por enquanto, é isso. Então, a gente conclui a parte do crud, e nas aulas seguintes, a gente vai aprender a fazer relacionamento. Por quê? Se a gente observar agora, a gente tem uma tabela de alunos, e uma tabela de cursos.
+
+[02:50] O que eu quero fazer? Eu quero matricular um aluno em um determinado curso, quero falar que esse aluno está matriculado no curso de Django, e esse outro aluno está matriculado no curso de Java.
+
+[03:00] É isso o que a gente vai começar a fazer, e aprofundar os nossos conhecimentos um pouquinho mais aqui no Django Rest Freamework.
+
 ### Modelo de matrícula
+
+[00:00] Eu tenho aqui a lista dos meus alunos, e acessando o meu API Root, eu tenho a lista dos cursos que eu criei. Só que as listas de alunos, e as listas de cursos, não estão alinhadas. A gente não tem um relacionamento entre esses cursos e alunos.
+
+[00:16] Por exemplo, a gente não tem uma matrícula. Eu não consigo falar que esse aluno está matriculado nesse curso. Seria legal se a gente pudesse criar isso, armazenar essas informações das matrículas também no banco de dados. E é isso o que a gente vai fazer agora.
+
+[00:29] O que eu vou fazer? Eu vou acessar o meu “models.py”. A gente tem aqui o model, a classe aluno, a classe curso, e vou criar uma nova classe, que vai ser a classe matrícula.
+
+[00:41] Então, classe, vou chamar de matrícula. Ele também vai ser do tipo models.model. E a minha matrícula, eu quero que tenha o aluno, o curso, e algumas informações da própria matrícula, como, por exemplo, a gente pode criar o período.
+
+[00:58] Então eu vou colar, vou copiar esse textinho que do nível, e vou criar, no lugar de nível, uma variável de instância chamada “período”. E aqui, no período, eu vou ter três períodos: matutino vespertino e noturno. E vou colocar o matutino, vespertino e noturno.
+
+[01:25] O que eu quero fazer agora na minha matrícula é falar que uma matrícula tem um aluno. Então, eu vou alterar, vou criar uma propriedade chamada “aluno”, que uma matrícula vai ter um aluno, e vou falar que ela vai ser da seguinte propriedade: “models.foreignkey”.
+
+[01:41] Por que “foreignkey”? Eu já tenho esse aluno criado numa outra tabela. Eu só quero pegar o ID desse aluno e armazenar na minha matrícula. Então, a primeira informação que a gente passa quando utiliza o “models.foreignkey”, é qual a tabela que a gente vai utilizar, quem vai ser responsável por mandar essa primary key. Então, vai ser o aluno.
+
+[02:00] Outra propriedade que a gente vai passar é o “on delete”. Vamos supor que a gente tenha um aluno matriculado em um determinado curso, e esse aluno, por algum motivo, é removido da nossa base de dados, ele foi deletado.
+
+[02:11] O que a gente quer que aconteça com essa matrícula? Ela vai referenciar para um aluno que não existe mais? Isso não seria legal. A gente teria um erro. Então, eu vou falar que a gente vai utilizar o “models.cascade”. Ou seja, quando um aluno for deletado, a gente vai remover também as matrículas dele.
+
+[02:28] O mesmo eu quero que aconteça para o curso. Então, o curso, ele vai ser do tipo “models”. Então eu colei, vou usar o curso, models, vou colocar o curso, “on delete cascade”. A última coisa que falta é a gente definir o período.
+
+[02:45] Vou copiar essa nossa linha que já está feita. O que eu vou fazer? Aqui, no lugar do nível, a gente vai ter o período, e esse período vai ser propriedade sharfield, max length, o choice vai ser a nossa instância. “Blanke false”, “no false”, e o valor default dela vai ser matutino.
+
+[03:12] Criamos a classe de matrícula. O que eu vou fazer? Para a gente conseguir visualizar essa classe de matrícula, eu vou acessar o meu “admin.py”, e vou criar uma propriedade aqui para as nossas matrículas.
+
+[03:28] Então, eu vou trazer, primeiro, “matrículas, matrícula”. Essa classe vai ser responsável pelas configurações no admin de matrícula. A gente não vai ter um campo de busca. Eu quero só o ID, o nome do aluno, o nome do curso e o período.
+
+[03:50] Legal. O link display vai ser o ID, e vamos registrar isso aqui. Então, a gente vai utilizar o modelo de matrícula, e quem vai ser a classe responsável pelas configurações vai ser matrículas. No plural.
+
+[04:10] Bom, abrindo o nosso terminal, parece que está tudo certo. O que eu vou fazer? Vamos fazer a migração. A gente criou o nosso modelo, mas a gente não fez ainda a migração, a gente não passou essas informações para o banco de dados.
+
+[04:20] Então, vou parar o meu terminal, vou colocar aqui “phythonmanager.py”, “make my graysons”. Dou um enter. Ele criou a migração de matrículas. O que eu vou fazer agora é migrar, de fato, para o banco de dados. Então, “phythonmanager.py”, “mygrade”.
+
+[04:40] Legal. Ele aplicou essas migrações no banco de dados. O que eu vou fazer? Para a gente visualizar, vamos subir o nosso servidor com o “pythonmanager.py”, “runserver”.
+
+[04:50] Voltando aqui no nosso admin, quando eu atualizar, apareceu aqui “matrículas”. Legal. Quando eu clico em matrícula, a gente não tem nenhuma matrícula criada. Vou clicar aqui em “adicionar matrícula”, e aqui, na lista de aluno, a gente tem não tem nada, aluno teste, aluno teste dois.
+
+[05:04] Então eu vou matricular o aluno teste no curso de Django Rest Framework, no período matutino. Vou salvar. E a gente tem aqui a nossa primeira matrícula. Quando eu clico no “um”, a gente consegue visualizar os detalhes dessa matrícula, apagar, configurar, mudar a matrícula desse determinado aluno.
+
+[05:22] O que eu vou fazer também? Vou criar uma segunda matrícula, só para a gente garantir. Aluno teste dois, no curso de Java avançado, no período noturno. Quando eu coloco em salvar, a gente tem o segundo aluno matriculado.
+
+[05:37] Certo? Só que se a gente acessar a nossa interface do Django Rest, a nossa API root, a gente não tem ainda a matrícula visível, para que a gente possa fazer, gerar essas matrículas usando aqui a nossa API. É isso o que a gente vai fazer na sequência.
+
 ### Recurso de matrícula
+
+[00:00] Configuramos nosso admin para realizar as matrículas dos alunos, e na lista de cursos que a gente tem. Isso ficou bem legal. Só que quando a gente vai na nossa API, a gente não tem esses recursos de matrículas disponíveis. Vamos tornar esses recursos disponíveis, então?
+
+[00:15] Então, olha só. A gente já tem um modelo, vou abrir aqui o modelo, em “models.py”. A gente criou esse modelo de matrícula, ele já está na nossa base de dados. O que eu preciso fazer agora? Vamos, da mesma forma que a gente fez, para o aluno e para o curso, a gente precisa de um sinalizador.
+
+[00:29] Depois, lá no nosso arquivo “view”, definir o nosso “viewset.modelvierset” filho para a gente conseguir exibir essas nossas matrículas, e em URLs, a gente registra essa nossa matrícula depois.
+
+[00:42] Então, vamos fazer isso? Bom, para a gente não ficar confuso, vou fechar esses aqui. Eu vou criar uma classe para ser responsável por serializar os dados de matrícula. Então, no model, a primeira coisa que eu vou fazer vai ser trazer uma matrícula para cá.
+
+[01:03] E eu vou chamar essa classe de “matrícula.serializer”. Ele vai ser do tipo “serializers.modelserializer”, e aqui eu vou definir a classe meta dele. E vou dizer para ele que os campos que eu quero, qual é o modelo que eu quero primeiro.
+
+[01:30] O modelo que eu quero vai ser o modelo de matrícula, que a gente trouxe ali em cima. E os campos que eu quero, eu quero visualizar todos os campos. Se a gente olhar os outros, observe o que a gente fez. A gente tem o “fields”, o “fields.all”, para trazer todos.
+
+[01:46] Existe uma outra forma que a gente pode visualizar os campos, que é através do “exclude”. Vamos supor que eu tenha muitos campos, e eu quero excluir, por exemplo, o ID. Eu faço dessa forma. Colchetes, e eu trago o ID.
+
+[02:00] Dessa forma, a gente vai trazer todos os campos, exceto o ID. Só que eu quero trazer o ID também. Então, se eu deixar o “exclude” vazio, eu trago todas as informações da nossa base de dados.
+
+[02:12] Legal? Bom, criamos uma matrícula serializer. O que eu vou fazer? Lá em “view”, eu vou trazer, primeiro, o meu modelo de matrícula. Observe que está bem passo a passo, como a gente fez nos outros.
+
+[02:27] Trazer o modelo de matrícula, e no “escola.serializer”, eu vou trazer também o “matrícula.serializer”. E aqui eu vou criar a minha classe “viewset”. Então vai chamar “matrícula.viewset”. Vai ser do tipo “viewsets.modelviewset”. Vou colocar um “dockstring” para ficar bem bonita a nossa documentação.
+
+[02:55] Então, listando todas as matrículas. Legal. E aqui embaixo, vou definir. O “query_set” vai ser “matrícula.objects.all”, quero trazer todas as matrículas, e o meu “serializer class” vai ser do tipo “matrícula.serializer”. Legal?
+
+[03:25] Abrindo nosso servidor, parece que está tudo certinho. Vou adicionar, registrar essa minha matrícula no meu “urls.py”. Então, vou trazer o meu “matrícula.serializer” e vou criar uma nova rota. Vou copiar e colar isso aqui. Agora sim. Vou chamar de “matrícula.viewset”. E o basename vai ser “matrículas”.
+
+[03:05] Abrindo nosso servidor, parece que está tudo certinho. Quando eu atualizar a página, a gente vai ter um recurso novo para visualizar todas as matrículas. Quando eu clico, aqui a gente tem a matrícula do aluno um, e a matrícula do aluno dois. Se eu acessar aqui o admin, e clicar em “matrículas”, eu tenho o ID 1, duas matrículas feitas. A gente tem a forma que esse “matrícula” está sendo executado, e tem os cursos.
+
+[04:29] Só que aí tem algo interessante. Observe uma coisa. Na nossa API, a gente tem um recurso principal para criar um aluno, isso está bem legal. A gente tem um recurso principal para também criar cursos, editar cursos, deletar cursos, isso ficou bem legal.
+
+[04:42] Porém, aqui nas nossas matrículas, quando a gente clica, a gente tem uma lista de todas as matrículas. E talvez isso não faz muito sentido. É legal a gente poder criar as matrículas, editar as matrículas. Por exemplo, eu quero visualizar detalhes da matrícula um. Aparece o período matutino, foi o aluno teste, e o curso, foi o curso de Django Rest Framework. Esse aluno vai mudar, ele vai para o período vespertino.
+
+[05:06] Eu dou um PUTT, e ele alterou, foi para o período vespertino. Isso ficou legal. Só que para eu consegui identificar qual é o aluno que está matriculado em um curso, ou quais são os alunos matriculados em um determinado curso, ficou um pouco complexo.
+
+[05:23] E o que a gente pode pensar? Se a gente observar, olha só. A nossa lista de matrículas está funcionando também em outros lugares. Se eu vier aqui no Postman e der um get em “localhost:8000/matrículas”, a gente tem todas as informações aqui.
+
+[05:37] Ou seja, nossa matrícula está funcionando, só que a gente está listando todas. Seria legal se eu pudesse identificar quais são todos os cursos que um determinado aluno está matriculado. Ou seja, eu vou falar que o aluno dez, eu quero ver as matrículas dele.
+
+[05:52] Então eu quero ver os cursos desse aluno. E a gente lista todos os cursos desse aluno. E se a gente precisar editar alguma informação, a gente já tem mais detalhes sobre a matrícula desse aluno. Ou o oposto também.
+
+[06:07] Vamos supor que eu tenho o curso dois. No curso dois, eu quero listar todos os alunos. Eu coloco o “curso dois alunos”, e eu consigo visualizar todos os alunos matriculados naquele curso.
+
+[06:19] Observe que se eu faço isso e dou um enter, a gente recebe um “page not found”. Ou seja, a gente precisa configurar a nossa API de uma forma diferente para listar algumas informações que a gente quer. Permitindo também algumas ações. por exemplo, aqui em “matrícula”, eu tenho o meu “crud” completo.
+
+[06:36] Eu posso criar uma nova matrícula com o Raw Data, ou com o meu HTML Form e dar um post. Eu posso editar uma matrícula, se eu coloco aqui “matrícula dois”, por exemplo, eu consigo editar detalhes dessa matrícula. Eu posso deletar essa matrícula. Ou seja, eu posso fazer bastante coisa.
+
+[06:53] Nessa minha lista de cursos, eu não quero permitir todas essas ações. Vamos supor que eu quero apenas listar, ou apenas buscar alguma informação. Não vou permitir deletar determinadas matrículas, ou determinadas turmas inteiras.
+
+[07:09] Então, o que a gente vai aprender na sequência? Na sequência, a gente vai aprender como configurar a nossa API de forma que a gente consiga colocar mais informações na nossa URL, e a gente tenha o resultado da lista que a gente quer, dos recursos que a gente quer.
+
+[07:24] E mais: como a gente consegue limitar quais ações a gente vai querer dentro desses recursos.
+
 ### Verbos HTTP
+
+O protocolo HTTP define um conjunto de métodos de requisição responsáveis por indicar a ação a ser executada para um dado recurso. Embora esses métodos possam ser descritos como substantivos, eles também são comumente referenciados como HTTP Verbs (Verbos HTTP).
+
+Em relação aos verbos, podemos dizer que:
+
+a) **Alternativa correta:** O método DELETE remove um recurso específico.
+- _Alternativa correta! Certo! Conforme vimos em aula, o localhost:8000/alunos/2 com uma solicitação DELETE por exemplo, irá remover este recurso do servidor._
+
+b) **Alternativa correta:** Existem 2 métodos para atualizar um recurso no servidor.
+- _Alternativa correta! Certo! O método PUT substitui todas as atuais representações do recurso de destino pela carga de dados da requisição Já o método PATCH é utilizado para aplicar modificações parciais em um recurso._
+
+c) O método POST também pode ser utilizado para solicitar a representação de um recurso específico.
+
+d) **Alternativa correta:** O método GET solicita a representação de um recurso específico.
+- _Alternativa correta! Certo! Conforme vimos em aula, o localhost:8000/alunos/2 com uma solicitação GET por exemplo, nos mostra detalhes de um determinado aluno ou aluna._
+
 ### Faça como eu fiz
 ### O que aprendemos?
 ## 5. ListAPIView e Autenticação
