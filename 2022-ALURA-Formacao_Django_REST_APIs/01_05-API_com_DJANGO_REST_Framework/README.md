@@ -380,7 +380,9 @@ Quer entender melhor o que é JSON? Clique [neste link]('https://www.alura.com.b
 
 ### Serializers
 Quando criamos nossos MODELS precisamos criar um arquivo `serializers.py` para cada app. Que vai fazer a ponte entre nosso banco de dados e api.
+
 ---
+
 [00:00] Configurei o meu admin de alunos e cursos. Eu consigo visualizar os cursos que eu crio e os alunos que eu vou criando. Esses dados estão armazenados na minha base de dados.
 
 [00:11] O que eu gostaria de fazer agora é: da mesma forma que a gente disponibiliza esses alunos aqui, eu quero disponibilizar os alunos que estão na base de dados. Ou seja, se a gente parar para pensar, a gente tem um modelo de alunos que o Python entende, que o Django entende, que o RM do Django entende.
@@ -436,7 +438,9 @@ c) Devemos renderizar uma página que transforme os dados no formato Json para i
 
 ### Viewset
 Viewset é o responsável por processar as query no ORM do DJANGO
+
 ---
+
 [00:00] Criamos o serializer que permite que dados sejam convertidos para forma Python, nativa, para o RM do Phyton entender, e que sejam facilmente renderizados em Json, XML, ou até outros tipos.
 
 [00:15] No nosso caso, a gente vai manter o padrão Json. Só que, quem vai ser responsável por receber esses dados e selecionar qual é a serialização que a gente vai utilizar, se a gente está recebendo dados Json e quer transformar esses dados para Python nativo para que o nosso programa entenda.
@@ -482,13 +486,124 @@ Viewset é o responsável por processar as query no ORM do DJANGO
 [07:07] Só que, agora, a gente vai criar as nossas URLs. A gente vai dizer que a gente precisa registrar essas nossas URLs trabalhando tanto com “aluno viewset”, como “curso viewset”. É isso o que a gente vai fazer a seguir.
 
 ### Configurando Urls
+Diferente do DJANGO TRADICIONAL as rotas são cadastradas a partir do router do URLS.PY
 
+---
 
+[00:00] Configuramos, agora, as nossas views. Só que, quando a gente abre o nosso terminal, a gente tem um erro, falando que a gente não tem mais alunos na “escola.view”, e isso já é esperado. Por quê? Se a gente acessar o nosso arquivo de setup URLs, a gente vai ver que a gente tem, quando chegar uma requisição para alunos, eu quero que “aluno” atenda.
+
+[00:20] Só que lá em view a gente não tem mais esse aluno, por quê? Nós configuramos as nossas views para que sejam viewsets. Então, agora a gente vai precisar configurar as nossas rotas, para que a gente use esses viewsets que a gente criou.
+
+[00:34] Legal? Então, o que eu vou fazer? Lá no nosso arquivo “urls.py”, no lugar de a gente tem “escola.views”, eu quero trazer os meus viewsets. Eu quero trazer o meu “aluno.viewset”, e quero trazer também o meu “curso.viewset”. Então, “curso.viewset”.
+
+[00:53] Maravilha. Além disso, eu vou precisar de mais uma coisa. Eu vou precisar, para a gente conseguir navegar e utilizar a nossa API no nosso browser, a gente tem uma rota default que é dada pelo Django Rest.
+
+[01:09] Então, o que eu vou fazer? Eu vou trazer essa rota para cá. Eu vou importar lá do Rest Framework, import, routers, e eu vou definir essa rota principal. Então eu vou dizer que router, no singular, ela vai ser igual a “routers.defaultrouter”, e vou criar aqui, executar a nossa função.
+
+[01:33] Agora, o que eu preciso fazer? Eu já tenho uma rota principal default criada. Eu preciso registrar tanto o meu “aluno.viewset”, quanto o meu “curso.viewset”. Então, eu vou fazer “router.register”, e vou passar para o register qual é a rota que eu quero atender.
+
+[01:55] Então, eu quero registrar uma rota para aluno. Eu vou deixar “alunos”, no plural, uma rota para os meus alunos. Vou dizer qual é o meu viewset, “aluno.viewset”, e vou dizer também que o basename dele vai ser “alunos”.
+
+[02:12] Vou fazer a mesma coisa com o meu “cursos”. Então eu vou registrar uma rota para cursos, só que quem vai atender vai ser cursos.viewset, e o basename vai ser “cursos”. Legal?
+
+[02:28] O que eu preciso fazer agora? Eu já tenho essas minhas rotas cadastradas. Eu quero que, quando a gente acessar o “localhost:8000”, eu quero visualizar a minha página de API, e conseguir navegar entre as requisições de aluno e de cursos Vamos fazer isso?
+
+[02:48] Então, eu vou tirar. Eu não quero mais uma rota principal para alunos. Eu quero incluir as rotas desse meu router que eu acabei de criar. Então, para eu fazer isso, eu vou colocar um include. Eu não tenho um include ainda. Vamos importar. Include, agora sim.
+
+[03:05] Então, na rota principal, eu quero incluir lá do meu arquivo router, que tem as rotas registradas “.urls”. Eu vou salvar. Se eu abrir o meu servidor, agora, observe que a gente não tem mais aquele erro acontecendo. Vou minimizar. Se eu venho aqui no “localhost:8000”, e dou um enter, a gente tem o nosso Django Rest Framework com as nossas duas rotas principais, tanto de aluno, quanto de cursos.
+
+[03:32] Mas é aí que está. Será que se eu clicar em “alunos”, eu vou visualizar aquele aluno que eu criei aqui no meu Django Admin, que está armazenado no banco de dados esse aluno teste com o RG 123456789? Vamos ver?
+
+[03:44] Cliquei no aluno, e apareceu ID 1, aluno teste, CPF. Vou fechar. Vamos ver, então, de cursos? Vou voltar. Então eu tenho “curso”. Eu tenho curso de Django Rest Framework certinho.
+
+[03:59] O que eu vou fazer? Vamos fazer a prova real disso. Eu vou criar mais um aluno. Vou criar o “aluno teste 2”. O RG vai ser 000. CPF vai ser 11111111111. A data de nascimento vai ser a data de hoje. Eu vou salvar. E observe que eu tenho o aluno teste, e o aluno teste dois, armazenado no banco de dados.
+
+[04:23] Se eu venho aqui na minha API de alunos, eu tenho aqui o aluno um e o aluno dois. Maravilha. Está funcionando. Só que isso que a gente está vendo é API? Não. Isso é uma interface do Django para que a gente possa testar esses nossos alunos.
+
+[04:40] Observe que eu tenho “localhost:8000/alunos”. Se eu colocar um, observe o que vai acontecer, ele vai trazer informações do aluno um. E se eu colocar, por exemplo, dois, ele vai trazer informações do aluno teste dois.
+
+[04:54] Certo? Mas, como outro programa, outra aplicação vai visualizar? Eles vão visualizar dessa forma, Json. Então, quando a gente tiver uma requisição para a nossa aplicação pedindo o aluno dois, o que a gente vai visualizar são esses dados.
+
+[05:14] E o que outro programa, outra aplicação vai fazer? Pega para mim o aluno, pega para mim o RG e coloca nessa caixa, coloca nesse box, coloca nessa tabela. Ou seja, eles vão consumir recursos da nossa API, e a gente vai conseguir integrar a nossa API, tanto com aplicações mobile, tanto com outros sistemas, tanto com outras APIs também.
+
+[05:36] Certo. Mas a API serve simplesmente para listar os meus alunos? Eu estou visualizando todos os alunos. Se eu colocar aluno três. Vamos ver. Coloquei aluno três. Ele falou que não é encontrado. A gente não tem o aluno três cadastrado.
+
+[05:49] Então, o que a gente vai fazer nos próximos vídeos? A gente viu, com o admin do Django, que é possível a gente criar aluno, é possível a gente criar curso. Mas como a gente cria alunos e cursos, e como a gente visualiza esses alunos e cursos sem o Django admin? Só visualizando no formato Json para a gente ter certeza que a nossa API está funcionando.
+
+[06:09] É isso o que a gente vai ver nos próximos vídeos.
 
 ### Método GET e POST
+
+[00:00] Agora que a nossa API está funcionando, vamos aprender um pouquinho mais de como funciona uma API utilizando Django Rest, e simulando outra aplicação consumindo os dados dessa API.
+
+[00:11] Primeira coisa que eu vou fazer. Eu vou em “cursos”. A gente exibe todos os cursos. A gente pode criar um curso utilizando o admin do curso, então acessando “Escola > Cursos > Adicionar Cursos”. A gente tem aqui o código do curso que a gente cria, a descrição e o nível.
+
+[00:25] E esse curso que a gente está vendo, é um curso que a gente criou utilizando o admin. Eu quero criar um curso, agora, utilizando o Django Rest Framework. Então, a gente tem algumas opções. Descendo a página um pouquinho para baixo, a gente tem aqui o “raw data” e o “HTML Form”.
+
+[00:38] O “HTML Form” vai criar para a gente um Formulário para a gente criar o nosso curso. Então, se você observar, o “código curso”, “descrição” e “nível”. A gente tem algo muito parecido aqui: “código curso”, “descrição” e “nível.”. Bem parecido com o admin.
+
+[00:54] Eu vou começar criando o curso utilizando esse “raw data”. Então, aqui a gente tem um objeto do tipo Json. Então, a gente vai criar um novo curso utilizando um “Json object”.
+
+[01:08] Então eu vou colocar um JavaScript Object. Então, o código do curso vai ser o “curso de Java avançado 03”. Por exemplo. Esse código é arbitrário, eu estou inventando. Então eu vou colocar aqui que o curso vai ser “curso de Java avançado”. E o nível. A gente tem nível básico, nível avançado e intermediário.
+
+[01:35] Vou colocar que vai ser do nível avançado. Beleza. Vou clicar aqui no Post. O que é o Post? O Post é uma requisição para a gente criar um novo curso, para a gente gerar um novo curso na nossa API. Então eu vou clicar nesse Post, e ele criou o “curso ID 2”, código do curso, 03, descrição do curso, e o nível A.
+
+[02:01] Legal? Se eu for aqui no admin e clicar em “cursos”, olha que legal. Vai aparecer o ID 1 de um do curso de Django que a gente criou usando o admin, e esse curso dois, agora, de Java avançado, que a gente usou utilizando o Rest Framework com o Json.
+
+[02:17] O que eu vou fazer? Vou criar um terceiro curso. Vou criar um novo curso, “root curso”. Vou usar o HTML Form e vou colocar “curso Django Rest Framework 03”, vai ser o avançado. Então, “curso de Django Rest Framework avançado”. Legal.
+
+[02:48] Ele vai ser um nível avançado. Reparem que ele já formatou para a gente, consegui visualizar um nível também do curso que a gente está criando. Se eu coloco o “Post”, ele mostra para a gente detalhes desse curso três. A gente consegue acessar, se eu colocar aqui “curso três”, e a gente tem “curso de Django Rest Framework avançado”.
+
+[03:05] Se eu colocar no curso dois, a gente tem “curso de Java avançado”, e se eu coloco no curso um, a gente tem o “curso de Django Rest Framework”, que é o nível básico. Legal? Eu entendi como é que funciona a criação utilizando o Post, só que eu quero fazer agora é simular uma outra aplicação.
+
+[03:27] Na atividade “preparando o ambiente”, lá no início do nosso curso, a gente pediu para você baixar um programa chamado Postman. Eu já tenho ele instalado, que é esse programa aqui, e esse programa vai funcionar como um simulador. A gente vai conseguir testar as nossas APIs.
+
+[03:43] O que eu vou fazer? Primeira coisa. Se a gente observar, a gente vai precisar, ele fala qual é o endereço, a requisição URL. Vamos pegar essa requisição, vou colocar aqui na nossa lista de cursos, vou voltar e vou colocar a requisição. Essa requisição é a requisição que está mostrando todos os cursos que a gente tem cadastrados.
+
+[04:05] Então, eu vou utilizar aqui, nessa aba, eu vou utilizar o verbo “Get”, que eu quero visualizar, e vou dar um “send”. Olha só. O que vai acontecer. Ele trouxe para a gente todas as informações no formato Json para a gente conseguir visualizar e trabalhar com esses dados.
+
+[04:22] Então, supondo que quem fez essa requisição é uma aplicação mobile, ele teria essas informações do formato Json, e da mesma Forma que a gente faz a deserialização dos dados para a linguagem que a gente está utilizando, a gente consegue fazer em outra aplicação.
+
+[04:42] A ideia do Postman é que a gente consiga testar as nossas aplicações. E quando a gente vem, a gente tem vários verbos. A gente vai testar dois. Então, o primeiro verbo que a gente está utilizando é o verbo “Get”, que a gente quer recuperar um determinado recurso. Então, eu vou colocar aqui “1/”, vou dar um enter, e a gente tem aqui o curso de Django.
+
+[05:00] Se eu colocar “3/”, ele vai trazer o curso de Django avançado. Se eu tirar a barra e der um enter, ele funcionou, porém, a gente tem que ficar muito atento com os detalhes da nossa requisição.
+
+[05:17] Por exemplo, se eu colocar duas barras e der um send, ele vai mostrar para a gente uma mensagem de erro. Ele está renderizando uma mensagem de erro, que a gente não tem essa requisição cadastrada.
+
+[05:29] Então, um dos pontos sensíveis do Rest Framework é que as nossas URLs precisam ser muito bem definidas, e a gente precisa tomar bastante cuidado com as requisições que a gente está fazendo, se não tem nenhum erro aqui.
+
+[05:43] Se eu colocar, por exemplo, cinco. A gente não tem nenhum curso cinco. Ele fala que não foi encontrado esse curso cinco. Então é legal que a gente já tenha algumas informações.
+
+[05:50] Legal, Guilherme. Conseguir entender, então, que o verbo “Get” é para a gente recuperar um determinado recurso da nossa aplicação, mas o que eu quero fazer agora é criar um novo curso, ou um novo aluno, utilizando aqui o Postman. Então, a gente viu como criar um curso utilizando a interface do Django Resto.
+
+[06:10] O que vou fazer agora? Eu vou criar um aluno. Vou voltar aqui na API Root, vou acessar “aluno”, e eu quero criar um novo aluno. Então aqui a gente tem as mesmas informações: o nome, RG, CPF, data de nascimento. Aqui no HTML Form, no raw data, a gente tem essas informações aqui.
+
+[06:25] Eu vou copiar essas informações, e vou fazer o seguinte. Vou voltar lá no nosso código. Um detalhe. Se a gente observar, a data de nascimento está com o formato americano. Então, o que eu vou fazer? Vou copiar esse código com a ID 2. Vou voltar lá na nossa aplicação, e agora, o que eu quero fazer é um método Post para URL de alunos. “alunos/”.
+
+[06:56] O método, então, é o Post, e eu quero fazer essa requisição. A primeira coisa que a gente vai fazer vai ser ir no “body”, eu vou remover esses dados que estão aqui e vou colar aqueles dados que eu copiei, aquele Json que eu copiei.
+
+[07:11] O ID não precisa passar. Por quê? O ID é gerado de Forma automática assim que a gente cria o nosso modelo. Então, quando a gente identificar esse aluno, eu vou colocar “aluno do Postman”, porque aí a gente já vai saber. O RG, eu vou deixar esse mesmo, para a gente não perder tempo.
+
+[07:31] CPF, eu vou deixar esse mesmo, e a data de nascimento, eu vou falar que nasceu no mês passado. No mês cinco. Eu vou um send, e olha só, ele deu outra informação, ele falou que não veio nenhuma mensagem de erro. Agora a gente tem o ID 3 para o aluno do Postman, que é esse programa que a gente está usando.
+
+[07:51] Certo. Mas será que esse aluno foi gerado na nossa aplicação? Vou atualizar, e a gente tem o aluno três. Para a gente garantir, vou acessar o nosso “Admin > Escola > Alunos”, e a gente tem o aluno do Postman também gerado.
+
+[08:04] Então, o método Get é para a gente recuperar um determinado recurso; o método Post, para a gente criar um novo recurso utilizando a nossa API.
+
 ### Um pouco mais sobre Viewsets
-### Faça como eu fiz
-### O que aprendemos?
+
+Como vimos na aula, os ViewSets permitem definir as interações da sua API e permitir que a estrutura REST construa os URLs dinamicamente com um objeto roteador.
+
+Sabendo disso, analise as afirmações abaixo e marque as verdadeiras.
+
+a) Um Viewset é a fonte única e definitiva de informações sobre seus dados.
+
+b) **Alternativa correta:** A utilização de Viewset pode evitar repetir a lógica das views.
+- _Alternativa correta! Certo! Não será necessário incluir a lógica para um CRUD, analisando as estruturas do REST para cada recurso._
+
+c) **Alternativa correta:** Viewsets incluem ações como criar, listar, atualizar ou deletar.
+- _Alternativa correta! Certo! Os Viewsets incluem essas ações ou operações por padrão._
+
 ## 4. Atualizando e deletando recursos
 ### Projeto da aula anterior
 ### Métodos PUT e PATCH
