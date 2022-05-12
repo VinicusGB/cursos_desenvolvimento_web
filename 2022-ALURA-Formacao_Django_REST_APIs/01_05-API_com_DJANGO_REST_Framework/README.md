@@ -783,13 +783,195 @@ c) O método POST também pode ser utilizado para solicitar a representação de
 d) **Alternativa correta:** O método GET solicita a representação de um recurso específico.
 - _Alternativa correta! Certo! Conforme vimos em aula, o localhost:8000/alunos/2 com uma solicitação GET por exemplo, nos mostra detalhes de um determinado aluno ou aluna._
 
-### Faça como eu fiz
-### O que aprendemos?
 ## 5. ListAPIView e Autenticação
-### Projeto da aula anterior
 ### ListAPIView
+
+[00:00] O que eu quero fazer agora é listar todas as matrículas de um aluno. Então eu quero passar o ID desse aluno/matrículas e eu conseguir visualizar todas as matrículas desse aluno.
+
+[00:12] Então, só para a gente entender, o que eu quero fazer é assim: eu vou ter um aluno. Eu quero passar o ID desse aluno. Vamos supor que o ID desse aluno seja o dois, e eu quero passar, por exemplo, escrito “matrículas”. E quando der um enter nessa rota aqui, e perceba que agora ela não existe, eu quero visualizar as matrículas desse aluno, os cursos, nome dos cursos, e quais períodos esse aluno vai fazer esses cursos. Beleza?
+
+[00:37] Então, vamos lá. A primeira coisa que a gente vai fazer: se a gente vai ter que criar um novo modelo para fazer isso, para alterar a listagem das matrículas de um aluno? Não. O que a gente vai fazer vai ser criar uma outra classe serializadora, que eu posso chamar de “lista matrículas alunos serializer”. Ficou esse nome gigante, mas a gente vai entender.
+
+[00:58] Então, o que eu vou fazer? Vou criar um serializer para ter a responsabilidade apenas listar as matrículas desse aluno. Então eu vou criar uma classe, vou chamar de “lista matrículas aluno serializer”. Legal? E agora eu vou passar a mesma propriedade que a gente já tinha, que é o “serializers.modelserializer”.
+
+[01:32] Aqui dentro eu vou definir uma classe meta também, “class meta”, dizendo que o modelo responsável é o modelo de matrícula, e vou dizer quais os campos que eu quero exibir da matrícula.
+
+[01:53] Como eu já tenho o ID do aluno, não faz sentido exibir o nome do aluno. Eu quero o nome do curso, e eu quero também o período. Então, “período”. Tenho, então, essas minhas informações, e vou salvar.
+
+[02:11] O que eu vou fazer? Lá em view, eu vou trazer, importar esse meu “lista matrículas alunos serializer”, e aqui dentro, deixa eu minimizar isso, só para a gente dar atenção total só para esse, essa nossa classe realizadora, e aqui dentro eu vou fazer algo diferente.
+
+[02:30] Observe que sempre quando a gente utilizava “viewset modelviewset”, a gente tem todas as requisições, as ações que a gente pode executar com determinado recurso. Então, se a gente quiser criar, a gente tem o Post, o PUTT. Nesse nosso caso, o que a gente quer? A gente só quer listar.
+
+[02:50] Então a gente quer pegar as informações que estão no banco e listar. A gente não quer informações de deletar, atualizar. Não. A gente só quer listar essas informações. Então, o que eu vou fazer? Eu vou criar uma classe, que eu vou chamar de “class lista matrículas aluno”. E agora eu vou passar um argumento diferente, que vai ser o “generic list api view”.
+
+[03:27] Então, só para a gente ver como a gente importa esse nosso “genérico list api view”, é assim: lá do nosso Rest Framework, que a gente tem o viewset, eu vou trazer o “generics”. E aqui dentro eu vou usar “generics.listapiview”. [03:46] Passei uma propriedade diferente agora para esse argumento. O que eu vou fazer agora? Agora que eu tenho esse meu “list api view”, eu vou colocar um docstring só para deixar padronizado. Então “listando as matrículas de um aluno ou aluna”. Legal.
+
+[04:06] Eu vou fazer o seguinte: a primeira coisa que a gente vai ter que fazer é pensar assim: observa que eu estou passando o ID desse meu aluno. Está vendo? Eu estou passando esse ID. De alguma forma, a gente tem que pegar esse ID e falar que o aluno que a gente quer listar as matrículas é esse.
+
+[04:22] Então, aqui vou criar uma função, que eu vou chamar de “get_queryset”. E, como argumentou, eu vou passar o self. Porque, dependendo da requisição que vier, a gente vai passar o valor da instância que a gente está utilizando. Legal?
+
+[04:45] Então, “get_queryset”, e vou dizer da mesma forma que a gente fazia para o outro: que o “queryset” vai ser igual à “matrícula.objects.filter”. Por quê? Eu quero filtrar, de todas as matrículas, a matrícula que tenha o ID desse aluno.
+
+[05:06] Então, eu vou falar assim, que o “aluno_id”, que é o nosso aluno lá do nosso modelo do banco de dados, ele vai ser igual à “self.karms”. Então a gente vai passar o “karms”, e aqui dentro, através dos colchetes, eu vou passar APK.
+
+[05:27] Então, o que eu estou fazendo? Para conseguir recuperar esse dois desse meu aluno, eu criei uma função chamada “get_queryset”, que vou filtrar, dizendo que o “aluno_id” vai ser esse aluno dessa requisição que eu estou passando.
+
+[05:43] E, para finalizar, vou dar um return, “queryset”. Legal. E o que a gente faz também, quando a gente define o nosso “queryset”? A gente passa o “serializer class”, que vai ser o “lista matrículas alunos serializer”. Ficou esse nome bem grandão.
+
+[06:03] Beleza. Criei aqui o meu “generic list api view”, falei para ele qual é o “queryset”, e qual é o serializer class, e o que a gente vai fazer agora vai ser registrar a nossa URL. E eu quero registrar da mesma forma que a gente tem aqui: aluno, o ID do aluno e a matrícula.
+
+[06:18] Lembra no nosso curso de Django, quando a gente queria exibir as receitas de uma determinada pessoa que fez o cadastro? Aqui vai ser algo bem parecido. Então eu vou criar um PATH, um novo PATH, e vou dizer que vai ter o aluno, o PATH vai ser aluno, exatamente como a gente tem aqui.
+
+[06:37] O ID. A gente já sabe como pega o ID, a gente viu no nosso curso anterior. Então vai ser do tipo “inti:pk”, que é o mesmo nome que a gente está chamando aqui no nosso viewset, de PK. E esse nome é importante que seja PK, por conta do funcionamento Rest Framework. Está bom?
+
+[06:55] Passei aqui a PK, que é o valor do ID do aluno. Só falta dizer também “matrículas”. Maravilha. Então, aluno, passei o ID do aluno e digitei “matrículas”, ele já sabe que a gente quer visualizar essas matrículas.
+
+[07:12] Vou colocar a “/” aqui, para a gente não ter nenhum problema. E para finalizar, o que eu vou fazer? Para finalizar, eu vou trazer esse “lista matrículas alunos” lá do nosso view. Então a gente tem “alunos viewset”, “curso viewset”, “matrícula viewset”. E agora a gente tem o “lista matrículas aluno”, e eu vou dizer que esse “lista matrícula aluno”, ele vai ser do tipo view.
+
+[07:40] Então eu vou colocar um “.as_view”, e uma função, executando uma função. Maravilha. Abrindo o nosso servidor, parece que a gente não tem nenhum erro, que a gente foi criando aqui. Vamos testar?
+
+[07:53] Então, o que eu vou fazer? Estou aqui em “matrículas”, dou um enter, e olha só: está mostrando o curso dois e o período. Observe que a gente não tem aqui o método PUTT e as outras informações.
+
+[08:04] A gente conseguiu a “lista matrículas aluno”, listando matrículas de um aluno ou aluna. Beleza. E a gente tem essas informações. Para a gente deixar mais legal, e mais visível o que a gente está vendo, o curso dois, período N. Seria legal se fosse o nome do curso dois, e o período fosse noturno.
+
+[08:20] Então vamos alterar isso. A gente vai fazer isso onde? Lá no nosso serializer. O que eu vou fazer? Eu vou dizer que o curso, ele vai ser do tipo “serializers.readonlyfield”, ou seja, a gente quer ler os recursos desse nosso curso, e vou passar com o source para ele, do tipo “curso.descrição”.
+
+[08:58] O que eu fiz aqui? Olha só. A gente tem o ID da matrícula, certo? E a gente tem na matrícula o ID do curso. E eu estou falando que o curso vai ser do tipo de leitura, apenas leitura, esse campo, e a gente quer representar ele através da descrição dele.
+
+[09:16] Então, se a gente olhar lá no nosso admin, a descrição está assim: curso de Django avançado, curso de Rest Framework. É isso o que a gente quer exibir. Então, coloquei aqui, “curso.descrição”. Só que aqui vai precisar ser uma string, está bom?
+
+[09:30] Legal. Outra coisa que eu quero fazer é o meu período. Então vamos fazer assim. O período vai ser do tipo serializer, só que eu quero serializer diferente. Eu quero o método que vai ser exibido aqui, eu quero o mesmo método que está sendo usado aqui também.
+
+[09:47] Então, no período, em vez de mostrar N e M, eu quero visualizar o que está escrito naquele campo. Então, eu vou utilizar uma função chamada “serializer method field”. E vou executar essa nossa função. Então a gente tem um curso período, e eu estou executando essa função aqui. Legal?
+
+[10:10] Então, se eu salvar isso aqui, abrir o meu servidor, e parece que a gente não tem nenhum erro, se eu voltar aqui e atualizar, a gente tem uma mensagem de erro, porque ele não conseguiu pegar o “get_período”.
+
+[10:21] Sabe por que isso acontece? Porque, aqui no período, a gente falou que o período vai ser do “serializer method field”. A gente vai ter um método para buscar o período correto.
+
+[10:33] Mas cadê esse método? A gente não criou. Então, vamos criar. Vou colocar aqui, vou criar um método def, vou chamar de “get_período”, e aqui dentro eu vou passar duas propriedades. A instância que a gente está utilizando com o self, e o nosso objeto. Vou chamar OBJ.
+
+[10:53] Eu vou pedir para ele retornar para a gente o objeto que a gente está utilizando “.get_período_display”. Ou seja, da mesma forma que você exibir o período lá no admin, eu quero que você exiba o período aqui também, na nossa API.
+
+[11:14] Vou abrir o meu servidor. Parece que está tudo certinho. Quando a gente volta e atualiza, a gente tem lá o nome do curso, e o nome do período do aluno dois. Vamos ver se está funcionando para o aluno um?
+
+[11:30] Então, o aluno dois é o curso de Java avançado, noturno. Vamos fazer a prova real. Aluno dois, curso de Java avançado, noturno. O outro aluno, o um, é o curso de Django Rest Framework no período matutino.
+
+[11:41] Então eu vou aqui o um, entender, e a gente tem lá, o curso de Django Rest Framework. Período vespertino.
+
 ### Matrículas de um curso
+
+[00:00] Agora que a gente consegue listar todas as matrículas de um aluno, eu quero fazer o oposto: eu quero listar todos os alunos matriculados em um curso. Então, vamos lá?
+
+[00:10] A primeira coisa que a gente vai fazer vai ser criar, no nosso serializer, um sinalizador para isso. Por exemplo, “lista de alunos matriculados em um curso”. Então, vou colocar aqui. Vou criar uma nova classe, que eu vou de chamar de “lista alunos matriculados em um curso”. Legal?
+
+[00:43] Ele vai ser do tipo serializer, “serializers.modelserializer”. Vamos definir a nossa classe meta. Informando que o nosso modelo vai ser o modelo de matrícula, e os campos que a gente quer exibir, já que a gente quer exibir todos os alunos matriculados em um curso, o único canto que eu vou querer vão ser os alunos. Certo?
+
+[01:11] Então eu vou colocar aqui “aluno”. Só que aqui tem uma coisa interessante, olha só. Eu vou abrir o meu Model para a gente poder visualizar. Aqui, no aluno, a gente tem o nome do aluno. Então seria legal se a gente pudesse exibir o nome desse aluno mesmo. E a gente já sabe como a gente faz isso.
+
+[01:28] Antes de entrar na nossa classe meta, eu vou colocar aqui “aluno_nome”, e vou falar que ele vai ser do tipo “serializers.readonlyfield”, a gente quer ler o campo onde, a gente vai ter, como referência, eu vou passar “alunos.nome”.
+
+[01:49] Dessa forma, a gente vai conseguir trazer, lá do nosso modelo, aluno, a gente vai trazer o nome dele. Vou fechar o nosso modelo. E a gente tem aqui o nosso serializer com esse “aluno.nome”.
+
+[02:00] E o campo que eu quero exibir vai ser o “aluno_underline”. Bom, a gente tem aqui o nosso serializer de “lista alunos matriculados em um curso”, para a gente não se confundir. Serializer. A gente pode pensar um pouco melhor nesse nome “lista alunos matriculados”. Eu vou tirar o “em um curso”. Vou deixar só assim. Legal?
+
+[02:30] Lá em “views”, a gente vai trazer esse nosso serializer. Então, “lista alunos matriculados”, serializer. Agora, o que eu vou fazer vai ser criar uma classe do tipo “list api view”. Legal.
+
+[02:58] Então, o que eu vou fazer? Eu vou criar uma classe, que eu vou chamar de “lista alunos matriculados”, por exemplo, e ele vai ser do tipo “generics.listapiview”. Aqui dentro, a gente vai definir a nossa “dockstring” para ficar bem organizado o nosso código. Vou colocar “listando alunos e alunas matriculados em um curso”. Legal.
+
+[03:39] Vamos definir o nosso “queryset”, e a gente vai utilizar uma função para fazer isso. Então eu vou colocar que a gente vai ter uma função, que eu vou chamar de “get_queryset”. Exatamente como a gente fez aqui no nosso “lista matrículas alunos”.
+
+[03:56] Passando o parâmetro “self”, o que eu vou fazer? Eu vou dizer que o meu “queryset = matrícula.objects.filter”, e aqui eu vou dizer que o “curso_id” vai ser igual ao ID que a gente tem na requisição, a mesma coisa que a gente fez aqui, “self.keyargs”.
+
+[04:30] Então, a ideia vai ser o seguinte: eu quero criar um “queryset”, onde a gente vai pegar qual é o ID do curso que a gente vai ter. Então, para a gente entender um pouco melhor, o que eu vou fazer? Eu vou alterar a nossa URL para a gente visualizar.
+
+[04:46] “localhost:8000”, nossa API. Eu quero informações de curso. O que eu quero do curso? Eu vou passar, por exemplo, o ID. O do curso dois, eu quero saber as matrículas. É isso o que a gente vai pensar. Então, esse ID 2 aqui, para eu recuperar e colocar ele no nosso filho, a gente esse “self.keyargspk”. Legal?
+
+[05:06] E agora a gente criou a nossa função, a gente vai precisar fazer o quê? Retornar. Então eu vou colocar aqui um “return.queryset”. Definimos o nosso “queryset”, e vou dizer que o nosso “serializer class = lista alunos matriculados serializer”.
+
+[05:29] Salvei. Abri no nosso servidor, está tudo certinho. A única coisa que falta é a gente configurar a nossa URL. Vou colocar uma vírgula aqui, um novo PATH, e eu vou deixar exatamente como a gente fez lá. Um curso, a gente vai ter um ID do curso, então “inti:pk ID”, e a gente vai ter também as matrículas.
+
+[05:57] Observa que interessante que ficou. A gente tem o aluno, o ID do aluno, e as matrículas. Agora, a gente quer saber informações do curso. Então tem um curso, passei o ID do curso, quais são os alunos matriculados. E a gente tem aqui as matrículas deste curso. Legal?
+
+[06:10] Não esquecendo da barrinha do final. Quem vai atender essa nossa URL, essa nossa chamada, vai ser “lista alunos matriculados”. Ou a gente pode até alterar esse nome, “lista matrículas alunos”, “lista alunos matriculados”. Ia alterar para “em um curso”, alguma coisa desse tipo para ficar mais claro, mas acho que assim já está fácil de a gente entender.
+
+[06:45] Então, “listaalunosmatriculados.asview”. Salvei, “Command + J”. O que vai acontecer quando eu der um enter aqui? Ele vai mostrar os alunos matriculados no curso dois. No curso dois não tem ninguém. Então, eu vou colocar aqui “matrículas”, a gente tem o curso de Java avançado.
+
+[07:35] Vamos ver qual é o ID desse curso. ID 2. A gente não tem nenhum aluno. Então, curso, matrículas. Vou colocar o curso um para a gente poder ver. Vou atualizar a página. E a gente não está conseguindo ver. Na verdade, eu errei. Eu coloquei “alunos.nome”, e na verdade é “aluno”.
+
+[08:03] Agora sim, a gente consegue visualizar os alunos matriculados no curso dois. E a gente tem aqui o “aluno teste dois”. Se eu coloco aqui, por exemplo, o valor um, a gente vai visualizar os alunos matriculados no curso um, “aluno teste”.
+
+[08:16] Vamos matricular mais alunos para a gente só fazer a prova real mesmo? No curso de Django Rest avançado, eu vou colocar mais dois alunos. Então eu vou fazer uma matrícula no curso de Django Rest avançado, vou falar que é o aluno teste, período matutino, e vou fazer mais uma matrícula do “aluno teste dois” no curso de Django Rest avançado.
+
+[08:40] Ou seja, nesse curso, a gente tem dois alunos, a gente tem duas matrículas para esse curso. Então, o que eu vou fazer? Eu vou deixar aqui o curso três, que é o curso que a gente estava utilizando. Quando eu dou um enter, a gente tem lá os nossos dois alunos.
+
+[08:55] Agora está funcionando. A gente pode listar todos os alunos matriculados em um curso.
+
 ### Autenticação
-### Exibindo ID
-### Faça como eu fiz
-### Projeto do curso
+
+[00:00] Disponibilizamos recursos de alunos, cursos e matrículas para a nossa API. Nossa API está rodando local. Qualquer outro sistema rodando local vai ter acesso a esses recursos também.
+
+[00:10] Então, se eu coloco aqui “alunos” e dou um send, ele vai me mostrar os alunos. Matrículas, ele vai me mostrar as matrículas. Observe que representa um outro sistema que tem acesso aos recursos da nossa API.
+
+[00:23] Só que, qualquer outro sistema que estiver rodando local, e fizer uma requisição, por exemplo, um get para “localhost8000/alunos”, matrículas ou cursos, vai ter acesso aos recursos da nossa API.
+
+[00:35] E será que é isso o que a gente quer? Será que a gente quer disponibilizar todos os dados da nossa API livremente para qualquer outro sistema? Talvez não. Seria legal se a gente pudesse criar uma autorização, uma forma de autenticar quem são os sistemas e pessoas que estão consumindo dados da nossa API. E é isso o que a gente vai fazer agora.
+
+[00:53] Para fazer isso, eu vou no meu código de “views.py”, e vou importar do Rest Framework, “fromrestframework.authentication”, “import”, um carinha chamado basic authentication.
+
+[01:08] Observe que quando eu coloco só “bas”, e dou o “Control+Espaço” para ele me mostrar as opções que eu tenho de atalho, eu tenho “base authentication” e o basic authentication.
+
+[01:22] Nós vamos utilizar o basic authentication, está bom? Não vamos utilizar o “bas authentication”. O basic, está bom? Autenticação básica. Vou clicar. E outro carinha que a gente vai precisar também trazer para a gente conseguir visualizar essa nossa requisição, essa nossa autenticação, é o “permition”.
+
+[01:41] Por quê? Assim que a pessoa faz a autenticação, eu vou dar permissão para ela consumir os recursos da nossa API. Então, eu vou colocar “import”, e a classe que a gente vai importar se chama “is authenticated”, ou seja, está autenticado.
+
+[01:56] Caso esteja autenticado, a gente vai dar permissão de consumir os dados. Vamos começar, então, com alunos. Observando aqui no postman, por exemplo, se eu digito alunos e dou um get, a gente tem todas as informações de alunos. Aluno teste, aluno 2.
+
+[02:12] Legal. O que eu quero fazer é: colocar uma classe responsável para ser o basic authentication, e uma permissão, uma classe responsável de permissão, que vai ser responsável por garantir que quem está consumindo esses recursos, está autenticado.
+
+[02:26] E, a gente faz isso da seguinte forma: nós criamos uma variável para queryset, uma variável serializer class. Vou criar mais uma variável, chamada authentication classes, e vou dizer, entre colchetes, que quem é o responsável é o basic authentication.
+
+[02:40] E vou fazer o mesmo para permissões, com o “permissionclasses=”, e quem vai ser o responsável é o “is authenticated”. Vou salvar. Se eu venho aqui na minha API, atualizo, clico em “alunos”, não aconteceu nada.
+
+[02:57] Por quê? Se você observar, eu já estou logado. Caso eu não estivesse logado, ia aparecer uma autenticação básica para a gente conseguir fazer a validação. Para a gente testar isso, eu vou abrir uma página privada, vou digitar “localhost:8000”, vou clicar em “alunos”. Apareceu.
+
+[03:19] Então, se eu já estou logado, a gente tem essa cena. Caso eu não esteja logado, a gente vai ver assim. E eu posso fazer a minha autenticação. Vou colocar o meu nome de superusuário, minha senha, e quando dou o ok, a gente consegue visualizar os dados da nossa API. Isso ficou bem legal.
+
+[03:34] Vou ver no Postman, agora. Se eu dou uma requisição get para alunos, e dou um send, as credenciais de autenticação não foram fornecidas. Como é que eu forneço as credenciais de autenticação para o Postman? Para a gente conseguir consumir os dados da API?
+
+[03:51] Aqui, do lado de parâmetros, a gente tem authorization, e a gente pode inserir um tipo de autorização. Então, repare que tem vários tipos de autorização. O que a gente está utilizando é o basic authentication, o basic aut.
+
+[04:04] Vou clicar nele, vou criar a minha senha de superusuário. O meu nome de super user, a senha de super user, e quando eu dou um send, a gente consegue visualizar os dados dos alunos.
+
+[04:16] Mas eu quero isso só para os alunos? Não. Eu quero isso para as outras classes também. Então, “alunos”, vou colocar em “cursos”, “matrículas”, lista de alunos e, para finalizar, na lista de matrículas e na lista de alunos matriculados.
+
+[04:44] Salvei. Vou tirar, agora, essa autenticação, para a gente testar nos outros. Vou colocar “no out”, não tem nenhuma autenticação. “Alunos” não funciona. “Cursos” também não. “Matrículas”, a gente também não consegue ver.
+
+[05:01] Só para a gente garantir, eu vou falar que o “Aluno 2”, eu quero ver as matrículas deles. “Matrículas”. Dou um send. As credenciais não foram fornecidas. Vou fornecer, então, essas credenciais.
+
+[05:16] Se eu dou um send, a gente consegue visualizar quais são os cursos que esse aluno está matriculado, passando os dados da nossa autenticação.
+
+### Exercício: Exibindo ID
+
+Ariel criou o seguinte serializer para listar todos os alunos matriculados em um curso:
+
+        class ListaAlunosMatriculadosSerializer(serializers.ModelSerializer):
+            class Meta:
+                model = Matricula
+                fields = ['aluno']
+
+Porém, após realizar todas as configurações nos modelos, view.py e urls.py, percebeu que os ids dos alunos eram exibidos e não seus nomes. Com base nessa situação, analise as afirmações abaixo e marque as verdadeiras:
+
+a) **Alternativa correta:** É possível configurar as informações que serão exibidas no serializer, mesmo que relacionadas a uma foreign key.
+- _Alternativa correta! Certo! Observe o código abaixo, onde é possível configurar o serializer para exibir os nomes dos alunos matriculados em um curso._
+
+        class ListaAlunosMatriculadosSerializer(serializers.ModelSerializer):
+            aluno_nome = serializers.ReadOnlyField(source='aluno.nome')
+            class Meta:
+                model = Matricula
+                fields = ['aluno_nome']
+
+b) **Alternativa correta:** Os serializadores permitem que dados complexos, como conjuntos de consultas e instâncias de modelo, sejam convertidos em tipos de dados Python nativos.
+- _Alternativa correta! Certo! Além de convertidos para dados do Python, podem ser facilmente renderizados em JSON, XML ou outros tipos de conteúdo._
+
+c) Não é possível configurar as informações que serão exibidas no serializer relacionadas a uma foreign key.
+
