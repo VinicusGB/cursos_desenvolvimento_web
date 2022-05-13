@@ -283,9 +283,106 @@ Para criar validações no SERIALIZER.PY definimos funções dentro das class Se
 [03:55] Se eu colocar outro CPF, mas colocar um dígito a menos, e dou um post, temos a mensagem do “O CPF deve ter 11 dígitos” . Essa é uma forma bem simples de conseguirmos incluir uma validação no nosso “serializer”.
 
 ### Melhorando o código
-### Motivo para validar
-### Faça como eu fiz
+Para o código do SERIALIZERS.PY não ficar com muitas linhas, podemos dividir nosso código de validação em um arquivo diferente. VALIDATOR.PY
+
+---
+
+[00:00] Agora que nós incluímos as validações no nosso “Serializer”, vamos pensar em deixar o nosso código um pouco mais organizado? O que eu quero propor? Vamos tirar essas regras de validações e colocar num arquivo que só mantém essas validações, deixando nosso “Serializer” mais limpo.
+
+[00:17] Por exemplo, essa verificação de se o CPF tem 11 dígitos, ou se o nome é alfa numérico ou se o RG não tem 9 dígitos. Vamos colocar todas essas validações num outro arquivo e de alguma forma pegamos essas informações e mandamos para que sejam verificadas, tornando nosso serializador mais limpo.
+
+[00:38] Para começar, vou criar outro arquivo dentro do nosso app de clientes em “PROJETO_CLIENTES>clientes” chamado de “validators.py”. Dentro desse nosso ´validator.py´ eu quero incluir nossas validações que estão no nosso ´serializer.py´ do CPF. Dei um "Ctrl+X" na validação do CPF e um “Ctrl + V” dentro do nosso ´validators.py´ e incluí e trouxe para cá.
+
+[00:58] Está vendo que ele ficou com dois espaços do lado esquerdo do if len(cpf) “=11: , dou um “Cmd + abre colchetes” e empurramos para o lado. Então abri e coloquei essa validação, só que eu quero que essa validação tenha um outro nome.
+
+[01:10] Observe que sempre que chamamos ´validate_´ e o nome do campo, já estamos especificando qual é o campo que queremos validar. Vamos fazer de uma outra forma.
+
+[01:18] Eu vou comentar essas outras linhas para não ficarmos confusos. E em cima eu vou criar uma função. Essa função eu vou chamar de apenas validate e não validate e o nome do campo. Então se eu quero validar um campo específico no serializer eu posso? Posso, da forma que tínhamos feito, cria uma função validate_ e no nome do campo, passando a instância e o nome do campo que queremos validar.
+
+[01:42] Agora vai ser um pouco diferente, vamos passar a instância e como segundo parâmetro vamos passar o “data”. Então fica validate(self, data):. O que isso vai significar? O que vai representar na nossa aplicação? Que vamos ter acesso a todas as informações quando passamos o “data”, do nosso serializer.
+
+[02:00] Então a partir do “data” vamos buscar o nome, o e-mail, o CPF, o RG, o celular, e assim por diante os demais campos.
+
+[02:08] Eu criei um “validator.py” e eu quero que o campo ´validate_cpf´ se chame cpf_valido. Não precisamos da instância, só vamos precisar do CPF, para ficar mais claro vou colocar numero_do_cpf, ficando cpf_valido(numero_do_cpf): e vamos verificar se o número do CPF é esse.
+
+[02:33] Não vou precisar do if do if len. Eu quero que o if seja apenas um return, quero que ele volte para mim o número do CPF, quero verificar se ele é igual a 11, então return len(numero_do_cpf) ==11 .
+
+[02:47] Caso ele não seja igual a 11, essa verificação vamos precisar importar para o ´serializers.py´. Então o que vou fazer? Vou colocar from clientes.validators import . Vou colocar um asterisco para ele trazer tudo, trazer todas as informações que temos.
+
+[03:07] E embaixo vou criar um if, if cpf_valido() e precisamos passar o número do CPF, como passo o número do CPF que está no “data”? Não temos mais um campo específico. Simples, escrevemos ´data´ e entre colchetes vamos digitar o nome do campo que queremos, entre aspas, então if cpf_valido(data[‘cpf’] e ele vai verificar para mim se o CPF é válido. Se ele não for, exibimos a mensagem de erro.
+
+[03:40] Então olha como vai ficar a leitura do nosso código, se o CPF não for válido, exibimos uma mensagem de erro. Observe que colocamos o not aqui, então if not cpf_valido(data[‘cpf’]): , se não for válido o CPF, passamos o CPF e exibimos essa mensagem de erro.
+
+[04:00] E no final, depois que validamos os campos, já deixamos nosso código limpo, retornamos apenas o “data” em ´return data’ . Vou salvar o validators.py também. Esqueci de tirar os dois pontos do final de return len(numero_do_cpf) ==11: pois não é uma função.
+
+[04:14] Então pensa comigo antes de executarmos lá o seguinte exemplo: vamos supor que o ´len´ do número do CPF é 10. 10 é igual igual 11? Não, isso é falso. Então o que vamos ter como resultado disso é um false.
+
+[04:38] O que vamos ter disso 10 == 11 é um valor falso, então ele vai retornar para nós um valor falso. O que vai acontecer? Lembra que o resultado dessa operação é um falso, só que para eu conseguir exibir a mensagem de erro eu preciso de uma condição verdadeira, se for verdadeira ele faz alguma coisa. E como transformamos do falso para o verdadeiro? Com o not na frente.
+
+[05:00] Então ele falou “10 não é igual a 11” aqui ele está mandando falso, só que como colocamos o not na frente em if not cpf_valido(data[‘cpf’]): vamos inverter. O que era falso, lá no nosso serializer vai virar verdadeiro e então vamos conseguir entrar nessa função.
+
+[05:20] Salvei, abriu o terminal, parece que está tudo ok. Então vamos voltar e tentar salvar o cliente. Vou dar um post e aparece uma mensagem estranha non_field_errors e “O CPF deve ter 11 dígitos” .
+
+[05:36] Por que ele não apareceu grifando o campo CPF igual estávamos vendo antes? Porque vamos precisar especificar. Existe uma mensagem de erro mas não sabemos onde, pegamos a informação do “data” mas em nenhum momento falamos “Essa mensagem de erro se refere a esse campo”. E como fazemos isso?
+
+[05:53] Vamos fazer assim, vou colocar abre chaves e fecha chaves em raise serializers.ValidationError({“O CPF deve ter 11 dígitos”}). Observe que aqui eu tenho o parênteses da minha função validationError, quando eu abro chaves eu vou colocar entre aspas o nome do campo então ‘cpf ‘: ‘. Então coloquei o nome do campo, fechei chaves, fechei as aspas, coloquei dois pontos e o nome da mensagem de erro, fechei aspas e fechei o parênteses. Vai ficar 'cpf‘ :”O CPF deve ter 11 dígitos".
+
+[06:18] Se eu salvo e executo mais uma vez, aparece “cpf”, temos aquela validação como estávamos vendo antes. Então o que vai mudar do validate para uma função que valida direto um campo? Vamos pegar as informações através do “data” e vai pegar as mensagens de erro e indicar nas nossas ValidationError o nome do campo entre chaves, dois pontos, e a mensagem de erro.
+
+[06:43] Então vou fazer isso agora para os outros campos também. Vou fazer para o meu validation nome. Vamos colocar esse do nome também, vou selecionar o validate_nome no nosso serializers.py, apertar “Command + X” e colar dentro de validations.py. Selecionei tudo, com “Command + barra” eu tiro o comentário e “Command + abre colchetes” eu empurro tudo. Eu quero saber se o nome só tem caracteres alfabéticos, então é isso o que eu quero retornar.
+
+[07:11] Então, na linha de baixo de validate_nome vou retornar return nome.isalpha. Vou tirar o ́return nome´ que não vamos mais usar e o campo do ´raise serializer.ValidationError´ ele vai para o nosso serializador.
+
+[07:26] A única coisa que precisamos aqui é o nome, então vou deixar validate_nome(nome) . Vou salvar essa verificação e vamos criar dentro de serializers.py. Vamos alterar o ´validate_nome´ em validator.py e vamos colocar nome_valido(nome) . Então if nome_valido(data[‘nome’]). .
+
+[07:56] Crio a minha função e passo a mensagem de erro na linha de baixo com raise serializer.ValidationError({“Não inclua números neste campo”) . Qual é o campo que estamos utilizando aqui e queremos exibir a mensagem de erro? No campo nome. Nome entre aspas, dois pontos, quando fecha o campo ele fecha a nossa string e colocamos também fechando as aspas. Ficando ({‘nome’: ”Não inclua números neste campo”).
+
+[08:16] No ´return data´, vai precisar ser a última coisa que fazemos depois de executar as nossas validações, então vou colocar ele na linha de baixo do nosso raise serializers.ValidationError. Vamos fazer esse teste, se o nome for válido exibimos uma mensagem de erro? isso está um pouco estranho.
+
+[08:31] Então vamos supor, se o nome for “123”, ele é alfa numérico? Não, então vamos receber um falso aqui. Para conseguirmos acessar e exibir mensagens de erro, a condição precisa ser verdadeira, então o que eu faço? Coloco um not no if, então if not nome_valido(data[‘nome’]).
+
+[08:47] Então colocando um not ali, já conseguimos verificar. Vamos ver. Então vou colocar 1234 no nome, e o CPF “1234512345” e o “1” para indicar os 11 dígitos e quando dou um post aparece no nome “Não inclua números neste campo”. deu certo. Vamos fazer o próximo?
+
+[09:07] O RG, copiei de serializers.py , tiro o comentário com “Command + X”, vamos no validator.py e com “Crtl + colchetes abrindo” puxamos para a esquerda. Vou chamar de rg_valido só para manter o padrão, passando apenas o número do RG, então rg_valido(numero_do_rg).
+
+[09:43] E vou passar o número do RG para if len(numero_do_rf) !=9: , vou tirar o ´return rg´ porque não preciso dele, e vou retornar direto nessa condição. No lugar do if´eu vou ter um return. Então return len(numero_do_rf) !=9: e vou tirar o raise serializers.ValidationError porque essa mensagem vai ficar no nosso serializer, e vou verificar dentro de serializers.py.
+
+[10:05] Para manter já o padrão vamos colocar if rg_valido(data[‘rg’]) e embaixo a mensagem de erro . Se o RG não for válido, então vamos mudar para if not rg_valido . Vamos ver qual a verificação que estamos fazendo para ver se o RG é válido ou não?
+
+[10:30] Vou passar o ´return data´ para baixo, selecionando ele e utilizando “Ctrl+X” e colando com “Ctrl+V”. Então nosso “validate” está assim e vamos ver qual é a verificação. O que eu quero ver é se o RG não for válido, exibimos uma mensagem de erro. Como estamos verificando o RG? Se ele não for igual a 9. Então vamos fazer diferente, se ele for igual igual a 9.
+
+[10:55] Vou colocar um exemplo aqui embaixo, o len do RG veio com 8. 8 é igual igual a 9? Não, não é igual, então ele vai receber uma mensagem de falso, na mensagem de falso ele não vai conseguir exibir essa condição do if not rg_valido. Porque para cairmos nessa condição, o if precisa ser verdadeiro, então vamos inverter a ordem, deixamos o RG com a condição verdadeira.
+
+[11:18] Vamos ver? Então se eu dou um nome mesmo de “Gustavo” e dou um post, observe que caímos numa mensagem de erro, deixa eu ver o que eu errei. Eu esqueci de tirar o nosso exemplo de 8 == 9.
+
+[11:30] Tirei o exemplo e vamos voltar para conseguirmos visualizar melhor. Se eu dou um post, deu as mensagens de non_field_errors e “O RG deve ter 9 dígitos” . Então voltando no ´serializer.py´ eu só esqueci de marcar o campo que vamos utilizar, que é o campo RG, então vou adicionar ´ ‘rg’ ´ em raise serializers.ValidationError({‘rg’: “O RG deve ter 9 dígitos”}).
+
+[11:53] E o ´return data´ no final. Se eu dou um post mais uma vez, vai aparecer “rg” e “O RG deve ter 9 dígitos”, grifado de vermelho nosso campo do RG.
+
+### Exercício: Motivo para validar
+
+Você foi contratado para trabalhar exclusivamente com validação de dados. Partindo dos princípios que você estudou, qual o principal motivo de realizarmos validação de dados em uma API?
+
+a) **Alternativa correta:** Para mantermos a qualidade da informação.
+- _Alternativa correta! Certo! O processo de validação ajuda a garantir que estamos lidando com dados reais e válidos._
+
+b) Para não comprometermos a usabilidade da API.
+
+c) Para não comprometermos o uso do banco de dados com dados inválidos.
+
 ### O que aprendemos?
+
+- Aprendemos como validar campo a campo criando uma função, por exemplo:
+
+        def validate_<nome_do_campo>(self, nome_do_campo):
+        if len(nome_do_campo) < 11:
+            raise serializers.ValidationError("O campo deve ter 11 dígitos")
+        return nome_do_campo
+
+- Vimos que podemos criar uma função chamada validate para validar todos os campo, validate(self, data) e acessar cada campo com data['<nome_do_campo>'];
+
+- Melhoramos nosso código removendo a lógica de validação do serializer.
+
 ## 3. Importando validações e gerando clientes
 ### Projeto da aula anterior
 ### Expressões regulares
