@@ -384,11 +384,208 @@ c) Para não comprometermos o uso do banco de dados com dados inválidos.
 - Melhoramos nosso código removendo a lógica de validação do serializer.
 
 ## 3. Importando validações e gerando clientes
-### Projeto da aula anterior
 ### Expressões regulares
+São expressões para validação dos dados.
+
+    import re
+
+    def celular_valido(num_celular):
+        modelo = ‘[0-9]{2} [0-9]{5}-[0-9]{4}´
+        return re.findall(modelo, numero_celular)
+
+---
+
+[00:00] Passamos a lógica da validação aqui pro validators.py e tiramos ele no nosso serializer.py. O que vamos fazer agora? A validação do celular, só que eu quero que o celular tenha um padrão, um modelo.
+
+[00:13] Por exemplo, quando vamos lá na nossa aplicação, quero que o celular tenha o DDD, o espaço, o número 9, aí temos 4 dígitos, quero que tenha um traço e mais 4 dígitos. Qualquer coisa diferente disso eu quero que não seja aceito pela nossa API, não seja um dado válido.
+
+[00:31] Então como podemos criar esse nosso modelo e garantir que o celular possui um número válido? Vamos usar expressões regulares. Se você não conhece expressões regulares, abaixo desse link temos um curso aqui na Alura que fala bastante sobre expressões regulares e validações e você vai poder assistir para entender melhor.
+
+[00:52] Mas como nosso exemplo é simples, queremos construir esse modelo de celular, vamos ver como integramos isso no nosso Djang Rest e fazemos nossa validação.
+
+[01:03] Para começar o que vamos fazer? Em “serializer.py” eu vou tirar a função que temos do celular, vou desconectar, com “Command + espaço” , vou dar “Ctrl + X” nela e vou trazer ela para dentro do “validators.py” . E vamos ter uma função que vai validar o celular. Vou usar “Command + colchete” só para trazer para o lado, vou falar que o nome dessa função vai ser celular_valido . E vamos precisar apenas do número do celular.
+
+[01:32] Então posso até mudar, vou colocar celular_valido(numero_celular). Então não queremos verificar apenas se o número do celular possui 11 dígitos, vamos fazer uma outra verificação. O ´raise´ vamos jogar para lá e vamos tirar o return celular. Depois vamos ter outra mensagem de retorno, para retornar um valor verdadeiro falso para utilizarmos no nosso serializer.
+
+[01:56] Como eu utilizo expressões regulares no meu código? Eu dei dois enters e na primeira linha eu vou importar um código que já está no nosso projeto, que é o ´re´, então ´return re´e a partir dele vamos conseguir utilizar expressões regulares.
+
+[02:13] Então vou até criar um doc string para ficar mais claro com o que essa função vai fazer. Coloquei três aspas e vou falar por exemplo “”“Verifica se o celular é válido”””. Posso deixar um exemplo, então o que eu quero que tenhamos é um 11, um espaço, o número 9, 4 dígitos, um traço e 4 dígitos. Ficando “””Verifica se o celular é valido (11 91234-1234)””” ´
+
+[02:42] Só para ficarmos com essa estrutura, esse modelo que queremos criar bem marcado. A primeira coisa que iremos fazer é criar esse modelo utilizando expressões regulares. Vou remover nesse código ́if len(celular) < 11.
+
+[02:54] A primeira coisa que vou fazer é criar uma variável que vou chamar de modelo e vou criar esse modelo utilizando expressões regulares. Então entre aspas vou colocar um colchete e quero que esse primeiro valor, que é o DDD, que pode ser 11, 15, 21, dependendo do estado que a pessoa estiver, pode ser um número entre 0 e 9. E quantos dígitos vamos ter? Dois, então vou colocar isso entre chaves.
+
+[03:22] Depois o que eu quero é um espaço, coloquei um espaço, e temos depois 5 dígitos que vou fazer a mesma coisa. Entre colchetes eu vou dizer que posso ter um número de 0 a 9, e eu tenho entre chaves o número 5, indicando que eu tenho 5 dígitos. Tenho um traço, e tenho a mesma coisa só que agora com 4 dígitos. Então tem um número de 0 a 9, só que agora com 4 dígitos. Pronto, criamos nosso modelo modelo = ‘[0-9]{2} [0-9]{5}-[0-9]{4} ´
+
+[03:54] Olha só, temos o DDD, 2 dígitos e um espaço, 5 dígitos, o traço, e depois os 4 dígitos. Criei meu modelo e agora quero verificar se o número do celular que vai entrar nessa função corresponde a esse modelo que criamos, então vou chamar isso de resposta.
+
+[04:17] E essa resposta vai ser assim, existe uma função que vai verificar se o número do celular corresponde a esse modelo. Essa função se chamar re.findall e entre parênteses eu preciso passar o modelo e preciso passar o número de celular, então resposta = re.findall(modelo, numero_celular).
+
+[04:41] Agora a partir disso eu consigo verificar se o meu modelo em reposta = re.findall(modelo, numero_celular) corresponde a esse número de celular em celular_valido(numero_celular), se o número do celular se enquadra nesse modelo que eu criei. A única coisa que eu preciso fazer é retornar a resposta, então return resposta.
+
+[04:59] Vamos no nosso código e importar essa nossa verificação de celular válida. Salvei o validators.py . Vou voltar para o meu serializer e antes de retornarmos o dado vamos verificar se o celular nessa nossa função é válido, passando o número de celular através do data if celular_valido(data[‘celular’]).
+
+[05:26] Então vamos verificar, se o número do celular for um número válido, o que queremos fazer? Se esse modelo for verdadeiro ele vai retornar para nós um True, e se ele retornar um True ele vai entrar na nossa função e não é isso que queremos. Então iremos inverter, se o número de celular não for válido, queremos exibir a mensagem de erro, então no lugar de ´if celular_valido´ , vamos colocar if not celular_valido.
+
+[05:47] Copiei a mensagem de erro, então precisamos entre chaves quando abrimos o ValidationError indicar o campo que queremos utilizar para fazer essa validação, que é o celular, dois pontos, a nossa mensagem e fecha chaves, ficando raise serializers.ValidationError({‘celular’:”O celular deve ter 11 dígitos”}).
+
+[06:05] Vamos fazer essa verificação? O que eu vou fazer? Vou colocar um número de RG válido, e vou colocar um número de celular inválido, então 1112345-12345. Se eu der um post observe que aparece “O celular deve ter 11 dígitos” .
+
+[06:28] Na verdade precisamos melhorar essa nossa mensagem de erro, então podemos expressar essa mensagem de erro como, por exemplo, “o número do celular deve seguir esse padrão”.. Então posso deixar assim “O número de celular deve seguir este modelo: 11 91234-1234. ”
+
+[07:12] E podemos dar uma explicação, de “deve ter dois dígitos, um espaço” vai do nosso cuidado em passar essa mensagem para quem está utilizando a nossa API.
+
+[07:28] Então por enquanto acho que assim está suficiente. Posso até colocar por exemplo, aqui na nossa função, “respeitando os espaços e traço.”
+
+[08:59] Bom, se vamos lá e damos um post de novo, aparece em vermelho a mensagem que criamos de “O número do celular deve seguir este modelo: 11 91234-1234, respeitando os espaços e traço.” Respeitando acho que podemos até deixar entre parênteses, acho que já está suficiente, dá para entendermos como devemos criar esse nosso modelo de celular.
+
+[08:24] Bom, o que eu quero fazer agora é criar um número de celular válido. Então vou criar um DDD 15 91234-1234, e vou marcar embaixo que Gustavo é um cliente ativo. Quando dou um post, conseguimos cadastrar o Gustavo com o número de celular com este modelo também.
+
 ### Importando validações
+Validação do CPF: validate_docbr
+
+    pip install validate-docbr
+
+---
+
+[00:00] Inserimos validações nos campos do CPF, do nome válido, do RG, e do celular. Porém, se formos na validação que verifica se o CPF é válido no nosso arquivo “validators.py” , observe o que fazemos. Só verificamos se o CPF não tem 11 dígitos, e isso não está legal. Porque se observarmos o CPF que conseguimos cadastrar, onze números 1, depois 12345123451. Onze dígitos mas esse CPF não é válido.
+
+[00:31] Se digitarmos “CPF” e der um “enter” e abrir a página no Wikipedia vamos ver que existe uma regra para os números do CPF, para os dígitos, e tem até um algoritmo que poderíamos implementar isso na mão.
+
+[00:45] Mas se pararmos para pensar um cadastro de cliente e um cadastro com o campo CPF é algo comum em muitos sistemas, então outros desenvolvedores e desenvolvedoras já passaram por esse problema, já tiveram que implementar essa solução do cadastro de CPF para verificar se o CPF é válido, e tem aqui todo o algoritmo. Se você entra na página do Wikipedia você vai conseguir ver detalhes de como é a implementação dos dígitos do CPF.
+
+[01:12] Então o que vamos fazer? Vamos ter que criar essa implementação do zero? Não, existe uma biblioteca onde podemos incorporar ao nosso projeto e pedir para que ela faça as verificações. Vou deixar a aba do Wikipedia aberta, e acessando ela temos todo o formato do CPF, como ele é feito, como são gerado os dígitos verificadores e o algoritmo dele.
+
+[01:42] Existe uma biblioteca chamada “validate_docbr” e quando pesquisamos no Google, o primeiro link da nossa pesquisa é a biblioteca que vamos utilizar. Vou clicar no link e temos a forma como instalamos esse módulo, então ele fala “Um pacote do Python para validação de documentos brasileiros”. Então com esse pacote podemos fazer a validação do CPF, CNH, CNPJ e vários outros documentos. Para o nosso caso precisamos só da validação do CPF.
+
+[02:25] Então ele fala quais são os métodos para utilizarmos e como utilizamos esse pacote no nosso projeto. O que vamos fazer? Primeira coisa, para instalar o projeto eu vou copiar pip install validate-docbr. Lá no nosso projeto, vou abrir meu terminal, parar meu servidor e vou rodar aquele código dando um “Ctrl + V” , o validate-docbr.
+
+[02:59] Vou dar um “enter” e ele vai instalar. Disse que a instalação foi concluida com sucesso então vou subir meu servidor de novo manage.py runserver. E o que ele fala? Ele fala “agora você vai importar do validate_docbr, importar o CPF, criar uma instância do CPF e depois para validar você pode fazer cpf.validate e passa o número do CPF”.
+
+[03:29] Toda essa lógica do CPF podemos inserir onde? No nosso código de “validators.py”. Então já temos o import das expressões regulares, que vamos criar e vou colocar o import também do validate_docbr . A instância cpf = CPF() não vou deixá-la do lado de fora, vou dar “Ctrl + X” nela e vou colocar ela dentro do cpf_valido(numero_do_cpf) , quando formos validar o CPF.
+
+[03:56] Então temos a instância do CPF e depois só perguntamos se o CPF é válido, passando o número do CPF. Então vou perguntar se o CPF é válido, e ao invés de passar o número “012.345.678-90” dentro do ´cpf.validate´ vou passar o número do cpf, ficando cpf.validate(numero_do_cpf).
+
+[04:13] E eu não quero retorno para saber se só tem 11 caracteres, eu quero retorno dessa condição do cpf.validate(numero_do_cpf). Então vou colocar ela para baixo no return return cpf.validate(numero_do_cpf) e vou voltar.
+
+[04:23] O que fizemos aqui agora? Importamos o validate_docbr, criamos a instância do CPF e falou assim “CPF, validate, valida para mim esse número de CPF” e ele vai retornar um verdadeiro ou falso.
+
+[04:41] Para conseguirmos cadastrar um número de CPF válido existe um site na internet que gera números de CPF para testarmos, para nós que somos desenvolvedores ou desenvolvedoras testar.
+
+[04:52] Então na aba de pesquisa podemos colocar “gerador de CPF” e clicar no primeiro link onde está escrito “Gerador de CPF - 4Devs” e vou pedir para gerar um CPF. Vou utilizar o CPF gerado e copiar o CPF com “Ctrl+C”. Eu não vou utilizar no nosso projeto traços para o CPF, se observamos no ´validate br´ existe uma forma de conseguirmos criar uma máscara para ele.
+
+[05:22] Ele fala assim: "O CPF foi gerado assim, mas podemos gerar ele com uma máscara utilizando esse parâmetro ́cpf.generate(True) ´”. Eu não vou utilizar isso, não vamos investir mais tempo nessa validação da máscara mas está bem tranquilo, a documentação está bem legal e conseguimos gerar.
+
+[05:40] Então o que eu vou fazer? Subi meu servidor e lá na nossa aplicação eu vou criar mais uma pessoa, que vai ser a Ana. O e-mail dela vai ser ana@alura.com, o CPF dela eu vou colocar o número de CPF 40532778090 que geramos no site visto anteriormente só que vou tirar os traços. O RG vou colocar 123451234, 9 dígitos, e o celular vou colocar 11 91234-1234. Vou marcar que Ana é uma pessoa ativa.
+
+[06:15] Esse número de CPF é um número de CPF válido. Eu vou inverter. Vou dar um “Ctrl + C” no número do CPF e vou colocar um CPF inválido 2222222222. Quando eu der um post olhe o que ele vai falar: “ O CPF deve ter 11 dígitos” .
+
+[06:33] Aqui está um pouco estranho, porque temos 11 dígitos, essa não é a mensagem correta. Poderíamos dizer apenas: “CPF invalido”. Então lá no nosso serializers.py vamos mudar nossa mensagem de erro.
+
+[06:45] Então em serializers.ValidationError vamos colocar serializers.ValidationError({‘cpf’: “Número de CPF inválido”}). Salvei, e se volto na aplicação e dou um post outra vez, ainda com o CPF inválido 2222222222, aparece a mensagem de erro “Número de CPF inválido”.
+
+[07:07] O que vou fazer? Vou colocar aquele número que copiamos, que usamos do gerador de CPF, e quando dou um post temos lá o cadastro da Ana com um número de CPF agora válido. Não apenas com 11 dígitos, mas seguindo todas as regras nacionais, dos padrões nacionais.
+
+[07:25] Então dessa forma aprendemos como podemos incorporar outras validações, outras soluções que outras pessoas criaram aqui no nosso código. E observe como nosso código ficou organizado, temos o validate_docbr só na parte da lógica da validação em “validators.py” e no “serializers.py” só perguntamos se o CPF não for válido, damos uma mensagem de erro.
+
 ### Script para gerar clientes
+
+    import os, django
+
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'setup.settings')
+    django.setup()
+
+    from faker import Faker
+    from validate_docbr import CPF
+    import random
+    from clientes.models import Cliente
+
+    def criando_pessoas(quantidade_de_pessoas):
+        fake = Faker('pt_BR')
+        Faker.seed(10)
+        for _ in range(quantidade_de_pessoas):
+            cpf = CPF()
+            nome = fake.name()
+            email = '{}@{}'.format(nome.lower(),fake.free_email_domain())
+            email = email.replace(' ', '')
+            cpf = cpf.generate()
+            rg = "{}{}{}{}".format(random.randrange(10, 99),random.randrange(100, 999),random.randrange(100, 999),random.randrange(0, 9) ) 
+            celular = "{} 9{}-{}".format(random.randrange(10, 21), random.randrange(4000, 9999), random.randrange(4000, 9999))
+            ativo = random.choice([True, False])
+            p = Cliente(nome=nome, email=email, cpf=cpf, rg=rg, celular=celular, ativo=ativo)
+            p.save()
+
+    criando_pessoas(50)
+
 ### Populando banco de dados
+Biblioteca Faker: auxília na criação de dados para popular o banco de dados
+
+    pip install Faker
+
+    from faker impor Faker
+
+---
+
+[00:00] Incluímos a validação do CPF e ficou bem legal. Só que na minha base de dados eu já tinha alguns clientes cadastrados, como o Guilherme e o Gustavo, que o CPF contém um valor inválido, contém dígitos inválidos.
+
+[00:14] E o que eu gostaria de fazer? Queria criar uma série de clientes. Quero criar uma forma de gerar vários clientes com base nos dados que já geramos e validações que já incluímos na nossa aplicação.
+
+[00:29] Por exemplo, quero que o CPF seja um número de CPF válido para esse cliente. Quero que seja um nome válido, quero que o RG tenha 9 dígitos, e quero que o celular tenha esse modelo que inserimos.
+
+[00:41] Mas como vamos criar esses clientes na nossa base de dados? A primeira coisa que vamos fazer é, se observamos, o cadastro da Ana está correto, tem o nome Ana, e-mail da Ana, o CPF é um CPF válido.
+
+[00:55] O RG não vamos nos preocupar com a regra porque cada estado do Brasil tem uma regra específica para o RG, então não tem como vincularmos uma regra geral. Por isso no RG vamos deixar com que tenha 9 dígitos mesmo e no celular queremos usar essa máscara.
+
+[01:12] Como que vou gerar esses clientes? Para começar, vou deletar o cliente Gustavo e Guilherme na aba de Administração do Django. Vou selecionar o nome deles, selecionar a Ação “Remover clientes selecionados” e clicar em “Ir”, e depois “Sim, eu tenho certeza” .
+
+[01:32] Agora que deletei esses clientes, na atividade anterior a esse vídeo, temos um link onde mostra um script escrito em Python para gerarmos clientes na nossa base de dados. E o script é esse, você também terá acesso a ele.
+
+[01:48] Então vamos criar um arquivo na nossa aplicação chamado populate_script.py , vamos colar esse script e gerar uma série de pessoas e vamos entender um pouco melhor como esse script foi criado.
+
+[02:06] Então vou copiar todos os dados do script com “Ctrl + C” e na nossa aplicação observe que temos nosso app de clientes, setup, e vou criar um novo arquivo em “PROJETO_CLIENTES”. Vou clicar no ícone de adicionar do lado direito de “PROJETO_CLIENTES” ,opção “New File”, e não de pasta, e vou criar um arquivo chamado “populate_script.py” .
+
+[02:36] Dentro deste arquivo eu vou dar um “Ctrl+V” e vamos entender o que tem nesse arquivo. Primeira coisa, ele faz o import do ´django´ e do ambiente virtual do ´django´, e do setup de desenvolvimento do Django para conseguirmos acessar nosso projeto. E tem também uma instância do ´django.setup() ´.
+
+[03:01] Depois temos uma biblioteca chamada faker, from faker import Faker e essa biblioteca não temos na nossa aplicação, vamos precisar instalar essa biblioteca para que esse código, esse script, que vai gerar nossos clientes, sejam gerados.
+
+[03:18] Então se formos na internet e digitarmos na busca “faker django”, clicando no primeiro link da pesquisa “Welcome to Faker’s documentation! - Faker 4.1.1… “ observe que temos aqui uma instalação básica dele que é o pip install Faker.
+
+[03:39] Vou copiar o pip install Faker e no nosso código em populate_script.py vou abrir no nosso terminal e vou dar um “Ctrl + C” para parar. “Ctrl + V” pip install faker e instalou. Subi no nosso servidor mais uma vez ´manage.py runserver´ e agora já temos o faker instalado na nossa aplicação.
+
+[04:01] O validate_docbr já tínhamos instalado e ele tem um import do random, o import random e já traz também um modelo de cliente from clientes.models import Cliente .
+
+[04:09] Tudo isso é possível porque utilizamos essas duas linhas, a linha 3 e 4, que constam os.environ.setdefault(‘DJANGO_SETTING_MODULE’, ‘setup.settings’) e django.setup(), onde dizemos que vamos utilizar as configurações do nosso projeto de setup e diz também qual a instância do ´django setup´.
+
+[04:25] O que esse script vai fazer? Existe uma função nesse script chamado “criando pessoas”, onde vamos passar o valor da quantidade de pessoas que queremos criar. Temos a instancia do faker para o português Brasil, porque se não setar essa propriedade, ele vai gerar com nomes em inglês, ou se eu setar estiver com outros nomes também ele pode gerar com nomes italianos, japonês, e várias outras possibilidades.
+
+[04:53] Lembrando que isso estamos utilizando para teste. Então vamos setar com a localização em português. Esse ´Faker.seed(10)´ o que vai acontecer? Quando definirmos o ´seed´ ele vai gerar a mesma sequência de nome para mim. Então quando rodarmos essa aplicação ele vai gerar os mesmos nomes para mim e vai gerar os nomes para você também.
+
+[05:13] E aqui temos um for como for _ in range(quantidade de pessoas) onde temos dentro uma instância do CPF cpf = CPF() e pedimos para ele gerar um nome fake nome = fake.name() . Temos um email que vai ser gerado com base nesse nome, então vamos pegar o nome da pessoa e vai colocar no primeiro espaço entre chaves, depois vai ter um arroba, depois vamos ter fake.free_email_domain()) que vai ser gmail, yahoo, e outros e-mails gratuitos, domínios gratuitos, e vamos gerar esse e-mail.
+
+[05:40] Depois vamos pedir para o nosso CPF do docbr gerar para nós o número do CPF válido e depois vamos gerar um RG com aquela formatação que já temos, com os números certos. Também vamos gerar o número do celular utilizando aquele formato que já tínhamos, dois dígitos, o 9, depois quatro dígitos celular = “{} 9{}-{}.
+
+[06:05] E vai ter um random choice ficando ativo = random.choice([True, False]) para deixarmos a nossa aplicação escolher se esse cliente vai ser um cliente ativo ou não, se vai ser true ou false para esse nosso cliente. Para ver se ele está ativo.
+
+[06:19] Vamos falar que “p” vai ser a instância desse cliente passando todas essas propriedades p = Cliente(nome=nome, email=email, cpf=cpf, rg=rg, celular=celular, ativo=ativo) . Então vamos ter um cliente com nome, que geramos em cima em nome = fake.name(), e-mail e depois configurar todas essas variáveis.
+
+[06:33] Salvamos este cliente. Se esse código for executado com sucesso temos a mensagem de print (‘Sucesso!’) e em criando_pessoas(50) estamos executando essa função criando 50 pessoas.
+
+[06:46] No início eu considero que seja muito interessante e válido para conseguirmos dar continuidade que você crie também com 50 pessoas a execução desse script.
+
+[06:59] Vamos executar esse script e gerar essas pessoas? Se eu for no meu código e atualizar minha lista de clientes eu só tenho a Ana, vamos gerar então 50 pessoas, 50 clientes para a nossa base de dados.
+
+[07:11] Abrindo meu terminal eu vou abrir uma janela clicando no ícone no canto direito com um sinal de “mais”. Observe que já estou com a minha venv e é muito importante sempre validarmos isso. Vou pedir para o ´python´ executar esse script, então vou dizer: “Python executa para mim esse script population_script.p. Então vou colocar python populate_script.py.
+
+[07:36] Quando dou um enter observe que ele vai pensar um pouco e mandou uma mensagem de “Sucesso!”. Se dou um “Ctrl + J” é a mensagem de Sucesso depois que executamos a nossa função que vai gerar essas pessoas.
+
+[07:50] Se eu volto no meu código e atualizo, observa que agora eu tenho muitos nomes, tenho Ana, Isabel, Mirella, Emanuella, a senhorita Olivia Melo e vários outros nomes que foram gerados com base nas validações que já criamos.
+
+[08:06] Mas Guilherme, por que eu estou gerando todos esses nomes? Porque mais para a frente vamos aprender a criar filtros, a incluir paginação na nossa API, vamos aprender como verificar se já temos um CPF cadastrado ou não.
+
+[08:25] Então aqui eu tenho “localhost:8000/clientes” , se eu coloco o ID 10 “localhost:8000/clientes/10” ele vai me mostrar o Luiz Otávio que é nosso cliente 10. Só que ele tem o CPF aqui, eu quero conseguir buscar um cliente por CPF, e se fossemos criar todos os clientes na mão íamos demorar muito tempo. Por isso, disponibilizamos esse script para popular nossa base de dados e assim dar continuidade na nossa aplicação.
+
+[08:50] Na sequência vamos ver como gerar filtros. Eu quero todos os clientes que são ativos, ou todos os clientes que não estão ativados, que estão desativados na minha API, ou eu quero verificar se esse RG está cadastrado, ou seja, se já é um cliente cadastrado aqui na nossa aplicação. Tudo isso vamos ver na sequência.
+
 ### Dividir para conquistar
 ### Faça como eu fiz
 ### O que aprendemos?
