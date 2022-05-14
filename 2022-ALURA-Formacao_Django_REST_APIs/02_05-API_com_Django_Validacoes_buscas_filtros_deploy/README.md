@@ -858,11 +858,363 @@ c) **Alternativa correta:** Nenhum cliente será exibido.
 - Desenvolvemos a busca de clientes pelo número de CPF ou pelo nome.
 
 ## 5. Deploy
-### Projeto da aula anterior
 ### Preparando o deploy
+Deploy seria torna nossa aplicação on-line. No português "desdobramento em linhas". Transferir nosso código/script/aplicação para um servidor. \
+[Documentação]('https://www.heroku.com/python')
+
+No Heroku:
+- Python >3.x
+- Postgree l ocal
+- Heroku CLI local
+
+
+1. Clicar em: Create New App
+    
+    **App name:** drf-clientes \
+    **Choose a region:** United States
+
+2. Após criado o App, no Terminal HEROKU CLI:
+
+    heroku login
+
+---
+
+[00:00] Nossa API ficou bem legal, temos um cadastro de clientes com todos os campos, validações, ordenação, buscas, pesquisa por filtro, ou seja, muita coisa bacana.
+
+[00:12] Se somarmos o conteúdo do primeiro curso que aprendemos a criar os modelos, quais eram os arquivos necessários, os passos necessários do modelo para o serializer, para o view, para as nossas urls, ou seja, conseguimos criar bastante coisa. Temos bastante conteúdo visto.
+
+[00:30] Só que no primeiro curso e nesse, se eu somo os dois conteúdos, a minha API só funciona local, ou seja, só o meu computador consegue fazer essa API funcionar e atender a essas requisições.
+
+[00:43] E se pararmos para pensar, não é só isso. Toda vez que eu quero executar a minha API, o que eu preciso fazer? Subir minha venv, rodar o python manage.py runserver e aí sim minha API está funcionando e conseguimos cadastrar clientes e alterar, atualizar, deletar, várias outras ações também.
+
+[01:03] O que eu quero propor agora é: vamos realizar um deploy dessa nossa aplicação de uma forma bem simples, não levando em conta todo o conteúdo denso que é o deploy.
+
+[01:13] Com o deploy é necessário que pensemos em segurança, necessário que pensemos em escalabilidade e vários outros assuntos. Daria um curso só de deploy.
+
+[01:22] Porém, eu quero mostrar que é possível realizarmos um deploy de maneira tranquila, um passo a passo bem claro entendendo o que estamos fazendo e sem precisar ter um custo por isso.
+
+[01:35] Lembrando que o objetivo do nosso treinamento, deste curso, é preparar você para uma aplicação maior, uma aplicação que vai crescendo.
+
+[01:45] Então a cada curso que temos aqui na Alura vamos aprofundando os nossos conhecimentos. Então vamos ver um passo bem simples de como realizar um deploy.
+
+[01:54] Para começar, vamos fazer deploy no Heroku. Então vou pesquisar na internet “heroku” e se eu clico no primeiro resultado da pesquisa “Heroku: Cloud Application Plataform” ele fala que é uma plataforma para conseguir colocar nossa aplicação na nuvem.
+
+[02:08] Observe que quando eu clico no Heroku eu já estou logado na minha conta. Caso você não esteja logado na sua conta, é só você criar uma conta. Vou sair da minha conta para você visualizar. Estou fazendo o log out.
+
+[02:22] “Eu não tenho conta no Heroku, não tenho nenhum conteúdo no Heroku”, então você pode criar. Se você não tem conta, você pode clicar em “Sign up” embaixo da barra de Log In, ou no canto superior direito da página que vai aparecer também.
+
+[02:34] E você vai colocar seu nome, seu email, a companhia que você trabalha, se você trabalha como estudante pode por que você é estudante ou algo desse tipo. Fala que você não é um robô e cria a sua conta.
+
+[02:45] Se você já tem conta é só clicar para fazer o Log In, colocar suas credenciais e acessar a página do Heroku.
+
+[02:54] Quando eu clico no Log In para realizar a minha conta, eu acesso alguns apps que eu já tenho ativo no Heroku e conseguimos realizar o deploy da nossa API de forma gratuita, sem precisar cadastrar cartão de crédito, sem cobranças por isso, pelas aplicações que vamos fazer.
+
+[03:15] Então observa, vai ser um conteúdo simples mas muito eficaz. Vamos ter de fato nossa aplicação no ar.
+
+[03:20] Primeira coisa que vamos fazer é: observe que estou utilizando aqui uma conta personal, eu não tenho um time cadastrado para realizar as alterações.
+
+[03:31] Eu estou com uma conta pessoal, vou clicar no ícone “New” posicionado no canto superior direito da página e depois selecionar a opção “Create new app” .
+
+[03:35] Esse app vou chamar de “drf-clientes”. Esse nome precisa ser único, então observe que , neste momento, esse nome está disponível.
+
+[03:47] Você pode achar depois algum outro nome interessante para você, como “clientes”, “api de clientes”, alguma coisa assim que esteja disponível.
+
+[03:54] A região vamos utilizar Estados Unidos mesmo, nossa aplicação vai ficar num servidor de lá, e vou clicar em “Create app” para criar o nosso app aqui no Heroku. Legal, criou o app, já temos um passo bem importante feito. Agora vou abrir uma outra aba e vou escrever “python heroku” na pesquisa.
+
+[04:16] Quando eu abro essa aba, tem aqui no segundo link da pesquisa “Deploy and scale Python & Django in the cloud” no próprio site da Heroku. Vou clicar e quando abrir a página ele tem um vídeo mostrando como faz esse deploy, mas quero mostrar bem passo a passo para você.
+
+[04:33] Então vou clicar no ícone em azul “VIEW THE DOCS” localizado no canto superior direito da página para visualizarmos as documentações e o que queremos é realizar o deploy de uma aplicação em Python utilizando o Django.
+
+[04:44] Olhando para baixo temos o ícone roxo de “Get started with Python” , vou clicar nele para começarmos com uma aplicação em python.
+
+[04:52] Então ele fala que a primeira coisa que precisamos ter para conseguir realizar um deploy é uma conta na Heroku, que já fizemos, e precisamos do python da versão 3.7 instalada local, e precisamos também do Postgres instalado local, essa é uma requisição importante.
+
+[05:08] Porém, se você já realizou os cursos de Django lá da aplicação das receitas, você já tem o postgres instalado local, já tínhamos feito essa instalação. Então, como eu já tenho também o postgre instalado local, eu só vou clicar em “I’m ready to start”, que já estou pronto para começar. Lembrando que essa versão do python instalada local tem suporte para o Mac, Windows e Linux.
+
+[05:31] Caso você não tenha o postgre, “Ah Guilherme, eu não vi os cursos do Django sem ser de API, de aplicações”. Então você pode clicar no link em cima “Postgres installed” e realizar o deploy, o download do postgre.
+
+[05:50] Vou colocar na busca “postgres download” para vermos. Clicando no primeiro link temos o download do postgre, então no Linux, Mac, Windows e outros sistemas operacionais também. Vou fechar.
+
+[06:07] Já estou certinho, tenho a conta, tenho a versão 3.7 instalado, meu sistema operacional é o Mac mas tem suporte para o Linux e para o Windows e estou com o postgre instalado local. Então vou clicar em “I’m ready to start”, estou pronto para continuar.
+
+[06:21]O que vamos fazer agora? Para pegarmos todos os arquivos do nosso código, os clientes, setup, tudo que precisamos para o nosso projeto funcionar e mandar para o Heroku, vamos precisar de um comando do Heroku mesmo.
+
+[06:37] Tenho que falar assim: “Heroku, eu quero enviar esses arquivos para você”. Para isso, vamos instalar um CLI, um “Command Line Interface” , a interface de linha de comando do Heroku na nossa aplicação.
+
+[06:49] Então caso você esteja utilizando um Mac, você pode instalar com o instalador ou utilizar o brew para instalar, “brew install heroku/brew/heroku” , aí você faz o download.
+
+[07:02] Se estiver utilizando o Windows, se for de 64-bit ou 32-bit, é só clicar no instalador e se seu caso for um Ubuntu é só dar o comando sudo snap install heroku --classic e você vai conseguir realizar o Heroku, o Log In do Heroku na sua aplicação.
+
+[07:17] Depois que você realizou esses passos, eu já instalei o Heroku CLI na minha máquina e vou executar o comando heroku login. Vou abrir nosso código, e vemos nosso servidor, e vou abrir um segundo terminal, clicando no ícone de “mais”.
+
+[07:36] Já estou com a venv, vou dar um heroku login e ele fala assim: “Pressione qualquer tecla para abrir o browser para ver se você pode realizar o login”. Vou pressionar a letra “A”, pode ser qualquer tecla menos o “Q” senão eu vou sair. Olha o que vai acontecer.
+
+[07:51] Pressionei, ele abre uma página do Heroku para mim e vou clicar em “Log In”. E pronto, já estou logado, aparece uma mensagem na tela dizendo “You can close this page and return to your CLI. It should now be logged in”
+
+[08:05] Então, por eu estar logado anteriormente na página da instalação do Heroku, ele já permitiu que eu realizasse o Log In. Ele falou: “Opa, você já está logado aqui com seu nome”. Maravilha.
+
+[08:13] Então já começamos bem, já temos um Log In feito na nossa máquina, já temos o CLI do Heroku, já tenho instalado o CLI, e o que ele fala? Bom, agora você vai precisar preparar o seu arquivo, realizar um git do seu arquivo.
+
+[08:28] Só que antes de realizarmos esses passos, o que eu preciso fazer na parte do Django? E é isso que vamos ver no próximo vídeo.
+
 ### Realizando o deploy
+
+Realizando as configurações no meu Projeto DJANGO:
+
+1. Instalar o HEROKU no projeto:
+
+    pip install django-heroku
+
+2. No SETTINGS.PY:
+
+    import django_heroku
+
+    django_heroku.settings(locals())
+
+3. Instalar o GUNICORN no projeto: [DOCUMENTAÇÃO]('https://gunicorn.org/')
+
+    pip install gunicorn
+
+4. Criar um arquivo Procfile:
+
+    web: gunicorn setup.wsgi
+
+5. Atualizar o requirements.txt com todas as dependências do projeto:
+
+    pip freeze > requirements.txt
+
+6. Iniciar um o GIT:
+
+    git init
+    git commit -m "deploy do projeto"
+
+7. No HEROKU CLI:
+
+    heroku git:remote -a nome_do_app_remoto # vinculando o repositório git
+    git push heroku master                  # envidando os dados para o heroku
+
+    # Parabésn!!! Se não apareceu uma mensagem de erro sua aplicação esta on-line, mas ainda não acabou falta alguns passos continue --->
+
+    heroku run python manage.py migrate     # migrações do banco de dados na aplicação do servidor, criando as tabelas
+    heroku run python manage.py createsuperuser # criar um super usuário no meu admin
+
+---
+
+[00:00] Realizamos as configurações do Heroku, agora vamos realizar as configurações do lado do Django.
+
+[00:06] A primeira coisa que vamos fazer será instalar o Heroku no nosso Django também. Existe um modo, uma lib responsável por fazer essa integração e preparar essa configuração também para postarmos nosso app no Heroku.
+
+[00:20] Então no nosso código eu vou instalar pip install django-heroku. Dou um enter e ele vai instalar para mim o Heroku no meu ambiente, na minha venv.
+
+[00:34] Instalou o Heroku e o que eu vou fazer? Vou minimizar, apertar “Ctrl + P” e vou em setting.py acessar o settings do Heroku e vou importar a configuração que vamos realizar agora no settings do nosso projeto de clientes.
+
+[00:49] É muito simples, eu vou importar import django_heroku e lá no final da página, na última parte, na última linha, no caso a linha 131, vamos colocar uma única linha de configuração, que vai ser django_heroku.settings(locals()) , abre e fecha parênteses executando essa função.
+
+[01:17] A única configuração necessária no settings para subirmos nossa aplicação é essa. “Ah, mas a nossa aplicação está utilizando o data base sqlite, e o Django utiliza o postgre. Mas nós já temos o postgre instalado e ele vai ser responsável por fazer toda essa mágica acontecer.
+
+[01:35] Vamos lá, um ponto importante aqui. Se observamos na nossa aplicação, temos uma chave de segurança a SECRET_KEY.
+
+[01:47] E essa chave de segurança é ideal eu pegar essa chave, gerar uma nova chave, colocar uma variável de ambiente e manipular as configurações do Django também para conseguir acessar essa minha variável de ambiente.
+
+[02:00] Isso seria uma aplicação em produção, valendo, não é o nosso caso aqui, não é o escopo do nosso projeto.
+
+[02:07] Temos uma API, um crood de clientes com validações , com ordenação. Então, não vamos focar no denso conteúdo que é realizar um deploy pensando em todos os pontos possíveis.
+
+[02:20] Então que fique bem claro que estamos fazendo um deploy para facilitar o nosso trabalho, o nosso desenvolvimento da nossa API, mas não vamos suprir todos os densos conteúdos que são realizar um deploy de uma aplicação.
+
+[02:39] Então o que vamos fazer? Fez um import do Heroku, colocou no final django_heroku.settings(locals()) , e a outra coisa que vamos fazer é ter que instalar gunicorn. E o que ele vai fazer? Vamos acessar a página dele para visualizarmos.
+
+[02:57] Vou na busca na internet e vou digitar “gunicorn”. E ele fala que o gunicorn é um servidor HTTP de interface Gateway do servidor Web Python, é um modelo de trabalho pré-fork, transportado do projeto Ruby Gunicorn.
+
+[03:12] Se clicarmos no primeiro resultado da pesquisa “Gunicorn - Python WSGI HTTP Server for UNIX” , quando acessamos, o que ele quer dizer? Todas essas palavras difíceis, ele vai ser responsável por realizar o compartilhamento de recursos entre os nossos servidores, de forma leve e simples.
+
+[03:27] O legal é que ele é feito, escrito na linguagem Python também. Então, vai ser muito mais fácil conseguirmos instalar ele na nossa aplicação. E esse WSGI é uma interface bem de baixo nível, de comunicação entre servidores Web, aplicações Web, frameworks.
+
+[03:45] Então ele vai funcionar debaixo dos panos, como uma interface mesmo entre os nossos servidores, do Heroku. As requisições que estão chegando ele vai ser responsável.
+
+[03:58] Então, vamos instalar. Vou no nosso código, em settings.py e vou abrir o terminal “Ctrl + J”. Não vamos usar mais nenhuma configuração no settings, então vou limpar minha tela com “Ctrl + L” e vou instalar o gunicorn na nossa aplicação.
+
+[04:12] Então vou digitar pip install gunicorn==20.0.4 que vai ser a versão que vamos utilizar. Dou um enter e ele vai instalar o Gunicorn 20.0.4. Instalamos o Django Heroku, instalamos o Gunicorn, o que vamos precisar fazer é, temos um arquivo chamado requirements.txt em “PROJETO_CLIENTES>requirements.txt” .
+
+[04:37] Se olharmos, esse arquivo tem todas as dependências do nosso projeto, e instalamos outras dependências como o Django Heroku e o Gunicorn . Vamos precisar passar essas dependências também para o nosso Gunicorn.
+
+[04:49] Então vamos colocar pip freeze > requirement.txt , ele vai pegar todas as dependências dessa aplicação e eu vou passar para o requirements.txt. Quando dou um enter ele colocou aqui todos os outros módulos que precisamos, todas as outras dependências.
+
+[05:09] Então se olharmos em requirements.txt temos aqui o whitenoise, temos o nosso ´gunicorn ´ também, e django- heroku . Maravilha. O que falta agora para realizarmos o deploy da nossa aplicação? Falta duas etapas bem tranquilas.
+
+[05:24] Próxima etapa que vamos fazer , vamos precisar indicar que essa nossa aplicação web vai ser executada com base no gunicorn. Para isso, vamos no ícone de “mais” do lado direito de “PROJETO_CLIENTES” e vamos criar um arquivo chamado “Procfile”.
+
+[05:43] Dentro desse arquivo vamos colocar o seguinte conteúdo: web: gunicorn .E agora vamos pegar o nome da nossa aplicação que deixamos como setup então vou colocar web: gunicorn setup.wsgi.
+
+[06:00] Então, dessa forma já estamos vinculando todas as responsabilidade, as requisições e a comunicação entre os servidores para o gunicorn. Então temos aqui o setup.wsgi. Legal, fiz tudo isso e agora podemos mandar todo o nosso código pro servidor do Heroku.
+
+[06:23] Vou minimizar, fechar a aba do requirements.txt e deixar aberto só o Procfile para vermos bem. Primeira coisa que vou fazer, já tenho o git instalado na minha máquina.
+
+[06:33] Se você não tiver, pode acessar o código do git, buscando na internet por “github download” e fazer o download do GitHub, clicando no segundo link da pesquisa “GitHub Desktop - Simple collaboration from your desktop”.
+
+[06:48] E é o que vamos utilizar, no meu caso ele já está mostrando meu sistema operacional mas ele vai mostrar o seu sistema operacional.
+
+[06:53] Faz o download, e assim que fazemos o download já precisamos iniciar o git no nosso código. Não vou passar tantos detalhes do git porque na plataforma do Alura temos vários cursos ensinando o passo a passo do git.
+
+[07:06] Então vamos lá, vou iniciar um novo repositório com git init e agora eu quero pegar todo o conteúdo que eu tenho, todos os arquivos que eu tenho no meu “PROJETO_CLIENTES” e falar: “Olha, meu próximo comit eu quero ter todos esses arquivos vinculados.
+
+[07:25] Então vamos colocar git add.Vou dar um enter e vou colocar na linha de baixo também git comit -m “deploy do projeto" Dou um enter e ele criou para mim toda a configuração do comit.
+
+[07:47] Bom, agora para eu mandar pro Heroku eu preciso vincular, preciso falar: “Olha, esse meu app vai ser utilizado para eu fazer o deploy”.
+
+[07:57] Então temos aqui um comando que se chama heroku git:remote -a drf-clientes , que é o nome do app que criamos. Ele vai mostrar o nome do app que você criou, então vai ficar um pouco diferente pra você.
+
+[08:12] Vou dar um “Ctrl + V” no nosso terminal, dou um enter e pronto. Ele já vinculou esse meu git com o git do remoto do Heroku. Para finalizar, a última coisa que preciso fazer é colocar um git push heroku master.
+
+[08:32] Dou um “Ctrl + C”, venho no meu terminal e dou “Ctrl + V” , e aguardo ele enviar todos os arquivos que eu tenho do git para o Heroku.
+
+[08:43] Agora que ele terminou de realizar o deploy de todos os arquivos que tenho, vamos visualizar como ficou a nossa aplicação? Vou copiar o link “https://drf-clientes.herokuapp.com/” que esse é o endereço agora de onde a minha API vai ficar hospedada , não é mais “localhost”.
+
+[08:59] Então dei um “Ctrl + C” nesse link, vou abrir uma página na internet com esse link e apareceu aqui. Só que quando eu clico no link em vermelho no meio da página, observe o que vai acontecer. Temos um erro.
+
+[09:12] Um erro falando que não existe a tabela clientes, não tem um contador de clientes. Porque em nenhum momento realizamos o manage.py migrate. Temos as migrações para subir nossa aplicação no Heroku, mas não criamos essas tabelas do banco de dados lá no Heroku.
+
+[09:32] Vamos fazer isso agora? Então limpei meu terminal, e o que eu vou fazer? Vou digitar heroku run python manage.py migrate ou seja, vou dizer: “Heroku, roda um determinado comando”.
+
+[09:44] E qual comando eu quero executar? o python manage.py migrate. Quando dou um enter ele vai gerar toda a migração lá no Heroku, vai criar todas as tabelas com base nos nossos modelos lá no Heroku também.
+
+[10:11] Agora que ele criou todas as tabelas la no Heroku, quando eu clicar no link em vermelho novamente, olha o que vai acontecer. Vamos conseguir visualizar já a nossa API funcionando, já conseguimos criar os nossos clientes.
+
+[10:23] Para finalizar, um ponto importante também, vamos criar um admin. Porque mesmo sendo uma aplicação no Heroku, não perdemos nosso Django Admin também. Então vamos precisar criar um administrador para ter acesso nessa página também do admin do Django.
+
+[10:40] Então no nosso código vou colocar heroku run python manage.py createsuperuser. Dou um enter e ele está rodando esse comando.
+
+[10:59] Agora ele está pedindo para eu criar um usuário, esse usuário eu vou criar com o nome de Guilherme, vou deixar a senha e endereço de email, e vou criar uma senha mais segura agora.
+
+[11:26] E vai aparecer a mensagem de “Super usuário criado com sucesso”. Vou acessar meu admin com o usuário e senha que acabei de criar.
+
+[11:36] Certo, vai abrir a página da “Administração do Django “ e se eu clico em “clientes” vamos visualizar que está tudo certo, todos os campos aparecendo certinho, o filtro, o campo de busca. Só que não temos nenhum cliente.
+
+[11:47] Só que tínhamos no nosso código um arquivo para executarmos, para criar nossos usuários lá na base de dados, e tínhamos usado como teste.
+
+[11:58] No próximo vídeo vou mostrar algumas funcionalidades. Como executamos esse comando também e algumas funcionalidades também em relação a autenticação.
+
+[12:07] Porque a medida que executarmos e criarmos usuários no Heroku, não queremos que qualquer pessoa que chegue tenha acesso a esses usuários, então vamos proteger a nossa aplicação, criar uma forma de autenticação para consumir os recursos da nossa API.
+    
 ### Atualizando API
-### Exibindo ID
-### Faça como eu fiz
-### Projeto do curso
+Autenticação para controle de acesso na aplicação:
+
+No VIEWS.PY:
+
+    from rest_framework.authentication import BasicAuthentication
+    from rest_framework.permissions import IsAuthenticated
+
+    class ClientesViewSet(viewsets.ModelViewSet):
+        ...
+        authentication_classes = [BasicAuthentication]
+        permission_classes = [IsAuthenticated]
+
+---
+Atualizações de alterações no projeto on-line:
+
+No terminal:
+
+    git status
+    git add .
+    git commit -m "atualização"
+    git push
+
+---
+
+[00:00] Estou com meu projeto local na página principal e eu tenho aqui o meu endpoint de clientes, e quando eu clico ele vai listar todos os clientes.
+
+[00:08] O mesmo acontece com o meu projeto no Heroku drf-clientes.herokuapp.com . Observe que eu tenho essa página e quando eu clico no link em vermelho no meio da página ele vai listar os clientes que eu tenho.
+
+[00:20] Por enquanto não tenho nenhum cliente cadastrado e eu não queria isso, não queria que qualquer pessoa que tivesse acesso a esse endereço drf-clientes.herokuapp.com/clientes/ , visse todos os meus clientes. E vimos como inserir uma autenticação básica na nossa aplicação. Vamos fazer isso?
+
+[00:30] Então vou no meu código em views.py e vou importar from rest_framework. authentication import BasicAuthentication , vamos importar o BasicAuthentication.
+
+[00:49] Vamos colocar embaixo também como authentication_classes aqui no nosso ClientesViewSet e vou falar que ele vai ser igual, e entre colchetes vou passar o BasicAuthentication, ficando authentication_classes = [BasicAuthentication].
+
+[01:10] Além disso, eu preciso dar as permissões necessárias porque eu quero que apenas as pessoas que estejam autenticadas tenham permissão de realizar o que o nosso ViewSet realiza.
+
+[01:23] Então se observarmos, quando criamos uma classe ViewSet com ModelViewSet estamos permitindo que as pessoas que tiverem acesso possam realizar o crood completo básico.
+
+[01:36] Porém, da forma como nosso projeto está implementado é possível criar um outro usuário que pode listar a API mas, por exemplo, não pode acessar a parte do admin. E eu quero testar isso com vocês.
+
+[01:48] Então o que acontece? Temos dois cenários aqui. Deixa eu importar essa classe, então vou digitar from rest_framework.permissions import IsAuthenticated. Legal. Agora o que eu vou fazer é criar essa configuração de permission, então permission_classes = [IsAuthenticated].
+
+[02:23] Coloquei esses dois e isso vai está rodando, funcionando no meu projeto local porque ainda não fiz o deploy para o meu Heroku app, então ele vai estar funcionando local.
+
+[02:34] Se eu atualizar a minha página da aplicação, observe que ele já pediu o username e password, vou precisar acessar com meu usuário local.
+
+[02:43] No nosso Administração do Django não temos esse problema porque não subimos as alterações que fizemos na view lá no nosso Heroku, então precisamos realizar um deploy. Bom, salvei a views.py, vou dar um “Ctrl + J” e vamos realizar o deploy.
+
+[02:57] Fizemos alterações nos nossos arquivos, alteramos o nosso código view, então podemos ver isso utilizando o git status . Ele vai falar: “Opa, tem uma modificação na pasta de clientes, no views.py”. Então vou falar para o git pegar todas essas alterações que eu fiz e vou fazer um novo commit, ficando git commit -m “incluindo atenticação”.
+
+[03:30] A única coisa que preciso fazer é o push no Heroku. Então vou colocar git push heroku master, dou um enter e ele vai dar o push do Heroku, das alterações que inclui no meu código.
+
+[03:46] Então observe, vamos ter o passo agora de realizar as alterações, realizar os testes locais. Teve o resultado que esperamos, nossa aplicação teve o comportamento que esperamos, damos o git, adicionamos essas alterações no git e damos o push no Heroku. E ele está realizando aqui o push no Heroku.
+
+[04:05] Ele terminou de realizar o deploy e o que eu vou fazer? Vou copiar esse link “https://drf-clientes.herokuapp.com/” de novo e vou abrir em uma aba anônima. Dei um enter, está carregando.
+
+[04:23] Vou clicar em “clientes” com o link em vermelho no meio da página, e ele pediu a minha senha. Vou colocar a senha que criei de superusuário e quando eu clico eu consigo visualizar. Legal, nossa API está um pouco mais protegida.
+
+[04:41] Vou acessar o admin e vou criar outro usuário. Esse usuário eu quero que ele tenha acesso aos dados da nossa API. Quero que ele consiga criar um novo cliente, deletar, atualizar os clientes, mas não quero que ele tenha acesso com o meu admin. “Ah, mas Guilherme, eu não queria que ele pudesse deletar os clientes”.
+
+[05:04] Isso por enquanto não vai ser possível porque estamos utilizando o ModelViewSet, assim que eu falo que o usuário está autenticado, ele vai conseguir realizar todas as alterações na nossa API. Só que eu consigo não permitir que ele entre no admin, e é isso que quero mostrar agora.
+
+[05:22] Então vou acessar o admin e vou criar o usuário e vou chamar o usuário de Ana. Vou criar uma senha para a Ana, confirmar a senha, e vou clicar em Salvar.
+
+[05:49] A senha da Ana foi salva e é muito importante essa parte das informações pessoais. Nome Ana, último nome vou deixar nada, o email vai ser “ana@alura.com”.
+
+[06:00] Vou dizer em permissões que é um usuário ativo. E ele até fala, no lugar de excluir um usuário, eu só desativo essa flag de ativo, só desmarcar.
+
+[06:15] Observe essas outras configurações, membro da equipe indica que o usuário consegue acessar esse site. Vou marcar que não, ele não vai conseguir acessar o site de administração do Django. Nem ter status de superusuário.
+
+[06:30] Então mais para baixo tem alguns filtros, eu não tenho nenhum grupo, e a permissão que eu vou dar para esse usuário são relacionadas a clientes. Vou colocar que vai poder adicionar um cliente, mas observa que essas permissões estão mais relacionadas ao admin.
+
+[06:46] Então vai permitir adicionar clientes, vou selecionar que pode alterar os clientes, pode deletar cliente, e pode visualizar os clientes. Pode fazer tudo relacionado a clientes, mas não quero que tenha acesso ao admin. E é isso que vamos testar agora. Salvei.
+
+[07:14] Então eu tenho dois usuários, o Guilherme que é superusuário e membro da equipe e tenho a Ana, com o email da Alura.
+
+[07:22] Eu vou encerrar essa sessão clicando em “ENCERRAR SESSÃO” no canto superior direito do Administração do Django. Vou acessar novamente e vou começar com a conta da Ana. Vou colocar “ana@alura.com” e vou colocar a senha que criei para a Ana.
+
+[07:38] Vou clicar em “acessar” e observe que recebemos uma mensagem escrita “Por favor, insira um usuário e senha corretos para uma conta de equipe.
+
+[07:53] Note que ambos campos são sensíveis a maiúsculas e minúsculas.” A Ana não tem acesso ao admin, mesmo eu colocando a senha dela certinho. Vou colocar mais uma vez, e não consigo.
+
+[08:02] Mas eu consigo consumir essa API, vamos ver? Vou colocar na url só “drf-clientes.herokuapp.com/” e consigo acessar a página. Vou clicar no link em vermelho para conseguir visualizar todos os clientes.
+
+[08:15] Consigo, então olha que bacana, conseguimos dar permissão da pessoa criar um novo usuário, criar um novo cliente e realizar todas as outras alterações, mas eu não dei permissão para a pessoa acessar a parte de admin.
+
+[08:31] Vou subir aquelas alterações que fizemos com o populate_script.py. “Ah, mas eu não quero executar esse script que cria vários clientes no Heroku, eu quero criar os clientes corretos, ou alguma coisa mais real, não quero gerar através disso”.
+
+[08:52] Fica a seu critério, não tem necessidade de você realizar esse passo que vou fazer agora. Vou apenas mostrar como é possível de forma simples popularmos, criar os clientes que temos local, lá no nosso Heroku também.
+
+[09:07] Então vai ser de uma forma bem simples. Vou executar o comando heroku run python populate_script.py . Dou um enter e ele vai executar esse script e vai gerar as pessoas que tínhamos local, lá no nosso script. Lembrando que isso não é obrigatório, você pode gerar sua própria lista de clientes se você quiser.
+
+[09:45] Ele terminou, parece que houve um erro em alguma parte dos modelos que fizemos. Só que se formos lá no nosso app do Heroku, e eu clicar no link em vermelho no meio da página novamente, observamos que vamos ver todos os clientes criados. Então temos os mesmos clientes.
+
+[10:03] Vamos testar os campos? Se clicarmos em “Filtra” e testarmos os campos, colocando a opção Ativo “sim” , quero apenas os clientes que são ativos. E então visualizamos só os clientes que são ativos.
+
+[10:12] Se eu quiser visualizar só os ordenados de forma ascendente, temos aqui também. Se quero todos os clientes, coloco Ativo “Desconhecido” e deixamos todos os clientes. Vou ordenar por nome de forma ascendente, e conseguimos.
+
+[10:26] Então, desta forma,vamos finalizando o nosso conteúdo, o nosso curso. Você pode testar e criar seus próprios clientes no seu app, no Heroku também. Mas espero que você tenha gostado.
+
+[10:42] Então observa, agora temos dois tipos de aplicação, uma rodando local que dá para testarmos as coisas, e depois que testamos e ficou bacana podemos fazer um push direto para o Heroku, para a nossa API.
+
+### Exercício: Exibindo ID
+
+Para colocar a API de clientes no ar, utilizamos o Heroku para hospedar nossa aplicação. Agora, precisamos ativar a venv e executar o runserver para rodar local, porém, no Heroku nossa API estará sempre disponível.
+
+Sabendo disso, podemos afirmar que:
+
+a) **Alternativa correta:** Para alterar ou atualizar a API no Heroku, é necessário realizar um push na master do Heroku.
+- _Alternativa correta! Certo! Após alterar ou atualizar o código, realizamos um commit adicionando todos os arquivos que queremos alterar e alteramos a API com o comando git push heroku master._
+
+b) Não precisamos mais da aplicação local.
+
+c) **Alternativa correta:** Temos um ambiente local de desenvolvimento e um em produção no Heroku.
+- _Alternativa correta! Certo! Podemos realizar a manutenção ou atualização no escopo local e subir essas alterações para o Heroku respectivamente._
+
 ### O que aprendemos?
+
+- Configuramos nosso projeto local para realizar o deploy;
+- Realizamos o deploy e colocamos a API no ar;
+- Vimos como atualizar a API no Heroku.
