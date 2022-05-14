@@ -442,7 +442,9 @@ São expressões para validação dos dados.
 [08:24] Bom, o que eu quero fazer agora é criar um número de celular válido. Então vou criar um DDD 15 91234-1234, e vou marcar embaixo que Gustavo é um cliente ativo. Quando dou um post, conseguimos cadastrar o Gustavo com o número de celular com este modelo também.
 
 ### Importando validações
-Validação do CPF: validate_docbr
+Validação de documentos brasileiros (validate_docbr)
+
+[Documentação]('https://pypi.org/project/validate-docbr/')
 
     pip install validate-docbr
 
@@ -518,7 +520,9 @@ Validação do CPF: validate_docbr
     criando_pessoas(50)
 
 ### Populando banco de dados
-Biblioteca Faker: auxília na criação de dados para popular o banco de dados
+Biblioteca Faker: auxília na criação de dados para popular o banco de dados.
+
+[Documentação]('https://faker.readthedocs.io/en/master/')
 
     pip install Faker
 
@@ -586,17 +590,273 @@ Biblioteca Faker: auxília na criação de dados para popular o banco de dados
 
 [08:50] Na sequência vamos ver como gerar filtros. Eu quero todos os clientes que são ativos, ou todos os clientes que não estão ativados, que estão desativados na minha API, ou eu quero verificar se esse RG está cadastrado, ou seja, se já é um cliente cadastrado aqui na nossa aplicação. Tudo isso vamos ver na sequência.
 
-### Dividir para conquistar
-### Faça como eu fiz
+### Exercício: Dividir para conquistar
+
+Como vimos na aula, podemos utilizar expressões regulares, importar bibliotecas de validação ou criar nossas próprias validações.
+
+Porém, qual a vantagem(ou vantagens) de remover a lógica de validação do serializer e manter em outro arquivo?.
+
+a) **Alternativa correta:** Melhora a legibilidade do código para outros desenvolvedores.
+- _Alternativa correta! Certo! Com o código dividido em partes, a compreensão e entendimento por parte de outras pessoas será facilitada._
+
+b) Carregamento mais rápido da API.
+
+c) **Alternativa correta:** Facilite a edição e manutenção do código.
+- _Alternativa correta! Certo! Com um arquivo mantendo apenas a lógica das validações, facilitamos a atualização ou edição das validações sem incrementar muitas linhas de código no serializer._
+
 ### O que aprendemos?
+
+- Aprendemos como validar os campos da API utilizando expressões regulares;
+- Vimos que é possível importar outras bibliotecas de validação para utilizar no nosso projeto;
+- Executamos um script para criar vários clientes de uma só vez em nossa base de dados.
+
 ## 4. Paginação, ordenação, busca e filtro
-### Projeto da aula anterior
 ### Paginação
+Paginação enviar os dados seguiemntados.
+
+[Documentação]('https://www.django-rest-framework.org/api-guide/pagination/')
+
+Adicionamos no SETTINGS.PY:
+
+    REST_FRAMEWORK = {
+        'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+        'PAGE_SIZE': 100
+    }
+
+---
+
+[00:00] Incluímos o script, que cria vários clientes na nossa base de dados, e isso ficou bem legal. Porém, precisamos pensar na usabilidade da nossa API porque com todas as requisições para “localhost8000/clientes” o que vai acontecer? A outra aplicação vai ver o nosso código assim.
+
+[00:17] Estamos jogando todos os clientes de uma só vez, que temos na nossa base de dados, para ele. E no lugar de respondermos essa requisição listando todos os clientes de uma só vez, por que não incluímos uma paginação, algo semelhante ao que temos no nosso “Django Admin”?
+
+[00:33] Observe que vou para a página 1, tenho 10 clientes, vou para a página 2, tenho 10 clientes. É muito mais fácil de conseguir navegar entre essas páginas. E observe que cada página que eu mudo, ele muda também na url. Se estou na página 2, aparece “localhost:8000/admin/clientes/cliente/?p=2” .
+
+[00:49] Isso já está no “Django Admin”, já veio nele. Como? Se acessarmos nosso projeto_clientes apertando “Ctrl + P” e digitar “admin” e acessar o “admin.py clientes”, observe que temos essa configuração list_per_page = 10 .Ou seja, em cada página eu quero exibir 10 clientes.
+
+[01:05] Por que não fazemos isso e incluímos isso na nossa API no lugar de exibir todos os clientes de uma só vez? Vamos fazer isso?
+
+[01:12] Para fazer isso vou pesquisar na internet “django rest pagination” e nesse primeiro link temos “Pagination - Django REST framework” . Vamos clicar e ao abrir temos uma explicação bem passo a passo de como funciona a paginação nos modelos, nas views diferentes, views genéricas e views sets.
+
+[01:38] Que é o que estamos utilizando, e ele fala: “Para utilizarmos a paginação existe uma paginação default onde vamos definir qual a quantidade de clientes que eu quero exibir por página.
+
+[01:54] E conseguimos colocar essa paginação como? Só irmos no nosso settings.py criando a variável REST_FRAMEWORK = { ‘DEFAULT_PAGINATION_CLASS’ : rest_framework.pagination.limitOffsetPagination’, ‘PAGE SIZE’ : 100 e definimos quantos clientes queremos exibir por página.
+
+[02:16] Vou copiar esse código com “Ctrl + C” , vou abrir meu “settings.py”, lembrando que “Ctrl + P” eu abro a janela na parte superior do programa e posso digitar ´settings.py´ e embaixo vou dar um “Ctrl + V” e vou salvar.
+
+[02:35] Só que não quero exibir 100 por página, no caso do nosso Admin, estamos exibindo 10 por páginas, então vamos colocar 10 e vamos testando até achar um número que melhore a usabilidade da nossa API também.
+
+[02:49] Então PAGE_SIZE’ : 10. E o que precisamos fazer agora? Precisamos testar nossa API. Então vou voltar na nossa API e atualizar e observe que já temos uma paginação, já foi incluída essa paginação. Como ficou a rota de clientes? Se clicarmos na seta do lado direito do ícone GET em azul, e selecionando “json”.
+
+[03:17] Observe que ele já fala, temos 51 cadastros, temos o ´localhost 8000´ e depois passamos não todos os clientes de uma vez, mas esses primeiros cadastros, dos primeiros 10 clientes que queremos exibir.
+
+[03:32] Mas e se eu quiser exibir da página 2? Quando eu clico na página 2 ele aparece como "localhost:8000/clientes/?offset = 10” e isso significa que estamos exibindo os outros 10, só que eu queria exibir a paginação assim, igual temos no “Django Admin”.
+
+[03:46] Então o que vamos fazer? Vamos alterar essa propriedade que colocamos anteriormente dentro do nosso ´settings.py ´. Ao invés de ser ´pagination.LimitOffsetPagination´, vamos colocar ´pagination.PageNumberPagination’ . “P” maiúsculo no Page, o Number com “N” maiúsculo, e o Pagination igual tava antes.
+
+[04:14] Quando eu salvar, observe o que vai acontecer aqui nessa propriedade do ´offset´ . Vou tirar ele, dar um “enter” só em “localhost:8000/clientes/ “ e temos aqui o ‘ “count”: 51’ , ele contou 51 clientes cadastrados. Se vou para a página 2, e temos “localhost:8000/?page=2”. Muito melhor. Quando vamos para a página 3, temos “localhost:8000/?page=3” e assim exibimos melhor.
+
+[04:38] Vou lá testar clicando novamente na seta do lado direito do ícone GET em azul, selecionando ´json´ e observe que estamos exibindo só os clientes da página 3, ele está falando que tem outras páginas e está mostrando detalhes dos clientes da página 3. E temos página 4, página 5.
+
+[04:58] Para testarmos vou no nosso “Django Admin” e vou colocar na página 1. Ele está listando o nosso cliente Pedro Henrique. Se viermos na janela da nossa API, colocar na página 1, ele está listando a Ana, porque está ao contrário. Então se eu for para a última página ele vai me mostrar aquele cliente Pedro Henrique. Com o mesmo CPF também.
+
+[05:28] Se vou para a página 5 na API temos a Pietra, e na página 2 do nosso Administração Django, o que seria nossa página 5, está a Pietra também. O admin está ao contrário porque ele está listando com os últimos ID’s , e na nossa API estamos listando através dos primeiros ID’S. Então ID 5, 6, 7, 8, e assim por diante.
+
+[05:52] Incluímos a paginação na nossa API, ficou muito mais fácil navegar, podemos escolher se 10 clientes por página é pouco e quero exibir mais, posso colocar 25 PAGE_SIZE: 25 no meu settings.py e salvar. Na minha API quantas páginas eu tenho? Vou ter 3 páginas, porque eu tenho 51 clientes.
+
+[06:13] Na página 3 vou ter só o Pedro Henrique, na página 2, 25 clientes, e na página 1, 25 clientes. Então fica ao seu critério escolher quantos clientes, qual a necessidade da sua API de exibir uma quantidade específica de clientes.
+
 ### Ordenação
+DJANGO-FILTER-BACKEND: [Documentação]('https://www.django-rest-framework.org/api-guide/filtering/')
+
+
+    pip install django-filter
+
+Adicionar no SETTINGS.PY:
+
+    INSTALLED_APPS = [
+        'django-filters',
+        ...
+    ]
+
+Adicionar no VIEWS.PY do app:
+
+    from rest_framework import viewsets, filters
+    from django_filters.rest_framework impor DjangoFilterBackend
+
+    class ClieentesViewSet(viewsets.ModelViewSet):
+        queryset = Cliente.objects.all()
+        serializer_class = ClienteSerializer
+        filter_backends = [DjangoFilterBackend, filters.OrderingFilter] #
+        ordering_fields = ['nome'] #
+
+---
+
+[00:00] Incluímos a paginação na nossa API, isso ficou bem legal, só que algo está diferente na nossa aplicação. Se observarmos a nossa API, nós listamos sempre os nossos clientes com uma ordenação através do ID de forma ascendente. Então temos o 5, 6, 7, 8 e assim por diante.
+
+[00:17] Porém, lá no nosso “Django Admin”, essa ordenação está ao contrário, ela está de forma descendente através do ID e eu não queria uma ordenação pelo ID, eu queria uma ordenação pelo nome para exibirmos os nomes das pessoas de forma ordenada, ia ficar muito mais fácil para conseguirmos navegar.
+
+[00:35] Então vamos começar pelo admin do Django, eu quero listar isso por nome. Lá no nosso código vou apertar “Ctrl + P” e vou digitar “admin” e vai aparecer admin.py clientes. Acessando ele existe uma propriedade que podemos passar para nossa classe de clientes, que se chama ordering .
+
+[00:55] Vou falar que ordering = (‘nome’,) e vou colocar uma vírgula depois que fechei as aspas. Salvei e voltando no nosso “Django Admin”, assim eu que atualizo, observe que já temos a ordenação por nome, não mais pelo ID. Então tem Alexandre, Ana, Ana Beatriz Fogaça e Ana Beatriz Ribeiro, Ana Costa, e ficou legal.
+
+[01:17] Incluímos aqui a ordenação e podemos ver que está certinho em ordem alfabética. O que eu quero fazer agora? Essa mesma ordenação que eu passei para o meu admin, eu quero passar também para a minha API, quero que minha API tenha essa ordenação por nome.
+
+[01:34] Então se pesquisarmos na internet digitando “django rest filter” e clicarmos no primeiro link escrito “Filtering - Django REST framework” da própria documentação, podemos ver que existe uma forma de conseguirmos alterar os dados, a exibição dos nossos dados.
+
+[01:53] E se rolarmos a página para baixo, temos a forma de incluir busca e ordenação e é o que queremos, queremos incluir ordenação na nossa aplicação, na nossa API. E descendo mais a página, em API Guide, temos o “DjangoFilterBackend”. Ele fala que é uma biblioteca, que suporta algumas customizações de campo, que vamos incluir na nossa aplicação.
+
+[02:18] Então para usar esse DjangoFilterBackend precisamos instalar através do pip install django-filter e depois temos que adicionar o django-filter lá no nosso app instalado.
+
+[02:32] Só tem um detalhe que vale a pena tomarmos cuidado é que quando vamos instalar, o pip install django-filter está no singular, porém quando vai adicionar no nosso app instalado, é django_filters no plural.
+
+[02:45] Então vamos fazer em partes. Vou instalar essa biblioteca. Lá no meu servidor vou parar o meu servidor “Ctrl + C”, limpei minha tela “Ctrl + V”, e adicionei pip install django-filter no singular, dei um enter e ele instalou. A instalação foi feita com sucesso.
+
+[03:04] Legal, limpei minha tela e vou habilitar mais uma vez nosso servidor python manage.py runserver. Voltando lá, precisamos adicionar o django_filters lá nos nossos apps instalados.
+
+[03:17] Então, o que vou fazer? Vou minimizar meu servidor, meu terminal, vou apertar “Ctrl + P” e vou digitar “settings” e vai aparecer settings.py setup . Dentro dele, lá nos nossos apps instalados, o INSTALLED_APPS vamos dar um enter e colocar django_filters, no plural e com uma vírgula.
+
+[03:37] Salvei e pronto. Agora já temos o django filters instalado na nossa aplicação. Claro que se formos na nossa aplicação e executamos, nada está acontecendo, tudo está como estava antes. Porque precisamos passar para quem é responsável por criar essa página, criar os dados, qual é o “Core Set” que estamos utilizando, qual a classe serializer.
+
+[03:57] Ou seja, precisamos ir no nosso arquivo de view e dizer para a nossa view: “View, essa lista de clientes possui uma ordenção”. E é isso que vamos fazer agora.
+
+[04:06] Vou fechar as abas de admin.py e settings.py para não ficarmos confusos, e vou abrir views.py. Acessando nossa view observe que temos algumas propriedades, que passamos algumas variáveis que criamos aqui e ela faz toda a mágica para nós.
+
+[04:20] O que quero fazer agora? Quero trazer lá do nosso rest_framework um cara chamado filters. Então from rest_framework import viewsets, filters. Maravilha. O que eu preciso fazer? Vamos usar o filters e vamos usar a biblioteca que acabamos de instalar na nossa aplicação.
+
+[04:41] Então, lá do django_filters no plural, queremos importar o DjangoFilterBackend, no singular, então vamos colocar from django_filters.rest_framework import DjangoFilterBackend. Vou salvar esse arquivo, e vamos entender a diferença do DjangoFilterBackend para o filters.
+
+[05:16] Vamos lá, o que precisamos fazer? A primeira coisa é preparar o nosso Backend para que possamos incluir as ordenações, temos que falar “Olha, existem filtros nos campos que nós queremos criar”.
+
+[05:30] A primeira coisa que faremos vai ser falar: “Vai criar uma variável chamada filter_backends agora no plural”. É um pouco confuso essa parte de uma hora está no singular e outra hora está no plural, mas conforme formos criando e testando outras API’s e for escrevendo outros códigos nós acostumamos.
+
+[05:55] Então filter_backends = [ ] e dentro dele eu vou falar que ele vai ser uma propriedade no DjangoFilterBackend, e quero utilizar uma ordenação, e essa ordenação vamos usar do filters , então vai ser filters.OrderingFilter.
+
+[06:14] Olha o que fizemos, criamos uma variável chamada filter_backends no plural, e dentro dela falamos que vamos utilizar o DjangoFilter para que possamos ver a ordenação acontecer na API, e quem vai ser responsável vai ser alguém de filters.Ordering. filter_backends = [DjangoFilterBackend, filters.OrderingFilter].
+
+[06:33] Criamos esses dois e a última coisa que precisamos fazer agora é criar uma variável chamada ordering_fields no plural, e dentro eu vou passar nome porque eu quero ordenar por nome, então ordering_fields = [‘nome’]. Salvei.
+
+[06:54] Assim que voltamos na nossa aplicação e atualizamos, aparece uma propriedade chamada “Filtra”. Quando eu clico nela, aparece uma janela onde temos “Ordenado”, e as opções “nome - ascendente” e “nome - descendente” . Se eu coloco o “nome - ascendente” nós temos o Alexandre, a Ana, a Ana Beatriz.
+
+[07:12] Lá no nosso ““Django Admin”” também temos o Alexandre, a Ana, e a Ana Beatriz. Conseguimos incluir então a ordenação na nossa aplicação.
+
 ### Busca e filtro
-### Busca por RG
-### Faça como eu fiz
+Utilizando a mesma documentação anterior no VIEWS.PY:
+
+    class ClieentesViewSet(viewsets.ModelViewSet):
+        queryset = Cliente.objects.all()
+        serializer_class = ClienteSerializer
+        filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter] #
+        ordering_fields = ['nome']
+        search_fields = ['nome','cpf',] #
+        filterset_fields = ['ativo']
+        
+---
+
+[00:00] Já incluímos a ordenação, aqui apareceu essa propriedade do filtro com “nome - ascendente” e “nome - descendente” no nome, e aparece na nossa url o “localhost:8000/clientes/?ordering=nome”.
+
+[00:12] Através disso conseguimos disponibilizar para outros sistemas que forem consumir nossa API essa ordenação para facilitar o uso da nossa lista de clientes.
+
+[00:22] Porém algo está um pouco difícil de entender. Vamos supor que eu precise pesquisar um determinado cliente por CPF. Como faço isso? Ou eu preciso visualizar todos os clientes que estão ativos.
+
+[00:33] Isso vai ficar muito difícil, por mais que eu tenha essa paginação, eu teria que olhar cliente a cliente para saber se eles estão ordenados ou não. E isso não está muito fácil.
+
+[00:43] Se observamos lá no nosso “Django Admin”, existe um filtro que podemos colocar para todos os clientes ativos quando clicamos no ícone Filtro e selecionamos o “sim” , ou quando colocamos “não”, todos os clientes que não estão ativos na nossa aplicação. E isso é bem legal.
+
+[00:57] Além disso, temos também o campo de busca. Se eu digito, por exemplo, Ana e clico em pesquisar, observe que aparece a Ana Beatriz Ribeiro.
+
+[01:05] Conseguimos visualizar clientes com o nome de Ana, e se eu for no ícone “FILTRO” e selecionar a opção “todos”, olha que interessante.
+
+[01:12] Ele vai me trazer a Ana, a Ana Beatriz Fogaça, a Ana Beatriz Ribeiro, Ana Costa, Ana Lívia, Joana, por causa do “Ana” e Mariana por causa do “Ana” que aparece também.
+
+[01:23] Isso é muito legal pois vai facilitar para as pessoas que estiverem mexendo na nossa API, consumindo a nossa API. Eu quero visualizar se esse cliente já está cadastrado ou não. Só com o nome já conseguimos visualizar, ou através do número de CPF também.
+
+[01:38] O que eu quero fazer? Vamos começar criando esse campo de busca e depois criando esse filtro para conseguirmos visualizar os clientes que estão ativos, e os clientes que não estão ativos, e realizar também uma busca por nome ou CPF.
+
+[01:53] Para começar, se observamos lá na documentação do Django Filter, temos uma propriedade chamada SearchFilter. E observe que a única coisa que vamos precisa fazer é o import do filter, que já fizemos, que já estamos utilizando.
+
+[02:10] E depois lá no nosso filter_backends vamos dizer que vamos ter um filtro de busca, um filters_Searchfilter dessa própria lib que importamos. Depois, vamos especificar com search_fields quais campos queremos disponibilizar para essa busca.
+
+[02:27] Lá no nosso código, em views.py, a primeira coisa que vamos fazer é, já temos os filters instalados, do rest_framework. Vou colocar uma vírgula e vamos ter de filters no plural filters.SearchFilter , ficando então filter_backends = [ DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter] .
+
+[02:41] Agora o que precisamos fazer é indicar quais campos queremos buscar, então vou escrever search_fields = [‘nome’] e o nome do campo que queremos buscar, que no caso é o nome.
+
+[02:55] Salvando, vou atualizar nossa API. Se eu vou no ícone filtra em branco no lado superior direito da nossa aplicação, observe que aparece um “Pesquisar”. Vou realizar a mesma busca que fiz no admin e escrever “Ana”.
+
+[03:05] Se eu clicar em Search, observe que aparece aqui todos os nomes que contenham a “Ana”, a Ana Beatriz, Mariana, Joana, Ana Costa, Ana Lívia, e a Ana.
+
+[03:15] Só que além do nome, eu quero realizar uma busca pelo CPF, então o que eu vou fazer? Quero visualizar todos os clientes. Vou escolher um determinado cliente, o Isaac Martins. Vou copiar o CPF dele e quero permitir que essa busca também receba um número de CPF.
+
+[03:35] O que eu preciso fazer? Voltar lá em views.pye adicionar uma vírgula e cpf em search_fields = [‘nome’, ‘cpf’] . Então o nosso search_fields vai ser igual ao nome, vírgula, e ao CPF também, entre aspas. Então vamos permitir que consigamos realizar uma busca pelo nome e pelo CPF.
+
+[03:51] Se eu volto na nossa aplicação, digito CPF do Isaac e dou um Search, observe que vai aparecer o cliente Isaac Martins. Como ficou o nosso endpoints? Como que outras pessoas vão conseguir realizar essas buscas?
+
+[04:02] Temos na url localhost:8000/clientes/?search . Quero realizar uma busca, e essa busca vai permitir nomes ou os dígitos do CPF.
+
+[04:15] Temos além da busca, além da ordenação, o que falta para deixarmos tanto nosso admin, quanto a nossa API igual, é o filtro por clientes ativos e não ativos. E para isso vamos precisar criar outra variável em views.py chamada filterset_fields .
+
+[04:32] Então vou escrever filterset_fields = [‘ativo’] , ou seja, essa vai ser uma busca exata, eu quero que esses valores de verdadeiro ou falso sejam usados como filtro para exibir os meus clientes na base de dados.
+
+[04:57] Observe que se eu atualizar a nossa aplicação, e for novamente no ícone “filtra” em branco no lado superior direito da nossa aplicação, vamos ter mais uma propriedade que é o “Filtra de campo”.
+
+[05:05] Se eu colocar o filtra de campo como “Desconhecido”, e clicar em “Enviar”, observe que na url fica “localhost:8000/clientes/?ativo= “, ativo igual a nada, então posso até tirar o ?ativo= da *url * que vai dar na mesma.
+
+[05:17] Ele então vai trazer clientes que não estão ativos e clientes que estão ativos na nossa API, verdadeiro e falso. Se eu coloco o “Filtra de campo” como “Ativo” e seleciono o “Sim” e dou um enviar, observe que no nosso endpoint vai ficar “localhost:8000/clientes/?ativo=true” e ele vai me trazer todos os clientes que são ativos. Observe que só temos true em toda a página.
+
+[05:41] Agora se eu coloco na nossa url “localhost:8000/clientes/?ativo=false” e dou um enter, observe que ele vai mostrar todos os clientes que não estão ativos na nossa API. E se clicarmos em “Filtra” e olhar em “Filtra de campo”, a busca ficou com o ativo “não”.
+
+[05:52] Conseguimos colocar uns clientes que não estão ativos ordenados de forma descendente, olha que coisa interessante. Aos poucos vamos começar a manipular melhor os dados da nossa API facilitando a usabilidade dela.
+
+[06:06] Dessa forma permitimos que tanto o admin, como a nossa API, tenham essas mesmas buscas. Eu vou permitir também que o CPF esteja na busca do nosso admin. ]
+
+[06:17] Se eu colocar um CPF na busca do nosso Administração Django e clicar em “Pesquisar”, não mostrou nada. Vamos alterar isso também?
+
+[06:21] No nosso código vamos apertar “Ctrl + P” e vamos acessar nosso admin, digitando “admin.py clientes” e observe que em search_fields = (‘nome’) temos o nome. Vai ter também uma vírgula e entre aspas cpf, e vou colocar uma vírgula e salvar como search_fields = (‘nome’,’cpf’).
+
+[06:38] Se eu vou em Administração Django e aperto em “pesquisar” mais uma vez, ele traz para mim o nome da Ana Beatriz. Então vou pesquisar um outro CPF para visualizarmos nos dois.
+
+[06:45] Vou colocar o CPF do Joaquim Almeida, vou copiar esse número de CPF, colar na barra de pesquisa do Django Admin, e se clico em “Pesquisar” ele trouxe para mim o Joaquim Almeida.
+
+[06:59] Se fizermos isso na nossa API, então temos todos esses dados, vou clicar em “Filtra” para pesquisar, no “Filtra de Campo” vou colocar o ativo como “Desconhecido” , nome ascendente mesmo, e para pesquisar vou colocar aquele CPF. Quando eu digito ele traz para nós o Joaquim Almeida.
+
+[07:14] Padronizamos tanto o nosso admin e as funcionalidade que o admin nos dá, como a nossa API também.
+
+### Exercício: Busca por RG
+
+Uma pessoa seguiu todos os passos deste curso e resolveu mostrar a API para um amigo, porém não informou que a busca é feita com base nos campos nome e CPF, conforme ilustra o código abaixo:
+
+    class ClientesViewSet(viewsets.ModelViewSet):
+        """Listando todos os clientes"""
+        queryset = Cliente.objects.all()
+        serializer_class = ClienteSerializer
+        filter_backends = [DjangoFilterBackend, filters.OrderingFilter, filters.SearchFilter]
+        ordering_fields = ['nome']
+        search_fields = ['nome', 'cpf']
+        filterset_fields = ['ativo']
+
+Seu amigo realizou a requisição get, passando um número de RG:
+
+    http://localhost:8000/clientes/?ordering=nome&search=541382893
+
+Com base nesse exemplo, podemos afirmar que:
+
+a) O Django Rest Framework fará a busca pelo RG, mesmo sem incluir o campo no search_fields, pois se trata do mesmo modelo.
+
+b) Os dados de um cliente chamada Luiz Miguel Cardoso será exibido como resposta.
+- _O cliente Luiz não será exibido no retorno desta requisição. Como a busca não é aplicada ao campo RG, o retorno desta requisição será:_
+
+        { "count": 0, "next": null, "previous": null, "results": [] }.  
+
+c) **Alternativa correta:** Nenhum cliente será exibido.
+- _Alternativa correta! Certo! Com base no código acima, a busca é feita apenas nos campos nome e CPF. Para realizar a busca pelo RG e exibir o cliente Luiz, é necessário incluir o campo como ilustra o seguinte exemplo:_
+
+        search_fields = ['nome', 'cpf', 'rg']
+
 ### O que aprendemos?
+
+- Aprendemos como ordenar os campos da API de forma ascendente e descendente;
+- Vimos como incluir paginação e filtros nos campos;
+- Desenvolvemos a busca de clientes pelo número de CPF ou pelo nome.
+
 ## 5. Deploy
 ### Projeto da aula anterior
 ### Preparando o deploy
