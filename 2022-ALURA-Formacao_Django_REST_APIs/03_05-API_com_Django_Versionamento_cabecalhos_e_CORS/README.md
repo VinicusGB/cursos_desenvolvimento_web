@@ -331,13 +331,188 @@ c) Ao versionar uma API, a velocidade e desempenho das respostas dela caem signi
 - Vimos na prática como versionar a API com Query Parameter Versioning.
 
 ## 2. Permissões
-### Projeto da aula anterior
 ### Definindo permissões
+Definição padrão do DJANGO ADMIN, adicionamos as permissões conforme necessidade.
+
+---
+
+[00:00] Neste vídeo vamos aprender na prática como funcionam as permissões no Django REST. E para isso vou criar dois tipos de usuários com permissões diferentes.
+
+[00:09] A primeira vai ser a Ana, ela vai ser responsável pelas matrículas da nossa aplicação. Então todo recurso relacionado à matrícula a Ana vai ter permissão de criar novas matrículas, de atualizar, de editar, mas ela não vai poder deletar as matrículas.
+
+[00:25] O mesmo eu quero para o Marcos, só que para outros recursos. Eu quero que o Marcos seja capaz de criar alunos, listar alunos, editar os alunos, criar cursos, editar cursos também, mas ele também não vai ser capaz de deletar os cursos nem os alunos. Vamos ver isso na prática como funciona?
+
+[00:41] A primeira parte que vamos fazer vai ser configurar o admin do Django com essas seguintes permissões para cada usuário. Vamos começar pela Ana.
+
+[00:50] Vou acessar o Django admin, “localhost:8000/admin”, vou colocar aqui o nome do meu super usuário e a minha senha, e eu vou vir em “Usuários” e nós vamos poder visualizar que temos um usuário só, que é o “gui”.
+
+[01:06] Vou adicionar mais um usuário, que vai ser a usuária “Ana”. Vou criar uma senha para a Ana, vou confirmar a senha, vou salvar. Vou dar aqui o primeiro nome, vai ser “Ana”, último nome vai ser “Ana” também, o endereço de e-mail vou deixar sem nada por enquanto.
+
+[01:27] Vou indicar que é um usuário ativo na nossa aplicação. Não vamos criar grupos de permissões, mas poderíamos fazer isso também, não faremos isso agora, eu só quero lidar com as permissões específicas para este usuário.
+
+[01:41] Eu quero que a Ana seja capaz de cuidar dos recursos de matrículas, então vou falar aqui que a Ana vai poder adicionar uma nova matrícula, ela vai poder atualizar, mudar uma matrícula, visualizar uma matrícula, só que ela não vai poder deletar uma matrícula. E essas são as permissões da Ana. Eu venho aqui embaixo, dou um “Salvar” e eu criei a Ana.
+
+[02:06] Vamos criar agora o usuário Marcos, que vai ser capaz de manter os recursos de alunos e cursos. “Adicionar usuário”, “Marcos”, vou criar uma senha para ele, vou salvar. Primeiro nome, “Marcos”, último nome vou deixar “Marcos” também.
+
+[02:36] Scrollando para baixo, quais são as permissões do Marcos? O Marcos vai conseguir criar um aluno, alterar e visualizar um aluno. Ele vai poder adicionar curso, editar um curso, e visualizar um curso também. Vou passar isso aqui para o lado, então ele tem todos esses recursos.
+
+[03:01] Observe que em nenhum momento nós falamos nem para o Marcos e nem para a Ana que eles podem deletar os recursos que eles gerenciam. Vou salvar aqui. Então eu tenho o Marcos e tenho a Ana.
+
+[03:15] Do lado do admin do Django o que temos que fazer é isso. Agora o que vamos precisar fazer? E u vou precisar ir lá nas minhas views e falar que eu preciso desse modelo de permissões aqui do admin na minha aplicação mesmo. E é isso que nós vamos ver no próximo vídeo.
+
 ### Testando as permissões
+
+Para que nossa API herde as permissões conforme as permissões do DJANGO-ADMIN, devemos:
+
+1. No VIEWS.PY:
+
+        ...
+        from rest_framework.permissions import IsAuthenticated, DjangoModelPermissions
+
+        class AlunosViewSet(viewsets.ModelViewSet):
+            ...
+            permission_classes = [IsAuthenticated, DjangoModelPermissions]
+            ...
+
+---
+
+[00:00] Agora que nós criamos no lado do admin as permissões da Ana para manter os recursos de matrícula e do Marcos para manter recursos de alunos e cursos, como nós pegamos essas modificações que nós fizemos no Django admin e passamos para a nossa API?
+
+[00:16] Então nós queremos que aquelas modificações, aquelas permissões que nós incluímos no admin tenham efeito aqui no lado da nossa API.
+
+[00:23] Primeira coisa que vamos precisar fazer para testar isso é, desse módulo, rest_framework.permissions, vou colocar uma vírgula aqui, nós vamos importar outro módulo para indicar que queremos utilizar o modelo de permissões do Django. Eu vou escrever aqui DjangoModelPermissions, no plural.
+
+[00:48] Trouxe o DjangoModelPermissions, o que eu vou fazer? Observe que temos uma classe de permissões e dentro dessa classe temos uma verificação para analisar se já estamos logados. Além disso, vou colocar uma vírgula e vou passar esse DjangoModelPermissions para esse nosso modelo de permissão de classes também.
+
+[01:09] Isso que fizemos está relacionado com o aluno. O curso, matrícula, lista de matrículas também precisam desse nosso DjangoModelPermissions, dentro dessa nossa variável das classes de permissões.
+
+[01:25] Então o que eu vou fazer? Eu vou copiar essa linha aqui, permission_classes = [IsAutenthicated, DjangoModelPermissions], estamos vendo que o nosso código já está bem duplicado, várias coisas, nós vamos melhorar isso. Mas vou colocar aqui, no lugar do permission_classes só com IsAuthenticated, eu vou alterar, eu vou colocar também o DjangoModelPermissions, os dois. Vou fazer isso para todos.
+
+[01:53] Salvei o meu código, o que eu vou fazer agora? Eu quero testar, vamos testar um por um. Eu vou começar testando a Ana, a responsabilidade dela é manter os recursos de matrículas, então eu vou visualizar.
+
+[02:05] Para isso podemos fazer duas coisas, posso abrir uma aba privada do Chrome para fazer esse teste, posso abrir em outro navegador uma aba privada, aqui, por exemplo, digitar “localhost:8000” e quando eu clico, por exemplo, em “matrículas”, ele vai pedir um username, vou passar “Ana”, vou passar a senha da Ana que eu criei. Quando eu dou um “Sign in” eu consigo visualizar as matrículas.
+
+[02:32] Observe que eu não tenho nenhuma matrícula criada, então vou criar. Vou colocar aqui período matutino, a Isabel Martins, no curso de Python Fundamentos. Vou alterar, vou colocar Python Avançado. Vou dar um “Post” e conseguimos. Parece que está tudo ok.
+
+[02:49] Vamos testar agora algo que ela não pode fazer? Observe que o nosso delete não aparece mais aqui. Se eu acessar, por exemplo, a “/matriculas” aqui, colocar “/1”, e visualizar essa matrícula, temos o “Put”, nós conseguimos atualizar, conseguimos realizar o “Get”, o “Options” dessa requisição, só que não temos o verbo delete.
+
+[03:09] O que eu vou fazer agora? A Ana não pode criar e manter alunos, por quê? Manter e criar alunos são recursos e permissões válidas para o Marcos. Mas vamos testar isso daqui. Vou clicar em “cursos” e observe que quando eu scrollo para baixo em cursos, nem aparece a aba do post. Para nós fez sentido isso daqui.
+
+[03:32] Se eu acesso aqui “matrículas”, ele mostra para mim as matrículas e aqui embaixo eu tenho um HTML e um form, indicando que eu posso aqui executar um post e criar um novo recurso.
+
+[03:42] Agora, se eu coloco, por exemplo, em “alunos”, eu vou listar todos os alunos e quando acabar essa lista de alunos eu não consigo fazer nada, ou seja, o get eu consigo visualizar, da Ana, dos recursos de aluno, cursos, mas eu não tenho ação nenhuma, a Ana não tem permissões de manipular esses recursos.
+
+[04:02] Para testar o Marcos eu vou utilizar o Postman, mas se você não quiser utilizar o Postman, se você quiser utilizar aqui mesmo, abrir outra aba anônima e fazer o teste, você pode. Então vou fechar isso daqui, vou lá no Postman e vamos só relembrar o que o Marcos pode fazer.
+
+[04:20] O Marcos é responsável por criar alunos e cursos, mantendo esses recursos. O que eu vou fazer? Vou pegar esse aluno, de cópia, só para ganharmos tempo, vou vir no Postman e vou dar um post nesse endpoint, deixa eu copiar o código, colocar aqui no “Body”. O nosso código não é XML, é JSON. Não tem o ID, eu já vou alterar esses dados para conseguirmos visualizar melhor.
+
+[04:58] O que eu vou fazer agora? Vou pegar esse nosso end-point, “localhost:8000/alunos/”, eu quero dar um post, e vou colocar aqui no nome “teste do Postman”. O RG vai ser esse RG, deixa eu mudar só um número para ele não ficar igual, vou colocar aqui na frente “2”, aqui no CPF vou colocar “2” também e a data de nascimento eu vou deixar essa mesmo.
+
+[05:26] O que eu preciso fazer? Eu preciso ter uma autorização. Então venho em “Authorization”, vou colocar que é um “Basic Auth” de authorization e vou colocar o Marcos com a senha dele.
+
+[05:39] Aqui no “Body” eu vou dar um “Send”, vamos visualizar, e parece que foi criado, o ID 203. Vamos ver lá do lado da nossa API? Em “/alunos”, se eu colocar “/203/”, eu tenho aqui o teste do Postman. Maravilha, fez sentido.
+
+[05:54] Só que observa que do Marcos, quando eu estou visualizando, eu estou logado com o meu admin, então eu vejo o delete. Será que o Marcos consegue deletar esse aluno? Vamos testar?
+
+[06:07] Selecionei esse end-point, se eu dou um get nesse end-point, “http://localhost:8000/alunos/203/”, dou um “Send”, ele vai mostrar para nós esse recurso que criamos.
+
+[06:17] Eu não quero dar um get nesse recurso, eu quero deletar, então vou colocar aqui o verbo delete e vou tentar. Quando eu dou um “Send” observe que legal a mensagem que ele já dá: “Você não tem permissão para executar essa ação”. Muito bacana.
+
+[06:32] Mas e se eu quisesse alterar alguma coisa? Então eu vou dar aqui um put, e eu vou mudar o nome, “Postman atualizado”, só para visualizarmos lá. Se eu dou um “Send”, temos “Postman atualizado”. Será que alterou aqui para nós também? Clicando aqui em atualizar, alterou, “Postman atualizado”.
+
+[06:58] Olha que bacana, quando criamos usuários e determinamos as permissões desses usuários do lado do Django admin, para trazermos essas informações para cá, nós utilizamos a classe DjangoModelPermissions e passamos para o nosso ViewSet, lá no permission_classes esse módulo que importamos também.
+
+[07:18] Isso ficou bem legal, só que tem um ponto que está um pouco estranho no nosso código, observe a quantidade de código duplicado que temos, principalmente para essa parte de autenticação e permissão. Será que nós conseguimos melhorar o nosso código removendo essa quantidade de código duplicado? É isso que vamos ver no próximo vídeo.
+
 ### Refatorando o código
-### Faça como eu fiz
-### Django Admin e API
+
+Podemos criar uma função para permission_classes e authenticated_classes. 
+
+1. No SETTINGS.PY podemos adicionar uma outra permissões
+
+        REST_FRAMEWORK = {
+            'DEFAULT_VERSIONING_CLASS': 'rest_framework.versioning.QueryParameterVersioning',
+            'DEFAULT_PERMISSION_CLASSES': [
+                'rest_framework.permissions.IsAuthenticated',
+                'rest_framework.permissions.DjangoModelPermissions'
+            ],
+            'DEFAULT_AUTHENTICATION_CLASSES': [
+                'rest_framework.authentication.BasicAuthentication',
+            ]
+        }
+
+2. NO VIEWS.PY podemos remover:
+
+        authentication_classes = 
+        permission_classes = 
+
+---
+
+[00:00] Conseguimos incluir as permissões que queríamos na nossa aplicação, porém se observarmos o nosso código da views, temos várias linhas repetidas.
+
+[00:08] Por exemplo, o authentication_classes e o permission_classes estão iguais em praticamente todos os nossos viewsets, porém, como conseguimos minimizar esse código duplicado? É isso que veremos nesse vídeo. Vamos melhorar o nosso código, deixá-lo mais legível, sem tanta repetição e sem alterar o comportamento da nossa aplicação.
+
+[00:27] Para isso vamos acessar os settings da nossa aplicação, aqui, “setup > settings.py”, e dentro desse REST_FRAMEWORK podemos indicar outras configurações padrões, por exemplo, eu quero indicar o authentication_classes.
+
+[00:44] Da mesma forma que temos aqui um DEFAULT_VERSIONING_CLASS, indicando o QueryParameter, eu vou colocar aqui uma vírgula e vou colocar outro tipo de verificação, vai ser o DEFAULT_PERMISSION_CLASSES, no plural. Então as permissões das nossas classes, as permissões padrões. Dois pontos, entre colchetes, aqui dentro eu vou passar quais são essas permissões. E temos duas.
+
+[01:21] Lá do nosso rest_framework.permissions – vou copiar esse código, vou colocá-lo aqui, entre aspas também – temos duas permissões, a primeira, IsAuthenticated, para saber se ele está autenticado, vou copiá-lo aqui, .Isauthenticated’,.
+
+[01:40] Aqui embaixo eu tenho esse mesmo código, ’rest_framework.permissions.IsAuthenticated’, vou dar aqui um “Enter”, só que no lugar do IsAuthenticated nós vamos utilizar o DjangoModelPermissions, vou colocá-lo aqui. Nós passamos então para cá.
+
+[01:56] O que eu já poderia fazer? Todas essas linhas de classes de permissões eu já posso tirar daqui, porque eu coloquei-a lá no setup da nossa aplicação. Então nós dizemos que por default essas são as nossas autenticações. Então todas essas linhas nós vamos tirar, permission.
+
+[02:16] O que podemos fazer também é para a parte de autenticação. Temos aqui do rest_framework.authentication, vou criar o default dele, vou colocar aqui uma vírgula, porque nós fechamos esse permission, DEFAULT_PERMISSION_CLASSES, entre aspas vou colocar ’DEFAULT_AUTHENTICATION_CLASSES’:, no plural, entre colchetes vou passar o meu valor.
+
+[02:48] Então temos, lá do Django Rest Authentication, entre aspas ’rest_framework.authentication.’, queremos verificar que a pessoa está autenticada, e nós utilizamos o BasicAuthentication, então vou passar aqui .BasicAuthentication’.
+
+[03:09] Salvei, o que eu posso fazer? Vou remover essa linha de autenticação, essas linhas também, authentication_classes = [BasicAuthentication]. Salvei esse aqui, posso remover essa linha, from rest_framework.authentication import BasicAuthentication, não estou utilizando.
+
+[03:29] Então nosso código já ficou bem mais fácil de entendermos. E nós vamos continuar com o mesmo comportamento. Vou colocar aqui uma vírgula, só para o nosso terminal não parar. Vamos testar para ver se tudo está funcionando bem?
+
+[03:45] O que eu vou fazer? Aqui eu estou no “alunos” com autorização do Marcos, o Marcos pode fazer as atualizações de alunos, então vou colocar “Postman atualizado 2.0”, algo desse tipo, vou dar um “Send” e temos o “Postman atualizado 2.0”.
+
+[04:03] Vou tentar deletar esse aluno 203, e nós recebemos que não temos a permissão, ou seja, nossas permissões continuam funcionando, então o nosso código continua igual e nós melhoramos bastante a questão das nossas views, deixamos muito melhor.
+
+[04:22] Outro ponto que podemos melhorar na nossa aplicação é a navegação. Se observarmos no nosso código, quando eu clico aqui, “alunos”, ele vai pedir autenticação, vou logar como o usuário admin, que eu quero mostrar outro ponto que podemos melhorar, e observe que aqui temos o “localhost:8000/alunos/”. Se eu coloco aqui, por exemplo, o aluno 2, temos os detalhes do aluno 2 e assim por diante.
+
+[04:45] Se eu quiser visualizar todas as matrículas desse aluno, o que eu tenho que fazer? Vamos visualizar lá em “setup” as nossas URLs.
+
+[04:53] Na nossa URL eu tenho aluno, no singular, o ID desse aluno, barra matrículas. Então eu teria que tirar esse S, “localhost:8000/aluno/2/matriculas/”. Quando eu dou um “Enter” ele não tem nenhuma matrícula, eu acho que fizemos a matrícula para o aluno 1. Deixa eu voltar aqui. Isso, para a aluna 1. Então temos aqui as matrículas da aluna 1.
+
+[05:17] Só que observe que faz mais sentido pensarmos na nossa API como uma navegação entre pastas. Se eu mantenho tudo no plural, vai ficar muito mais fácil eu conseguir manipular os dados, melhorar os meus end-points.
+
+[05:30] Por exemplo, se eu coloco “localhost:8000/alunos/1/”, temos detalhes do ID 1. Se eu quiser visualizar as matrículas, faria mais sentido se eu tivesse aqui “localhost:8000/alunos/1/matriculas”, dou um “Enter” e visualizo as matrículas desse aluno.
+
+[05:43] Ou seja, posso padronizar os meus end-points, como? Tudo no singular ou tudo no plural, para ficar mais fácil essa navegação. Vamos alterar isso então?
+
+[05:52] Vou deixar “alunos”, vou deixar “cursos”, então temos end-point de alunos, end-point de cursos e de matrículas. Se eu quero visualizar, por exemplo, as matrículas de um determinado aluno, eu vou utilizar no plural por conta da navegação da minha aplicação também. Então se eu atualizo aqui, deu um erro. Vou atualizar mais uma vez, ele conseguiu trazer.
+
+[06:16] Se eu coloco, por exemplo, as matrículas do aluno 2, ele vai mostrar que esse aluno não tem nenhuma matrícula. O mesmo acontece para os nossos cursos. Eu tenho um curso, eu passo o ID desse curso, barra, e quero ver todas as matrículas que esse curso possui, vai ficar muito mais fácil a nossa navegação.
+
+[06:33] E de onde nós tiramos essa ideia? Vamos pensar bem nos nossos end-points como uma navegação entre pastas. É uma analogia muito simples, mas que vai fazer sentido e vai ficar muito mais fácil conseguirmos navegar nos nossos end-points.
+
+[06:50] O que nós fizemos? Colocamos lá nos settings da nossa aplicação as propriedades default das nossas classes, tanto os de permissões como os de autenticação, e nós melhoramos os nossos end-points padronizando tudo no plural, para ficar mais fácil essa navegação.
+
+### Exercício: Django Admin e API
+
+Nesta aula, criamos 2 tipos de usuários utilizando o Django Admin com permissões diferentes, em que cada um é responsável por um recurso.
+
+Sabendo disso, analise as afirmações abaixo e marque a que está correta em relação ao Django Admin.
+
+a) **Alternativa correta:** As alterações feitas no Django Admin podem ser aplicadas na API Rest, respeitando as boas práticas de programação.
+- _Alternativa correta! Podemos incluir as configurações em cada viewset ou apenas uma única vez no settings.py do projeto._
+
+b) As alterações feitas no Django Admin não podem ser aplicadas na API Rest.
+
+c) As alterações feitas no Django Admin podem ser aplicadas na API Rest. Porém, uma série de códigos duplicados será necessária para o funcionamento.
+
 ### O que aprendemos?
+
+- No Django Admin, criamos a usuária Ana, com permissão de manter os recursos de Matrículas, como criar, ler e atualizar; e o usuário Marco, com permissão para manter os recursos de Alunos, podendo criar, ler e atualizar;
+- Configuramos o Django Rest para utilizar as permissões do Django Admin e testamos as permissões no Postman;
+- Melhoramos a qualidade do nosso código removendo o código duplicado das views.
+
 ## 3. Viewset e permissões
 ### Projeto da aula anterior
 ### Métodos HTTP
