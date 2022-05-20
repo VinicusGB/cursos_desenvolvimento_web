@@ -514,12 +514,136 @@ c) As alterações feitas no Django Admin podem ser aplicadas na API Rest. Poré
 - Melhoramos a qualidade do nosso código removendo o código duplicado das views.
 
 ## 3. Viewset e permissões
-### Projeto da aula anterior
 ### Métodos HTTP
+
+Na API podemos definir na VIEWS.PY qual o método disponível para a VIEWSET.
+
+    class CursosViewSet(viewsets.ModelViewSet):
+        ...
+        http_method_names = ['get','post','put','path','delete']
+
+---
+
+[00:00] Agora que refatoramos o nosso código e melhoramos para caramba a qualidade do nosso arquivo de views, tiramos todo aquele código duplicado, existe um ponto interessante que eu quero mostrar para vocês também.
+
+[00:12] Criamos aqui as classes AlunosViewSet, CursosViewSet e MatriculaViewSet. Isso significa que quando vamos para a nossa API e eu clico em “alunos”, observe que eu tenho esses verbos aqui, get, post, head e options, essas ações permitidas para esse recurso de alunos.
+
+[00:26] Então eu posso buscar uma informação de um aluno, colocar aqui o post para criar um novo aluno, o head e o options, outros verbos que eu tenho também.
+
+[00:34] E se eu coloco aqui, por exemplo, “localhost:8000/alunos/1”, observe que eu tenho o put e o patch para eu atualizar determinado aluno também. Então ele me mostra todas essas ações. Isso é padrão, tanto para alunos como para cursos também, temos todas essas ações. E se eu seleciono um determinado curso, podemos ver que o put e o patch aparecem aqui também.
+
+[00:54] E o mesmo para as matrículas, deixa eu mostrar para vocês, “matriculas”, eu tenho aqui options, o get no formato JSON e API, e aqui embaixo o post, para eu criar uma nova matrícula, e se eu seleciono uma determinada matrícula com esse ID, temos aqui o put e o patch.
+
+[01:14] “Beleza, Guilherme, o que você quer dizer?”. Vamos supor que eu quero criar um determinado recurso, mas eu não quero permitir todas as ações. Eu não quero permitir, por exemplo, o delete.
+
+[01:24] Observe que quando eu coloco aqui “/matriculas/1”, aparece por padrão o delete. Em nenhum momento do nosso código, em nenhum viewset nosso nós falamos: “Esses são os verbos permitidos”, não. Por padrão, quando criamos um viewset, ele nos gera recursos para atender todas as ações.
+
+[01:45] O que eu quero fazer? Vamos supor que a matrícula eu não quero permitir o delete, em hipótese alguma, nenhum usuário, nem admin, nunca. Não quero permitir aqui o delete na minha API, como eu faço isso?
+
+[01:57] Existe uma forma de limitarmos esse delete indicando quais são os verbos que eu quero permitir para esse viewset. Para isso eu vou colocar aqui http, ele já até aparece ali, _method_names, no plural. E eu coloco aqui um igual, entre colchetes eu vou falar que eu quero o get, por exemplo, e o post, só para visualizarmos esse exemplo.
+
+[02:21] O que eu posso permitir dessa forma? Vou salvar. Quando eu coloco http_method_names = [‘get’, ‘post’], significa que eu vou conseguir recuperar uma determinada matrícula e criar uma matrícula nova. Outros verbos, o delete, o put e o patch vão desaparecer.
+
+[02:37] Vou atualizar essa página e observe que temos aqui um get. Todo aquele contexto que tínhamos aqui embaixo, de atualizar uma matrícula, já desapareceu, ele não está mais visível.
+
+[02:47] E se eu for lá para a página de matrícula, observe que temos o get e o post, eu consigo criar uma nova matrícula, por exemplo, eu vou criar aqui, no período vespertino, para o Renan e o curso vai ser o Python/React. Quando dou aqui um “Post” ele mostra para nós, se eu for lá na tabela de matrícula, temos duas matrículas.
+
+[03:05] Só que por mais que eu acesse a matrícula 2, eu não consigo atualizar. Mas eu quero atualizar essa matrícula, então vamos especificar esses verbos.
+
+[03:12] Vou colocar aqui, para eu atualizar eu tenho o ’put’, e tenho também o ’path’. Vou deixar os dois, para entendermos. Estou aqui no “localhost:8000/matriculas/2/”, quando eu atualizo aparece para nós o put e nós conseguimos atualizar também esse nosso recurso.
+
+[03:33] Por exemplo, vou falar, ele mudou, o período agora dele é noturno. Quando eu dou aqui um “Put” ele muda para nós para o período noturno também.
+
+[03:41] Então essa é uma forma que temos para limitar as ações que queremos dentro de um viewset. Quero criar um viewset, quero usar todos os recursos possíveis que o Django REST nos proporciona.
+
+[03:53] Observe que em nenhum momento estamos criando na mão, se for o método get verificando eu quero essas ações, não. Estamos deixando tudo isso por conta do Django REST, e estamos especificando que queremos para o nosso recurso de matrícula esses métodos, o get, o post, o put e o path.
+
+[04:12] Vamos supor que eu quero o método delete também, eu posso colocar aqui o delete. Quando eu volto lá e atualizo, o método delete vai aparecer para nós também. Então vou tirar aqui o método delete, eu não quero, vou deixá-lo apenas com esses métodos aqui, para lembrarmos.
+
+[04:28] Então não coloquei nada, não especifiquei nenhum http name, aqui em cursos ou aluno ele vai permitir todos os verbos possíveis, o get, o post, o put, o path, o options e todos os outros verbos também. E o mesmo acontece para curso.
+
+[04:46] Mas eu quero especificar, eu tenho esse recurso, mas eu não quero todos os verbos, então eu posso criar essa nossa variável, http_method_names e indicar quais são os verbos que eu quero utilizar.
+
 ### Limitando requisições
-### Faça como eu fiz
-### Tipos de Views
+
+Podemos limitar o acesso a nosssa API por requisições por usuário. Com funcionalidade DJANGO-REST THROTTLING. [DOCUMENTAÇÃO]('https://www.django-rest-framework.org/api-guide/throttling/')
+
+No SETTINGS.PY adicionamos:
+
+    REST_FRAMEWORK = {
+        'DEFAULT_THROTTLE_CLASSES': [
+            'rest_framework.throttling.AnonRateThrottle',
+            'rest_framework.throttling.UserRateThrottle'
+        ],
+        'DEFAULT_THROTTLE_RATES': {
+            'anon': '100/day',
+            'user': '1000/day'
+        }
+    }
+
+---
+
+[00:00] Na nossa API nós incluímos permissões e criamos a Ana e o Marcos para controlar e manter determinados recursos.
+
+[00:07] Porém, essa não é a única forma que temos no Django REST de criar permissões ou limitar o acesso aos recursos que a nossa API disponibiliza. Podemos inserir outra forma de permissões do consumo da nossa API.
+
+[00:23] Por exemplo, eu posso criar uma forma de limitar a quantidade de requisições. Então vou falar, por exemplo: “Esse usuário pode fazer x requisições” ou “Se o usuário for anônimo, ele vai poder fazer tantas requisições”, e é isso que eu quero mostrar para vocês agora.
+
+[00:38] Vamos acessar a documentação do Django REST, aqui “Django REST framework: Home”. Aqui em cima, em “API Guide”, temos essa palavra “Throttling”, vou clicar nela. Podemos entendê-la como um limite. Tem uma explicação bem legal sobre ela e aqui temos como utilizamos essa política de limitação.
+
+[01:02] O que acontece? Nós conseguimos criar uma limitação para um usuário que for anônimo, então aqui eu falo, se o usuário for anônimo, ele pode fazer 100 requisições por dia, ou se for um determinado usuário, ele pode fazer mil requisições por dia.
+
+[01:17] Vamos copiar essa configuração, passar lá para o nosso arquivo de setup, do settings. Só para lembrarmos, vou minimizar a nossa “escola”, então em “setup > settings.py”, eu coloquei uma vírgula ali e vou colocar essa nossa classe de throttle classes, palavra difícil em inglês.
+
+[01:44] Primeira coisa, eu vou tirar – só para conseguirmos testar certo – essa limitação de permissão das classes. Selecionei tudo, dei um “Command + /”, para ele colocar essa linha como comentário, e aqui vamos manter o BasicAuthentication.
+
+[02:04] Já que criamos os usuários e falamos: “Esse usuário pode manter, criar, atualizar determinado recurso”, eu vou fazer só com o usuário anônimo. O que é um usuário anônimo? Uma pessoa que não está logada e fez um get na nossa API ou tentou fazer alguma coisa na nossa API.
+
+[02:23] Eu vou remover essa linha de baixo, ’rest_framework.throttling.UserRateThrottle’, vou deixar só essa linha, ’rest_framework.throttling.AnonRateThrottle’. Vou tirar também essa, ’user’ : ‘1000/day’. 100 requisições por dia é um número talvez aceitável, dependendo da situação que é disponibilizada a sua API.
+
+[02:46] Como estamos no vídeo, para eu fazer as 100 requisições e mostrar no vídeo, vai ficar impossível, vai ficar um vídeo muito comprido. Vou deixar 5 requisições por dia, só para vermos isso funcionando.
+
+[02:56] Eu indiquei que vai existir um rate, um limite de requisições para um usuário anônimo. E a quantidade do usuário anônimo é de cinco requisições por dia.
+
+[03:10] O que eu vou fazer? Eu poderia testar isso lá na minha API mesmo, deslogar o Gui aqui como admin e fazer esse teste. Mas para ficar mais fácil para entendermos e para irmos contando para ver se está certo esse número, eu vou fazer esse teste no Postman.
+
+[03:26] Não se preocupe se você não está com o Postman instalado, eu mostro aqui no vídeo, depois você pode fazer esse teste na sua casa também.
+
+[03:33] Eu estou utilizando aqui o “Basic Auth”, vou remover, vou colocar aqui “No Auth”, eu sou um usuário anônimo, e vou dar aqui um “Send” em cursos. E ele mostrou, apareceu aqui um, dois, três, estou vendo todos os cursos, quatro, cinco.
+
+[03:52] Na sexta vez aparece algo diferente, “Pedido foi limitado”, e ele dá aqui um valor em segundos e eu preciso esperar até o outro dia. Olha que bacana.
+
+[04:04] Além das permissões que criamos lá no nosso admin e depois lá na nossa view – deixa eu abrir nossa view – nós falamos que determinados usuários vão poder utilizar tais recursos, vão manter alguns recursos, quando fazemos isso estamos bem especificando, estamos falando assim: “Esses usuários podem fazer, alterar e manter esses recursos”.
+
+[04:32] Quando utilizamos esse cenário, por exemplo, a minha API está aberta e eu consigo limitar o uso da minha API. No Postman eu só utilizei o get como exemplo para ficar mais fácil, mas depois você pode testar os outros verbos também, o get, o post.
+
+[04:47] Então para esse usuário anônimo nós colocamos cinco requisições por dia de limite, mas é um número com base naquilo que o seu sistema ou aquilo que você está criando faz sentido você colocar. Essa é outra ideia.
+
+[05:04] Temos dois níveis de permissões aqui, temos esse nível de permissão que eu vou comentar aqui, que é o nível que vimos nesse vídeo, que vamos limitar uma determinada quantidade de requisições da nossa API, seja um usuário anônimo ou seja um usuário da nossa API.
+
+[05:20] Ou temos aqui uma possibilidade de falar: “Lá no nosso Django admin nós criamos alguns usuários com determinadas permissões, então eu quero que essas permissões sejam refletidas também na minha API”, então nós colocamos esse PERMISSION_CLASSES e indicamos que queremos aqueles usuários com aquelas determinadas requisições. São duas formas que podemos disponibilizar os recursos da nossa API.
+
+### Exercício: Tipos de Views
+
+Uma pessoa estava trabalhando no desenvolvimento de uma API que tinha o seguinte desafio: criar um recurso capaz de atender apenas requisições GET e DELETE.
+
+Ao pesquisar a documentação, ela decidiu utilizar o RetrieveDestroyAPIView.
+
+Analise a história acima alinhando-a ao conteúdo aprendido e assinale as alternativas que correspondem melhor ao que podemos esperar do RetrieveDestroyAPIView.
+
+a) **Alternativa correta:** O uso do RetrieveDestroyAPIView vai atender a necessidade da pessoa.
+- _Alternativa correta! Conforme a documentação, o uso deste método permitirá apenas ações como GET e DELETE._
+
+b) O uso do RetrieveDestroyAPIView não vai atender a necessidade da pessoa, pois, o Django Rest só funciona com ViewSet.
+
+c) **Alternativa correta:** A pessoa pode usar o método RetrieveDestroyAPIView ou um ViewSet, limitando as ações do recurso.
+- _Alternativa correta! Podemos configurar as ações do ViewSet através de http_method_names = ['get', 'delete'], por exemplo._
+
 ### O que aprendemos?
+
+- Vimos como limitar as ações de um ViewSet;
+- Aprendemos como limitar a quantidade de requisições de um usuário anônimo.
+
 ## 4. Modelo de maturidade e Location
 ### Projeto da aula anterior
 ### Modelo de maturidade
