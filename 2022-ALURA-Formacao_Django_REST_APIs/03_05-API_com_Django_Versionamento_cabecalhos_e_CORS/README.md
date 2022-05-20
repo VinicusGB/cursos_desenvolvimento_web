@@ -645,12 +645,139 @@ c) **Alternativa correta:** A pessoa pode usar o método RetrieveDestroyAPIView 
 - Aprendemos como limitar a quantidade de requisições de um usuário anônimo.
 
 ## 4. Modelo de maturidade e Location
-### Projeto da aula anterior
 ### Modelo de maturidade
+
+- A lama do XML
+    - _HTTP como um sistema de transporte para interações remotas, mas sem a utilização de qualquer um dos mecanismos da web._
+- Recursos
+    - _Introdução de recursos. No lugar de fazer todos os nossos pedidos a um simples endpoint, trabalhamos com recursos individuais._
+- Verbos HTTP
+    - _Introduz um conjunto padrão de verbos para que possamos lidar com situações semelhantes, da mesma forma._
+- Controle de Hipermídia
+    - _Busca uma forma de fazer um protocolo auto-documentado._
+
+---
+
+[00:00] Nesse vídeo vamos conversar um pouco sobre modelos de maturidade com base na glória do REST de Richardson, que é um artigo muito bacana onde ele descreve os passos em direção a glória do REST.
+
+[00:13] O que acontece? Nós criamos a nossa API, ela tem várias funcionalidades bacanas, versionamento, relacionamento entre modelos, padronizamos os nossos end-points, fizemos bastante coisa legal. Mas é possível subirmos ainda um nível de maturidade na nossa API, com base nesse artigo.
+
+[00:32] Vou deixar esse link na descrição desse vídeo para você conseguir ler depois, ele está em inglês, mas você pode usar o Google Translate para conseguir entender depois esse artigo em português também. E vamos falar um pouco sobre a glória do REST, com base no Richardson.
+
+[00:49] Eu fiz aqui um pequeno resumo para entendermos esse caminho para a glória do REST. Ele divide esse modelo de maturidade em alguns níveis, e o primeiro nível que temos ele dá um nome de lama do XML, algo desse tipo. O que é a lama do XML? É utilizarmos o protocolo do http sem qualquer um dos mecanismos da web.
+
+[01:14] Por exemplo, eu tenho lá na nossa API o recurso chamado alunos, e quando queremos criar um determinado aluno, o que nós fazemos? Vamos no end-point desse determinado recurso, utilizamos o verbo do http post para que criemos, de fato, um determinado aluno ou aluna na nossa aplicação.
+
+[01:36] Isso é interessante, porém nesse nível 0 nós não teríamos isso, teríamos um end-point cadastrar aluno e passaríamos nesse end-point todas as outras informações. Repara que na lama do XML nós não temos essa divisão dos recursos, nós não utilizamos todos os mecanismos da web para que consigamos criar os nossos recursos.
+
+[02:05] O nível 1 já pensa em introduzir recursos na nossa API. No lugar de termos um simples end-point que vai fazer um monte de coisa mágica, nós não queremos, vamos começar a dividir e trabalhar com recursos individuais, como fizemos na nossa API.
+
+[02:21] Criamos alunos e mantivemos os recursos de alunos, criamos cursos e mantivemos o recursos relacionados aos cursos da nossa API, e matrículas também. Então nós começamos a dividir a nossa aplicação em recursos diferentes. E isso é uma coisa legal. E ele fala que esse é o nível 1 de modelo de maturidade da glória do REST.
+
+[02:43] O nível 2 nós começamos a introduzir um conjunto de padrões e verbos para que possamos lidar com situações semelhantes. Se eu quero criar um determinado recurso, se eu quero atualizar ou se eu quero recuperar uma determinada informação, vamos começar a utilizar o conjunto de padrões dos verbos do http.
+
+[03:06] E para finalizar, o último nível é o controle de hipermídia, onde buscamos uma forma de fazer o nosso protocolo ser auto-documentado. O que isso significa? Significa que a minha própria documentação, eu vou utilizar o protocolo para que as pessoas e sistemas que utilizam e consomem recursos da minha API estejam cientes do que está acontecendo. Então vamos utilizar o protocolo para auto-documentar a nossa API.
+
+[03:35] Só para fazer um resumo aqui do modelo de maturidade, seguindo os passos para a glória do REST com base no Richardson, temos o nível 0, onde não utilizamos os recursos do http e os end-points cadastrar aluno ou algo muito mágico fazendo e não tem a divisão dos recursos.
+
+[03:57] No nível 1 já temos essa divisão dos recursos, eu trabalho só com alunos ou nesse momento estou trabalhando só com matrículas, trazendo um pouco para o nosso contexto, então nós dividimos os recursos da nossa API.
+
+[04:09] Depois temos a inserção dos padrões, dos verbos para situações semelhantes na nossa API e por último, controle de hipermídia, onde vamos buscar uma forma de auto-documentar as informações na nossa API. Esse é o modelo de maturidade de Richardson.
+
+[04:33] O que vamos fazer na sequência? Vamos pensar nesse nível 3, em controle de hipermídia. Como podemos documentar melhor uma determinada situação ou um determinado recurso ou uma determinada ação na nossa API, para que aqueles que estão consumindo nossa API, fique mais claro o que está acontecendo. Vamos fazer isso a seguir.
+
 ### Cabeçalho Location
-### Faça como eu fiz
-### A glória do REST
+
+O cabeçalho Location retorna para ou usuário da API o endereço do elemento criado por ele.
+
+No VIEWS.PY:
+
+    ...
+    from rest_framework.response import Response
+
+    class CursosViewSet(viewsets.ModelViewSet):
+        ...
+
+        def create(self,request):
+            serializer = self.serializer_class(data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                response = Response(serializer.data, status=status.HTTP_201_CREATED)
+                id = str(serializer.data['id'])
+                response['Location'] = request.build_absolute_uri() + id
+                return response
+
+---
+
+[00:00] Vamos subir um nível de maturidade da nossa API REST? Eu quero mostrar algo interessante para vocês. Eu vou clicar com o botão direito, vou escolher a opção inspecionar, “Inspect”, e vou selecionar a opção “Network”.
+
+[00:14] Eu vou clicar aqui em “cursos”, aqui temos todas as propriedades do curso, todas as informações e eu vou acessar o curso com o ID 1, dou um “Enter” no “localhost:8000/cursos/1” e aqui eu tenho duas pastas. Eu tenho aqui o ID 1, localhost 1, e esse “1/”.
+
+[00:30] Vou clicar nessa primeira opção, “1”, e vou scrollar. Observe que quando scrollamos essa parte, nesse “Response Headers”, existe uma propriedade chamada “Location”, o que isso significa?
+
+[00:43] Esse location serve para auto-documentar a nossa API utilizando os recursos da web. Só que esse location é exibido no Django quando acessamos determinado ID, porém quando criamos um novo curso, eu vou fazer isso aqui, vou chamar curso de Java básico, por exemplo, vou chamar “Curso de Java”, deixar nível básico. Vou limpar aqui, vou dar um “Clear”.
+
+[01:13] Quando eu dou um “Post”, observe que ele criou aqui o “cursos/”, só que quando nós scrollamos o “Response Headers” nós não temos o location. Nativamente o Django REST não nos traz o location.
+
+[01:26] Como eu crio o location para tornar minha API auto-documentada? Eu quero que todas as vezes que eu crio um elemento novo, apareça aqui na propriedade do “Response Headers” a aba location com o ID desse curso que eu acabei de criar, que é o curso com o ID 11, então vou colocar aqui “localhost:8000/cursos/11/”.
+
+[01:44] Eu queria que o meu location tivesse esse end-point, indicando para quem está consumindo a nossa API: “Esse aqui é o link do recurso que você acabou de criar”. Vamos fazer isso? Primeira coisa, vou abrir meu app de “escola”, vou lá nas minhas views. Vou acessar aqui cursos, deixa eu dar um “Enter” só para ficarmos com essa aba de cursos na nossa tela.
+
+[02:12] Para que consigamos acessar o nosso curso, vamos precisar fazer um import de dois módulos. O primeiro módulo é do rest_framework mesmo, .response import Response, é esse. Conforme formos escrevendo o nosso código, eu vou fazer o import dos outros também.
+
+[02:40] O que eu quero fazer? Quando eu crio um elemento novo, eu quero incluir o response location. Então quando nós criamos, significa que vamos precisar reescrever o nosso método create. Vou reescrever o create():.
+
+[02:55] Para eu reescrever o create dois argumentos são necessários, primeiro, a instância que estivermos trabalhando, (self, e a requisição, request):.
+
+[03:05] Primeira coisa que eu vou fazer vai ser buscar todos os dados dessa minha requisição, eu vou chamar de serializer, no singular, vou falar que ele vai ser igual a instância que estivermos utilizando, = self.serializer_class, entre parênteses, para eu buscar todas as informações, eu vou utilizar a propriedade (data=request.data).
+
+[03:31] E aqui o que nós vamos fazer? Vamos verificar se as informações que passamos para o nosso serializer são válidas. Para isso, if serializer.is_valid():, se ele for válido o que eu quero fazer? Eu quero salvar os dados no meu serializer, eu quero pegar aquela informação post que eu enviei e salvar na minha base de dados, serializer.save().
+
+[03:56] O que acontece agora? Vamos pensar no lado do location. Primeira coisa, se um dado foi salvo, ele foi criado, eu preciso falar qual é o dado criado, precisamos devolver essa resposta para o nosso servidor.
+
+[04:09] Então vou criar uma variável chamada response = e vou falar que ela vai ser igual a classe Response que acabamos de importar, passando o (serializer.data, com as informações que criamos na nossa base de dados e o status code, que vai ser status=status., existe uma propriedade chamada status.
+
+[04:34] Como vamos criar um elemento, já temos aqui HTTP_201_CREATED). Vou selecionar essa opção. Temos então a resposta dessa requisição.
+
+[04:46] O que eu vou precisar fazer agora vai ser buscar o ID dessa requisição, para eu criar a minha URL location inteira. Vou criar uma variável chamada id = e para eu conseguir recuperar a informação desse ID eu vou utilizar a propriedade serializer.data[‘id’].
+
+[05:06] Se eu executar da forma que está aqui, vamos receber um erro mostrando que o ID é do tipo inteiro e precisamos na concatenação, para criar a nossa string, de um tipo string. Então eu vou converter aqui já, str e vou colocar entre parênteses, encapsulando esse serializer data.
+
+[05:25] Agora o que eu posso fazer é criar o meu response location. Então response [‘Location’] =, eu preciso do endereço daquele “localhost:8000/cursos/” mais o ID, para eu pegar todo esse endereço eu vou pegar lá da request.build_absolute_uri(). É uma função, ela vai pegar o endereço completo e eu quero concatenar com o ID do recurso que salvamos.
+
+[06:12] Para finalizar, o que eu vou fazer? Dar um return response. Salvei, abri o terminal, vou ver se tem algum erro aqui. Salvando de novo. Acho que eu escrevi response em algum lugar errado, deixa eu ver. Aqui em cima tem um response também minúsculo, eu vou tirar, vou deixar só o maiúsculo. Era isso.
+
+[06:44] Ele acabou importando um response que não vamos precisar usar, esse response aqui é referente aos dados e o status code da nossa aplicação, então não tem eles, nós só vamos precisar de dois imports, o response com R maiúsculo, que fizemos no início, e o rest framework status, para devolvermos aqui o status code 201 de criado.
+
+[07:07] Vamos testar isso agora. Vou vir aqui em “Cursos List”, tenho alguns cursos. Eu vou criar, por exemplo, curso de Docker, então vou colocar “Curso de Docker”, básico, vou limpar, dar um “Clear” para visualizarmos o nosso location, dou um “Post” e foi criado, tem o ID.
+
+[07:36] Vamos navegar, acessando aqui a barra “cursos/”, scrollando um pouco para baixo, temos aqui um “Location: http//localhost:8000/cursos/12”, que é o curso do ID que acabamos de criar.
+
+[07:50] Dessa forma nós conseguimos auto-documentar a nossa API. Todas as vezes que criarmos um curso, mandamos no response headers uma propriedade chamada location.
+
+[08:03] Isso nós podemos pensar em extrair para outra função e passar para todos os outros módulos que temos também. Deixa eu só tirar a quantidade de espaços aqui, só para ficarmos com o nosso código certo.
+
+[08:17] Fizemos isso para o nosso curso, mas poderíamos fazer isso para os outros viewsets que temos aqui também e padronizar o nosso projeto. Esse foi só um exemplo demonstrativo de como podemos tornar nossa API mais auto-documentável.
+
+### Exercício: A glória do REST
+
+Aprendemos que segundo o artigo [Modelo de maturidade de Richardson]('https://martinfowler.com/articles/richardsonMaturityModel.html'), existem níveis para a glória do Rest.
+
+Sabendo disso, analise as afirmações abaixo e marque aquelas que trazem corretamente o nível de maturidade e sua devida função.
+
+a) **Alternativa correta:** O nível 0 aborda a questão de lidar com a complexidade usando “dividir e conquistar”, quebrando um grande endpoint de serviço em vários recursos.
+
+b) **Alternativa correta:** O nível 2 introduz um conjunto padrão de verbos para que possamos lidar com situações semelhantes da mesma forma.
+- _Alternativa correta! No lugar de usar um endpoint cria-curso ou deleta-curso, por exemplo, usamos os verbos HTTP POST ou DELETE no endpoint de cursos._
+
+c) **Alternativa correta:** O nível 3 fornece uma maneira de fazer um protocolo auto-documentado.
+- _Alternativa correta! Vimos como incluir o cabeçalho Location sempre que um recurso é criado para auto-documentar a API._
+
 ### O que aprendemos?
+
+- Aprendemos o que é o modelo de maturidade de Richardson e seus níveis;
+- Incluímos o cabeçalho Location quando criamos um novo curso.
+
 ## 5. Teste de unidade na view e model
 ### Projeto da aula anterior
 ### Preparando o ambiente
