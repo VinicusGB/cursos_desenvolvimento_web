@@ -779,13 +779,181 @@ c) **Alternativa correta:** O nível 3 fornece uma maneira de fazer um protocolo
 - Incluímos o cabeçalho Location quando criamos um novo curso.
 
 ## 5. Teste de unidade na view e model
-### Projeto da aula anterior
 ### Preparando o ambiente
+
+No próximo vídeo, vamos integrar uma aplicação front-end desenvolvida em React para consumir nossa API. Para isso, clique [neste link]('https://github.com/guilhermeonrails/escola_react_api_3/archive/master.zip') para realizar o download do projeto React e siga os passos abaixo:
+- Após o download, verifique se Nodejs está instalado em sua máquina, executando o seguinte comando em terminal:
+
+        node --version
+
+Se sua versão aparecer na tela, pode passar para o próximo passo. Caso a versão do React não apareça na tela, realize por gentileza o download do React em sua máquina, de acordo com seu sistema operacional.
+- Agora abra um terminal na pasta do projeto e digite o seguinte comando para instalar as dependências do React:
+        
+        npm install
+
+Atualize as dependências do npm com o seguinte comando:
+
+        npm update
+
+Para finalizar, ainda no terminal digite o comando abaixo para subir o servidor do React e aguarde:
+
+        npm start
+
+Após o carregamento, será exibida a seguinte página:
+
+<center>
+    <img src="https://caelum-online-public.s3.amazonaws.com/1996-api-django-3-versionamento-cabecalhos-cors/05/aula-5-p%C3%A1gina.png">
+</center>
+
+
+Chegou aqui? Você está pronto para descobrir o que é CORS na próxima atividade. Algo deu errado? Não hesite em pedir ajuda no fórum!
+
 ### O que é CORS?
+
+[SAME ORIGIN POLICY]('https://developer.mozilla.org/en-US/docs/Web/Security/Same-origin_policy')
+
+Compartilhamento entre recursos. 
+
+---
+
+[00:00] Na atividade anterior fizemos algo super legal, disponibilizamos uma API feita em React para consumir a nossa API feita em Django REST. E quando eu executo a minha API, eu subo o meu servidor no React, na porta 3000 e vou lá no meu console, acontece algo interessante.
+
+[00:22] O que eu quero fazer com essa aplicação em React? Eu quero exibir a descrição dos cursos aqui, Python Fundamentos, Python/React, Python para Data Science, Python Avançado e mostrar aqui a lista de cursos criados numa outra linguagem, numa outra aplicação, então eu tenho o back-end e o front-end.
+
+[00:38] Só que eu tenho uma mensagem no front-end indicando que fomos bloqueados por conta da política do CORS, que é o Acess-Control-Allow-Origin, que é o acesso de recursos compartilhados. Então o que é política de mesma origem?
+
+[00:57] Política de mesma origem é um mecanismo de segurança crítico que restringe como um documento ou um script carregado de outra origem pode interagir com o recurso, entre eles, como eles podem conversar. Isso ajuda a isolar documentos maliciosos, reduzir ataques entre as aplicações também.
+
+[01:22] Existe um local onde podemos ter mais informações sobre esse tipo de erro. Se eu digitar na barra de navegação “same origin policy”, por exemplo, eu tenho aqui alguns links explicando. Vou clicar no link do Mozilla para abrir e vou clicar no link do Wikipédia também.
+
+[01:40] No Wikipédia temos uma descrição em português sobre esse tipo de segurança que temos na web, você pode dar uma lida depois nele. Eu vou pegar o exemplo do Mozilla. Ele fala que o compartilhamento entre recursos ou o CORS foi criado para ajudar a resolver problemas de segurança.
+
+[02:02] Antes do CORS os desenvolvedores tinham que se esforçar muito para garantir quais APIs podiam consumir, quais APIs podiam ser compartilhadas por outras aplicações, por outros domínios, por outros clientes também dentro do navegador JavaScript. E hoje temos o CORS. O que o CORS faz? O CORS permite que solicitações de origem cruzada sejam compartilhadas de maneira segura.
+
+[02:33] Pensando da perspectiva do React, o CORS é muito bom, porque o React vai falar: “Preciso consumir essas APIs” ou outra aplicação em front-end, “Preciso consumir esses determinados recursos com esses end-points, com esses caminhos, outras aplicações”.
+
+[02:50] E essas outras aplicações vão precisar fazer configurações dizendo que: “Essa aplicação em React você pode confiar e nós vamos liberar os recursos e todas as outras informações também”.
+
+[03:04] Mas quando eu sei o que são origens diferentes e o que são de mesma origem? Se observarmos na nossa aplicação, o que eu vou fazer aqui? Vou abrir o inspecionar, vou selecionar aqui “Network”, vou atualizar essa página. Eu atualizei, ele trouxe todas as informações para mim.
+
+[03:28] Se eu vier em “cursos/”, aqui no “General” eu tenho política de referência same-origin. Então eu estou consumindo recursos utilizando a mesma origem do meu servidor, então não vou ter problema em relação a isso.
+
+[03:47] Porém, lá no site do Mozilla, ele dá um exemplo assim, aqui temos um “http://store.company.com/dir/page.html”, e ele dá um exemplo do que é mesma origem e do que são origens diferentes também.
+
+[04:02] Para entendermos um pouco, ele entende como mesma origem mesmo quando temos paths diferentes. Observe que aqui temos o “dir” e no outro temos o “dir2”. Esse “dir2”, por mais que ele seja um path diferente, se observarmos, o host aqui é o mesmo, e provavelmente a porta que ele está utilizando é a mesma também, mesmo que seja outra página. Nesse caso ele vai permitir.
+
+[04:29] Outro exemplo de mesma origem também é quando eu tenho paths diferentes. Eu tenho aqui “store.company.com/dir/inner”, então aqui já mudou, “/dir/page.html”, ele foi para outra página dessa aplicação desse exemplo. Isso ele considera como mesma origem, pode liberar as informações, os recursos.
+
+[04:55] O que acontece quando temos protocolos diferente? Ele entende como origens diferentes. Então por mais que eu tenha aqui um “http://store.company.com/dir/page.html”, aqui eu tenho “https”, ele já vai entender que é um protocolo diferente.
+
+[05:11] Ou se eu estiver utilizando uma porta diferente, uma está utilizando http na porta 80 por default e essa aqui eu estou utilizando na porta 81, por exemplo, ele vai entender, isso pode ser outra aplicação, não libera, isso vai violar as políticas de mesma origem.
+
+[05:30] Ou quando eu tenho host diferente. Observe que eu tenho “news.company.com/dir/page.html”, esse “news.company.com” já garantiu um host diferente, então eu não vou conseguir acessar.
+
+[05:42] Olha que interessante, temos uma aplicação React feita para consumir os cursos da nossa aplicação em Django, só que nós não conseguimos consumir, porque existe essa política de mesma origem. Então é um erro que acontece do lado do front-end, mas quem deve resolver é o pessoal do back-end.
+
+[06:04] O que nós desenvolvedores back-end, que criamos a nossa API em Django REST, precisamos fazer? Precisamos informar para a nossa API que vamos utilizar compartilhamento cruzado na nossa API, que vamos utilizar o CORS, e identificar quais são as origens que vamos permitir esse compartilhamento cruzado.
+
+[06:26] Eu vou falar assim: “O localhost:3000 é um local que você pode confiar, pode liberar o acesso. Qualquer outra aplicação diferente disso eu não quero liberar o acesso da minha API”.
+
+[06:40] O que nós vamos fazer na sequência? Vamos configurar a nossa API do lado do Django para conseguir atender o projeto feito em React.
+
 ### CORS no Django
-### Faça como eu fiz
+
+[DOCUMENTAÇÃO]('https://pypi.org/project/django-cors-headers/')
+
+Para funcionar nosso projeto de REAACT precisamos instalar DJANGO-CORS-HEADERS
+
+    pip install django-cors-headers
+
+No SETTINGS.PY:
+
+    INSTALLED_APPS = [
+        ...
+        'corsheaders',
+        ...
+    ]
+
+    MIDDLEWARE = [
+        ...
+        'corsheaders.middleware.CorsMiddleware',
+        'django-middleware.common.CommonMiddleware',
+        ...
+    ]
+
+    CORS_ALLOWED_ORIGINS = [
+        "http://localhost:3000",
+    ]
+
+---
+
+[00:00] Vamos configurar a nossa API Django para que o compartilhamento de recursos entre origens diferentes seja permitido.
+
+[00:09] Existe uma biblioteca chamada django-cors-headers, ela vai ser responsável por fazer esse meio de campo para nós, não vamos precisar realizar toda essa verificação na mão, já existe uma biblioteca específica para isso, que é essa django-cors-headers. Vou copiá-la e vou seguir a documentação para conseguirmos instalá-la.
+
+[00:30] Primeiro passo, pip install django-cors-headers, vou colar aqui. Deixa eu minimizar ali do lado, só para conseguirmos ver melhor. Dou um “Enter”, vai instalar super rápido, já instalou.
+
+[00:44] O que eu vou fazer agora vai ser seguir o que está escrito na documentação, depois o que vamos precisar fazer é colocá-lo na configuração dos nossos apps instalados. Então abrindo aqui, vamos no “setup > settings.py”.
+
+[01:00] Aqui nos apps instalados, se scrollarmos, no meu está na linha 32, temos todos esses apps, que são os apps desse projeto Django, eu vou copiar e vou colocar, ’corsheaders’,, aqui dentro. Já instalamos, já colocamos nos apps instalados, vamos precisar colocar no Middleware também.
+
+[01:17] E aqui ele tem uma informação interessante, esse “CorsMiddleware” é importante gerá-lo o mais alto possível, antes mesmo desse “CommonMiddleware” ou do “WhiteNoise”.
+
+[01:35] Por quê? Porque a ordem do Middleware que nós vamos colocar na nossa aplicação vai fazer diferença no nosso funcionamento também, então antes desse “CommonMiddleware” nós vamos colocar a configuração do Django CORS, que é essa aqui, ’corsheaders.middleware.CorsMiddleware’,. Vou colocá-la aqui. Salvei.
+
+[01:58] E agora faremos o quê? Temos tipos de configurações diferentes, então aqui ele vai especificar, vai dizer quais são os domínios onde vamos permitir que a nossa aplicação possa ser compartilhada.
+
+[02:19] Eu vou copiar toda essa linha do CORS_ALLOWED_ORIGINS = [, vou lá para o final da página mesmo e vou colocá-la aqui embaixo. Eu vou tirar essa aqui, ”http://127.0.0.1:9000”, vou deixar só a que está com “localhost”, para fazermos a nossa alteração.
+
+[02:33] Se observarmos, a nossa aplicação React roda na porta 3000, então vou colocar aqui na porta 3000. E observe algo muito interessante, se eu copiar e colar e deixar o 3000 com uma barra, teremos um erro aqui, não podemos passar a barra no final do CORS_ALLOWED_ORIGINS, as origens que queremos permitir esse compartilhamento cruzado.
+
+[03:00] Então tirei a barra, não tem a barra aqui no final. O que eu vou fazer vai ser subir o meu servidor, python manage.py runserver, volto na minha aplicação React, atualizo e nós recebemos um erro.
+
+[03:16] Por que estamos recebendo esse erro? Esse erro não é por conta do React, mas sim por conta das permissões que temos na nossa aplicação. O lado do React não tem uma classe para fazer a verificação, para saber se eu sou um usuário que pode acessar ou não. Então o que vamos fazer? Eu vou alterar.
+
+[03:34] Lembra que temos uma permissão aqui que vai verificar quantas vezes um usuário anônimo pode fazer requisições na nossa aplicação? Eu vou usá-la. Vou comentar essas linhas do ’DEFAULT_PERMISSION_CLASSES’ até o ’DEFAULT_AUTHENTICATION_CLASSES’, eu não vou apagar, só vou comentar e vou ativar ‘DEFAULT_THROTTLE_CLASSES’ E ‘DEFAULT_THROTTLE_RATES’ que vou tirar aqui o comentário daquela nossa classe de permissões anônimas, e vou aumentar, vou deixar com 100 permissões por dia ‘anon’: ‘100/day’
+
+[Aula5_video2_imagem4]
+
+[04:05] Se eu tiro essa parte de permissões, a minha aplicação vai estar sempre disponível para qualquer pessoa, mas eu quero colocar aqui um limite, só para termos um pouco o controle para onde estamos liberando a nossa API. Fique à vontade se você quiser tirar essa parte do Rates de requisições anônimas também na sua aplicação.
+
+[04:27] Alterei aqui para 100, vou atualizar a parte do React e está lá, temos Python Fundamentos, Python/React, as descrições de todos os cursos que temos na nossa API também.
+
+[04:40] Para conseguirmos disponibilizar esse compartilhamento cruzado, é necessário instalarmos o django-cors-headers, façamos toda essa configuração e digamos: “Eu tenho a minha API, ela está funcionando, está tudo certo e eu posso compartilhar recursos da minha API com essas aplicações”.
+
+[05:02] Então se você está criando mais de uma aplicação ou se você está dividindo a sua aplicação em back-end, front-end e está ficando bem legal, você pode usar esse sistema de segurança.
+
+[05:14] A minha API roda numa porta diferente, então nós já estaríamos com outra política mesmo, não estamos na política de mesma origem, estamos com uma origem diferente. Mesmo assim conseguimos consumir, porque nós permitimos, falamos dentro das nossas configurações, do lado do Django REST: “Pode confiar nessas outras aplicações”. E aqui temos uma aplicação front-end super simples consumindo os dados do Django REST Framework.
+
 ### Permitindo compartilhamento
-### Projeto do curso
+
+Uma equipe desenvolveu uma API com Django Rest que seria usada por 3 sistemas front-end diferentes. Pensando nisso, realizaram toda a configuração do CORS no Django. Porém, no lugar de configurar cada sistema conforme ilustra o código abaixo:
+
+código 1
+
+    CORS_ALLOWED_ORIGINS = [
+        "http://sistema1:3000",
+        "http://sistema2:9000",
+        "http://sistema3:5000",
+    ]
+
+Eles optaram por configurar usando o seguinte código:
+
+código 2
+
+    CORS_ORIGIN_ALLOW_ALL = True
+
+Analisando as linhas de código acima, escolha as alternativas que apresentam os possíveis resultados.
+
+a) A forma usada pela equipe permitirá o compartilhamento de recursos apenas para as 3 aplicações front-end.
+
+b) **Alternativa correta:** A forma usada pela equipe permitirá o compartilhamento de recursos para qualquer aplicação.
+- _Alternativa correta! Com esse comando, o compartilhamento de recursos cruzados estará disponível à qualquer aplicação._
+
+c) **Alternativa correta:** Tanto o código 1 como o código 2, atenderão às 3 aplicações front-end.
+- _Alternativa correta! Certo! As aplicações front-end usarão a API com o código 1 ou 2._
+
 ### O que aprendemos?
-### Parabéns
-### Conclusão
+
+- Entendemos a importância da política de mesma origem e como compartilhar recursos de origens diferentes configurando o CORS;
+- Configuramos o CORS do Django Rest e integramos a API Django Rest com uma aplicação React.
