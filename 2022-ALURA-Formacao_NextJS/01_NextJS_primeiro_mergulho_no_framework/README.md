@@ -489,12 +489,166 @@ Segundo a documentação sobre o Link do Next.js, o passHref é mandatório quan
     - Este componente permite a navegação SPA de aplicações Next.js.
 
 ## 2. Build e SEO na prática
-### Projeto da aula anterior
 ### Entendendo o Build do Next.js
+
+1. No terminal para que o projeto tenha um melhor desemepenho:
+
+        yarn build && yarn start
+
+2. No PACKAGE.JSON adicione: [Static HTML Export]('https://nextjs.org/docs/advanced-features/static-html-export#next-export')
+
+        "scripts": {
+                ...,
+                "export": "next build && next export",
+                ...
+        }
+
+3. Instalando um novo servidor
+
+        npx http-server ./out -c-1
+
+---
+
+[00:00] Chegou a hora de entendermos um pouco mais do que o Next.js gera, porque até então ele parece igual o Create React App, que nós conseguimos criar a nossa aplicação, conseguimos vê-la rodando e ter o feedback e tudo mais.
+
+[00:14] É nesse vídeo aqui que se você já conhece essa ferramenta, nós veremos o diferencial do Next em si. Nossa app está rodando aqui bonita.
+
+[00:22] Eu comentei que todo esse código que estamos vendo, todo esse `<h1>` aqui e tudo mais, se dermos o “View Page Source”, nós conseguimos vê-lo, ou seja, ele está sendo pré-carregado aqui.
+
+[00:35] Isso bate bastante com essa estratégia de fazer o tal do Server Side Render, ou seja, o HTML vai vir pronto para os nossos usuários e o usuário só vai baixar o conteúdo que queremos que ele tenha acesso.
+
+[00:50] Para conseguir simular isso aqui, eu vou assumir que você vai hospedar o seu site em algum lugar, então você vai contratar um servidor, uma máquina, seja na AWS, seja no Heroku ou até mesmo na Vercel, que é onde faremos o nosso deploy em um momento futuro aqui do curso, por enquanto.
+
+[01:10] Ou até mesmo tem a tal da Umbler, que se eu não me engano é uma empresa brasileira, que tinha hospedagem para Node, eu não lembro se eles têm ainda, mas eu lembro que durante uma época eles tinham.
+
+[01:19] Então passei vários clientes, AWS, Heroku, a Vercel. Se você tem a sua aplicação rodando a nível de servidor, você conseguiu colocá-la nesses lugares aqui.
+
+[01:30] Como seria esse rodar no servidor? Basicamente o seu código vai ser baixado em um desses servidores, vai ter uma máquina que vai ler o seu código, tal como a minha máquina que está rodando esse projeto aqui agora. E lá vai rodar o comando yarn build && yarn start.
+
+[01:53] Repara que ele está buildando aqui, ele otimiza tanto a nossa página 404 quanto o FAQ aqui e tudo mais. E repara que tem um segredo, ele fala que tudo está sendo gerado como estático, mas eu já falo sobre isso.
+
+[02:07] Se abrirmos o localhost:3000, que é onde estávamos, está aqui o nosso código. Parece que ele não mudou nada. Se dermos um view page source aqui, está tudo do mesmo jeito, estão aqui os arquivos Next. Eu posso até fechar e abrir de novo para vocês, aqui, $ next start, started server on.
+
+[02:39] O que mudou aqui? Basicamente agora, se eu vier na nossa home e mudar aqui, `<h1>Alura Cases - Home Page bla</h1>`, repara que ele não muda mais de acordo com as alterações que fazemos. Ou seja, ele está só pegando a versão já gerada e jogando-a para o nosso usuário. É isso que vai acontecer no servidor.
+
+[03:04] Porém, mesmo os servidores, é mais barato rodarmos os arquivos de forma estática. “O que seriam os arquivos de forma estática, Mario?”, seria pegar somente o HTML, o CSS e o JavaScript e servir. Então o usuário acessa uma URL, o servidor interpreta que teve a requisição e manda só um arquivo HTML estático. Você não tem o processamento do servidor de gerar o arquivo e depois mandar, que é uma coisa que acontece muito.
+
+[03:29] O Next dá suporte para o Server Render, nós vamos vê-lo em outro momento desse curso ainda, mas por hora o que o Next está fazendo parece Server Render, mas vai gerar um monte de arquivos estáticos, ele está gerando um monte de arquivo estático para nós.
+
+[03:42] “Mario, como assim arquivo estático? Eu não estou conseguindo entender isso”. Seguinte, aqui tem um build, que gera os arquivos estáticos e o servidor do próprio Next, otimizado para rodar o Next, que roda isso. É isso que está acontecendo.
+
+[04:00] Porém, eu posso vir aqui e rodar o seguinte comando, eu vou até pegar a documentação, isso aqui é uma feature avançada do Next, que é esse Next Export, para você conseguir visualizar esses arquivos que eu estou falando.
+
+[04:14] Eu vou criar aqui um comando chamado “export”:, no meu “package.json”, e eu vou dizer que esse “export”:, quando eu rodar yarn export, é um atalho para “next build && next export”. Basicamente eu estou fazendo um atalho para rodar isso aqui.
+
+[04:40] Você fala: “Mario, beleza, então esse export é um atalho para next build e next export, show. Como isso funciona?”, vamos ver na prática. yarn export, vamos rodar.
+
+[04:57] Repara que surgiu uma pasta “out”, à esquerda e dentro dela tem o “index.html”, o “faq.html” e a página “404.html”. Ele também tem esse monte de “chunks”, esse monte de arquivos JavaScript. Tudo que está aparecendo aqui que o Next gera, está aparecendo aqui também.
+
+[05:16] Você fala: “Tá, Mario, mas qual é a vantagem disso?”. Eu consigo copiar o path para esse arquivo na minha máquina e colar isso no navegador, então “/Users/mariosouto/dev/alura/01-nextjs-course/out/index.html” e ele abriu.
+
+[05:33] E se eu clicar para ir para o FAQ, ele quebra, por quê? Porque desse jeito aqui só os arquivos estáticos mesmo ele não está 100% preparado para rodar, precisaria minimamente ter algum outro servidor rodando.
+
+[05:44] Tem um que eu uso bastante para testes, que é esse aqui, o npx http-server ./out, que é a pasta, e vou desabilitar o cache dele aqui, vou passar esse -c-1. Ele vai instalar.
+
+[06:02] Esse http-server é um servidor básico, tal como qualquer coisa que você quiser botar online na internet, disponível para os usuários, vai ter que ter, tem que ter alguém recebendo as requisições, que é o servidor. Agora se eu acessar a porta 8080, “localhost:8080”, o mesmo conteúdo, só que agora ele funciona.
+
+[06:27] Com essa estratégia nós não precisamos do servidor do Next, você pode pegar esses arquivos aqui e fazer diferentes estratégias de botá-lo no ar. Você pode colocá-lo no ar dentro de uma estrutura comum do AWS. Essa aqui nós não vamos abordar no curso, mas seriam os buckets do S3.
+
+[06:48] Conversa com o pessoal de infraestrutura da sua empresa para fazer algumas contas de: vale a pena botar na Vercel? Aí você negocia o preço com eles. Faz uns testes de botar o seu site nesse bucket do S3, faz um teste de botar em outro lugar, tenta hospedar em lugares diferentes para você ver qual o custo-benefício melhor para a sua empresa.
+
+[07:05] Já adianto que isso aqui só funciona para sites que são mais estáticos, então sites de página de campanha, hotsites e tudo mais.
+
+[07:13] Se for um site um pouco maior, que tiver alguma coisa dinâmica, uma coisa dinâmica de verdade, que já falaremos mais para frente o que é dinâmico para valer na web, você teria que ter um servidor mesmo, com uma máquina rodando, processando todas as requisições, que o seu time vai configurar, ou vai ter que usar um Heroku da vida ou a própria Vercel.
+
+[07:32] Desses aqui a Vercel é o mais tranquilo e eu acho um custo-benefício bem bom no final das contas, mas não é agora que faremos o deploy lá, esse vídeo foi só para te mostrar que você tem esse export estático aqui, você tem o build normal do Next.js, que é o que você vai usar para rodar qualquer servidor que você configurar, vai rodar build e start.
+
+[07:56] E agora eu posso até arrumar a minha home aqui, `<h1>Alura Cases - Home</h1>`, que eu tinha bagunçado só para fazer esse exemplo para vocês. Nos vemos na nossa próxima aula.
+
 ### SEO na prática
-### Sobre o Next.js
+
+[00:00] Um vídeo que não poderia faltar, é a dúvida que mais aparece, que é o pessoal tentando entender essa parte de SEO.
+
+[00:06] Eu comentei do ponto de vista de Web Vitals, que são as coisas que o Google considera como métricas para ranquear melhor e tudo mais, o lance do LCP, do Firts Input Delay.
+
+[00:17] Porém, a parte do conteúdo é o principal. Se o seu conteúdo não é bom e ele não renderiza no HTML, por mais que tenham estudos que provem que hoje em dia renderiza, tem rankings, então quanto mais demora para o seu conteúdo aparecer, mais tempo para o Googlebot rodar e você acabar sofrendo alguma penalidade.
+
+[00:37] Qual é o ideal? Eu tenho uma app rodando com o Create React App e o nosso projeto aqui do curso. Se vocês forem olhar, o projeto com o Create React App é um projeto novo. Aqui à esquerda, “App.css”, “App.js”, tem o logo, edit, tudo igual está aparecendo aqui para vocês. Eu segui basicamente o “Getting Started” da documentação, não fui nada muito longe do que mostra aqui na própria documentação do Create React App.
+
+[01:08] E de cara eu já consigo mostrar para vocês esse view page source dele. Isso aqui é estático. Ele fala que esse arquivo HTML é um template, se você abrir diretamente no navegador, você vai ver uma página em branco.
+
+[01:20] Você pode adicionar fontes e tudo mais, mas você só vai conseguir ver o conteúdo quando o client renderizar, ou seja, o servidor vai responder com esse HTML os scripts que tem, vai terminar de baixar o javascript, vai rodar o React no navegador, aí sim ele sai do estado de loading.
+
+[01:38] Enquanto que o Next.js, por mais que geremos o estático, tal como vimos no vídeo anterior, esse arquivo estático que ele gera já tem os conteúdos HTML. Se eu procurar por h1, ele tem uma tag h1 aqui, diferente do Create React App, que se eu olhar no view source dele, que está aberto aqui do lado, ele não traz nada.
+
+[02:01] Se você olhar inspecionando o elemento, inspecionando ele tem. Existe aqui o “Edit”. Então está aqui, existe. No view source não existe. Se procurarmos aqui “Alura Cases - Home Page” no inspect, existe, e no view source também existe.
+
+[02:29] Era só isso aqui, só para deixar claro para você e nós vamos nos aprofundar ainda mais em quando roda servidor, quando roda client, que é uma coisa super importante de aprender, mas isso fica para próximos vídeos, que agora precisamos aprender a estilizar a nossa aplicação.
+
+### Exercício: Sobre o Next.js
+
+Uma aplicação web criada com Next.js:
+
+a) **Alternativa correta:** Tem opiniões fortes de como organizar a estrutura de pastas.
+
+b) **Alternativa correta:** Possibilita Server Side Rendering (SSR).
+- _Alternativa correta! O Next.js consegue pré-renderizar o HTML para cada requisição._
+
+c) **Alternativa correta:** Possibilita geração de conteúdo estático (Static Site Generation - SSG).
+- _Alternativa correta! O Next.js consegue pré-renderizar o HTML durante o build que será reutilizado em todas as requisições._
+
+d) Impede a renderização do lado do cliente (Client Side Rendering).
+
+e) **Alternativa correta:** Tem melhor SEO.
+- _Alternativa correta! O SSR e SSG facilitam o escaneamento dos motores de busca, como resultado a aplicação tem uma melhor nota de SEO._
+
 ### Faça como eu fiz: create-next-app
+
+Durante a aula você aprendeu a adicionar pacotes do Next.js e do React a um projeto Node vazio.
+
+Para facilitar a vida dos desenvolvedores, os criadores do Next.js criaram a ferramenta create-next-app que instala todas as dependências do framework e cria a estrutura de pastas recomendada com uma linha de comando.
+
+Que tal experimentar? Abra um terminal, navegue até uma pasta desejada e execute o comando:
+
+        yarn create next-app nome-do-projeto
+
+Para os usuários de NPM o comando é:
+
+        npx create-next-app@latest
+
+Para criar um novo projeto Next.js. substitua "nome-do-projeto" por algo do seu desejo e aguarde a instalação.
+
+Abra a pasta no seu editor de código e tente encontrar as semelhanças e diferenças do que foi mostrado em aula!
+
+VER OPINIÃO DO INSTRUTOR
+
+Opinião do instrutor
+
+Durante a aula criamos manualmente a pasta Pages e inserimos os comandos relacionados ao Next.js no package.json. O create-next-app já executou esses passos por você.
+
+Estrutura de pastas do projeto padrão
+
+A pasta api e o arquivo _app.js são particularidades do Next que serão explicados ao longo desta formação.
+
+Além do Next, React e React-DOM, outra ferramenta muito utilizada foi instalada: o ESLint. O time do Next.js tem suas próprias sugestões de configuração, então acompanhado dele está o eslint-config-next.
+
+A pasta public é utilizada para armazenar arquivos estáticos, como imagens e ícones.
+
+A pasta styles não é obrigatória e você tem liberdade para utilizar o framework CSS de sua escolha. O projeto padrão utiliza o CSS Modules.
+
+Para saber mais, visite a documentação do [create-next-app}('https://nextjs.org/docs/api-reference/create-next-app').
+
 ### O que aprendemos?
+
+- Como buildar um projeto Next.js. O comando gera os arquivos que serão utilizados no ambiente de produção.
+
+        next build && next export
+  
+- SEO no Next.js
+  - O Next.js entrega o conteúdo da página diretamente, enquanto no Create React App ele é gerado após o carregamento. Como resultado o SEO é melhor.
+- create-next-app
+  - Essa ferramenta realiza o setup inicial por você, facilitando o início de uma aplicação Next.js.
+
 ## 3. Estilizando o projeto
 ### Projeto da aula anterior
 ### Onde colocar meu CSS?
