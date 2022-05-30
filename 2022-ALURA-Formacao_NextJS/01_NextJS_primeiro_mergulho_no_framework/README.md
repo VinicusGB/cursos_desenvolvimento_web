@@ -2332,12 +2332,510 @@ Por
   - Com o componente <Head> conseguimos editar os metadados de cada página, como, por exemplo, o título.
 
 ## 5. Publicando seu projeto
-### Projeto da aula anterior
 ### next.config.js e Redirects
+
+[next.config]('https://nextjs.org/docs/api-reference/next.config.js/introduction')
+
+[Redirectes]('https://nextjs.org/docs/api-reference/next.config.js/redirects')
+
+---
+
+[00:00] Estamos quase terminando o curso e a nossa ideia é fazer o deploy nessa aula. Porém, antes, neste vídeo, precisamos fazer uma coisa que é o seguinte, tem alguns ajustes que você vai precisar fazer no seu projeto, tal como o que o pessoal chama de trailing slash, que é você ter ou não ter uma barra no final de todas as URLs do seu projeto, ou até mesmo fazer redirects.
+
+[00:25] Eu vou aproveitar esse momento para te explicar como você pode fazer essas configurações no Next.js e até dar umas dicas de outras que você pode fazer. E mostrar um arquivo super importante que é esse aqui, o next.config.js. Bora mexer nele?
+
+[00:41] Eu estou com o nosso projeto aberto, está aqui. Eu vou criar dentro do VS Code agora o arquivo “next.config.js”. Para que ele serve? Ele vai servir basicamente para botarmos configurações gerais de como o Next deve funcionar com o nosso projeto.
+
+[01:03] Esse do trailingSlash, por exemplo, eu vou copiar e vou mostrar para vocês. module.exports, fechou. Eu copiei e colei, eu sei que não é o melhor dos mundos, sei que quem está assistindo está “Meu Deus, ele só copiou e colou”, mas calma, porque o importante mesmo é eu rodar aqui yarn dev, eu já estava rodando. Deixa eu desligar e ligar de novo, yarn dev.
+
+[01:33] Vou no “localhost:3000” e aqui dentro agora o que faremos? Eu vou olhar nessa parte do “Confira as principais dúvidas” e repara que o FAQ agora tem sempre essa barra no final, e se ele não tiver, ele força, ele vai sempre botá-la aqui.
+
+[01:54] E você está: “Mario, por que precisamos disso?”. Lembra que nós configuramos o Analytics? Muitas pessoas que trabalham com análise de Analytics preferem que por padrão o site tenha essa barra ou ele não tenha essa barra. Tem um jeito super fácil conseguir trazer essa configuração para o projeto, é muito importante e ajuda bastante.
+
+[02:16] Outra coisa importante de mostrar também é essa parte de redirects que eu trouxe. Que, de novo, eu acho que é até complicado eu tentar explicar muito, mas pensa que basicamente você vai copiar e colar mais uma chave aqui, então você vai colar essa parte de redirects() no seu projeto, eu vou só ajustar aqui, vou colar.
+
+[02:40] Repara que quando mudamos, ele fala “Found a change in next.config.js.” Restart o servidor para ver em efeito. Então vou desligar, yarn dev. E o que eu colei aqui está dizendo que sempre que eu acessar o ‘/about’, o destino é a home.
+
+[03:00] No nosso caso, podemos criar um alternativo para a parte de perguntas, por exemplo. Se alguém acessar ‘/perguntas’ nós mandamos a pessoa para o ’/faq/’, que é a nossa página de perguntas comuns. Salvei. De novo, teve mudanças, vamos salvar aqui.
+
+[03:22] Se voltarmos agora no nosso projeto, o FAQ abre normal, mas se acessarmos “/perguntas”, ele nos manda para o FAQ. “/perguntas”, trouxe para o FAQ.
+
+[03:36] Isso é muito útil quando você trabalha com alguma campanha, quando alguma página some do ar, porque o pessoal que trabalha com SEO tem relatórios, as páginas estão dando 404. E normalmente, quando você tem um 404 acontecendo no seu site, você escolhe alguma outra página para fazer o redirecionamento.
+
+[03:53] Ou, por exemplo, um site que tem um sistema de login, que vai ser um dos próximos cursos aqui da formação, por mais que você não tenha uma página de login, você tem uma URL que é /login e você redireciona para a home com algum efeito que faça abrir o painel de login, enfim. Tem várias formas de fazer isso, mas existem coisas que são meio que um consenso e ter redirects ajuda bastante nisso.
+
+[04:17] E essa questão de ser permanente ou não está muito relacionada a isso aqui, “http status dogs”. Não sei se vocês já viram esse site, não é necessariamente o cachorro em si, mas é porque quando fazemos um redirect, existe uma troca de status quando estamos falando do computador, é uma coisa de como a rede funciona, o protocolo HTTP. Os computadores estão conversando ali que eles fazem a parte do redirect.
+
+[04:46] E pensa que se você botar permanent: false, ele vai trazer um status 307, e se você bota permanent: true, ele traz um status 308, que é como se ele fosse um redirect permanente.
+
+[04:59] Para você debugar isso, acho que uma forma legal é darmos “Inspect” aqui e na aba “Network”, eu botar aqui na barra de endereço “/perguntas”, e nós analisarmos aqui no começo. Nós viemos de /perguntas e tomamos um 308, redirect permanente. Esse redirect permanente vai para onde? Vai para cá, “Response Headers”, refresh para o FAQ e nós chegamos no FAQ.
+
+[05:23] Chegou no FAQ, ele carrega aqui as coisas. No caso, ele vai identificando aqui que teve outro redirect das perguntas, acho que o navegador só meio que se perdeu na ordem das coisas, mas basicamente o fluxo importante é esse, viemos da página do /perguntas e caímos na do FAQ.
+
+[05:43] Depois ele segue carregando todos os nossos outros scripts e cada arquivo que baixamos sempre tem o status.
+
+[05:51] É até uma dica que eu dou, acostuma sempre olhar essa aba network do navegador, porque muitos erros da web são relacionados a não carregar alguma coisa ou como você está carregando, a ordem ou algo do gênero. Super importante deixar essa página como seu guia de consulta definitivo.
+
+[06:08] E agora que já aprendemos a fazer essa configuração de fazer os redirects, de fazer o trailing slash e tudo mais, chegou finalmente a hora de, na próxima aula, fazermos o login aqui na Vercel e finalmente fazer o deploy do nosso projeto, para podermos terminar o nosso curso.
+
+[06:23] E uma coisa que eu preciso contar antes de sairmos daqui é que quando você usa várias dessas configurações no arquivo “next.config.js”, eles assumem que você não vai mais usar aquele processo de gerar a pasta output, usando o next export, que criamos aqui o comando.
+
+[06:42] Daqui para frente eu vou assumir que você sempre vai rodar o fluxo normal do Next, que é o que eles esperam, que é fazer o build e fazer o start. E o pessoal que cuida da infraestrutura da sua empresa vai dar conta de fazer o deploy da melhor forma possível ou você mesmo pode dar uma olhada nos cursos de AWS aqui da Alura, aprender a mexer nos EC2, nas máquinas, e configurar.
+
+[07:02] Eu não recomendo tanto, eu acho que a melhor estratégia hoje como front-end é usar uma empresa como a Vercel ou como alguns outros players que tem no mercado, mas no próximo vídeo nós falamos da Vercel e você entende um pouco mais do que eu estou falando, de deploy, colocar no ar e tudo mais. Vejo você já já, porque eu sei que você quer ver esse vídeo.
+
 ### Preparando o ambiente: Recursos da aula 5
+
+O código do componente FAQScreen que será criado na aula seguinte pode ser visualizado no GitHub ou logo abaixo:
+
+// faq.js
+
+        import FAQScreen from '../src/screens/FAQScreen';
+
+        export default FAQScreen; 
+
+        export async function getStaticProps() {
+            console.log('Em modo DEV, sempre roda! A cada acesso')
+            console.log('Roda SOMENTE em build time')
+            const FAQ_API_URL = 'https://gist.githubusercontent.com/omariosouto/0ceab54bdd8182cbd1a4549d32945c1a/raw/578ad1e8e5296fa048e3e7ff6b317f7497b31ad9/alura-cases-faq.json';
+            const faq = await fetch(FAQ_API_URL)
+                .then((respostaDoServidor) => {
+                    return respostaDoServidor.json();
+                })
+                .then((resposta) => {
+                    return resposta;
+                });
+
+            return {
+              props: {
+                  qualquercoisa: 'que eu passar aqui',
+                  faq,
+              },
+            };
+        }
+
+// FAQScreen.js
+
+        import Footer from '../../components/patterns/Footer';
+        import Link from '../../components/Link';
+        import { theme } from '../../theme/theme';
+        import { Box, Text } from '../../theme/components';
+
+        export default function FAQScreen({ faq }) {
+          return (
+            <Box
+              styleSheet={{
+                backgroundColor: theme.colors.neutral["050"]
+              }}
+            >
+              <Box
+                as="main"
+                styleSheet={{
+                  flex: 1,
+                  maxWidth:theme.space.xcontainer_xl,
+                  marginHorizontal: "auto",
+                  paddingHorizontal: {
+                    xs: theme.space.x4,
+                    sm: theme.space.x6,
+                    lg: theme.space.x8,
+                  },
+                  paddingVertical:{
+                    xs: theme.space.x16,
+                    lg: theme.space.x20,
+                  },
+                }}
+              >
+                <Box 
+                  styleSheet={{
+                    display: "grid",
+                    gridTemplateColumns: {
+                      lg: "repeat(3,minmax(0,1fr))",
+                    },
+                    gap: {
+                      lg: theme.space.x8,
+                    }
+                  }}
+                >
+                  <Box>
+                    <Text
+                      as="h2"
+                      styleSheet={{
+                        textVariant:theme.typography.variants.heading2,
+                        color:theme.colors.neutral[900],
+                      }}
+                    >
+                      FAQ: Perguntas Frequentes
+                    </Text>
+                    <Text
+                      as="p"
+                      styleSheet={{
+                        marginTop: theme.space.x4,
+                        textVariant: theme.typography.variants.body1,
+                        color: theme.colors.neutral[500],
+                      }}
+                    >
+                      Não consegue encontrar a resposta que procura? entre em contato com nosso{' '}
+                      <Link
+                        href="mailto:contato@alura.com.br"
+                        styleSheet={{
+                          color: theme.colors.primary[400],
+                          hover: {
+                            color: theme.colors.primary[300],
+                          },
+                        }}
+                      >
+                        time de suporte ao consumidor
+                      </Link>
+                    </Text>
+
+                    <Text
+                      as="p"
+                      styleSheet={{
+                        marginTop: theme.space.x4,
+                        textVariant: theme.typography.variants.body1,
+                        color: theme.colors.neutral[500],
+                      }}
+                    >
+                      <Link
+                        href="/"
+                        styleSheet={{
+                          color: theme.colors.primary[400],
+                          fontWeight: '500',
+                          hover: {
+                            color: theme.colors.primary[300],
+                          },
+                        }}
+                      >
+                        Voltar para home
+                      </Link>
+                    </Text>
+                  </Box>
+                  <Box
+                    styleSheet={{
+                      marginTop: {
+                        xs: theme.space.x12,
+                        lg: theme.space.x0,
+                      },
+                      gridColumn: {
+                        lg: "span 2 / span 2;",
+                      }
+                    }}
+                  >
+                    {faq.length === 0 && (
+                      <Box
+                        styleSheet={{
+                          display: 'flex',
+                          flexDirection: 'column',
+                          justifyContent: 'center',
+                          borderTop: {
+                            xs: `${theme.space.xpx} solid ${theme.colors.neutral["200"]}`,
+                            sm: 'none',
+                          },
+                          paddingTop: {
+                            xs: theme.space.x6,
+                            sm: 0,
+                          },
+                          borderLeft: {
+                            sm: `${theme.space.xpx} solid ${theme.colors.neutral["200"]}`,
+                          },
+                          paddingLeft: {
+                            sm: theme.space.x6,
+                          },
+                          textAlign: "center",
+                          minHeight: theme.space['x1/1']
+                        }}
+                      >
+                        <Text
+                          as="h1"
+                          styleSheet={{
+                            textVariant: theme.typography.variants.heading1,
+                          }}
+                        >
+                          Nada por aqui
+                        </Text>
+                        <Text
+                          as="p"
+                          styleSheet={{
+                            marginTop: theme.space.x1,
+                            textVariant: theme.typography.variants.body1,
+                            color: theme.colors.neutral[500],
+                          }}
+                        >
+                          Talvez ainda não existam dúvidas frequentes.
+                        </Text>
+                      </Box>
+                    )}
+                    <Box as="dl">
+                      {faq.map((faq) => (
+                        <Box
+                          key={faq.question}
+                          styleSheet={{
+                            marginBottom: theme.space.x12,
+                          }}
+                        >
+                          <Text
+                            as="dt"
+                            styleSheet={{
+                              textVariant: theme.typography.variants.heading4,
+                              color: theme.colors.neutral[900],
+                            }}
+                          >
+                            {faq.question}
+                          </Text>
+                          <Text
+                            as="dd"
+                            styleSheet={{
+                              marginTop: theme.space.x2,
+                              textVariant: theme.typography.variants.body1,
+                              color: theme.colors.neutral[500],
+                            }}
+                          >
+                            {faq.answer}
+                          </Text>
+                        </Box>
+                      ))}
+                    </Box>
+                  </Box>
+                </Box>
+              </Box>
+              <Footer /> 
+            </Box>
+          )
+        }
+
+        FAQScreen.defaultProps = {
+          faqs: [],
+        };
+
 ### Publicando na vercel
+
+[00:00] Chegou a hora. Finalmente vamos publicar o nosso projeto lá na Vercel. E para fazer isso, a primeira coisa que precisamos ter é o nosso projeto dentro do GitHub, precisamos tê-lo publicado em um repositório no GitHub. Precisa ter conta no GitHub e com essa conta já vamos conseguir fazer login aqui na Vercel. Então vamos passo a passo aqui.
+
+[00:23] Estou aqui no terminal. Eu estou num projeto que eu não tenho o Git nele, então eu vou dar um git init. Eu resetei só para ficar mais fácil, para mostrar para vocês. Agora eu vou seguir o passo a passo desse repositório que eu criei aqui.
+
+[00:38] Eu vou fazer aqui um git, tem que fazer o add, o meu não vai ser README, mas vai ser todo o projeto, então git add ., para adicionar tudo. git commit -m, primeiro commit, limpei o terminal. Nós fazemos aqui git remote add origin. E por último fazemos o git push -u origin main, vamos empurrar o nosso código para cá.
+
+[01:09] Feito isso, quando eu carregar a página de novo, nosso projeto já está aqui, bonito, perfeitíssimo. O próximo passo que deveríamos fazer é vir na Vercel e fazer o login. No meu caso, é só clicar para continuar com o GitHub, no de vocês também, ele vai pedir para autorizar a Vercel, é só autorizar e seguir vida.
+
+[01:32] Repara que eu uso bastante a Vercel, eu tenho muito projeto mesmo aqui. Praticamente todos os projetos mais recentes que eu fiz, eu fiz por aqui. Até coisas de back-end, usando alguns recursos mais avançados, eu tento colocar aqui também. Não é o mais recomendado, mas funciona. A Vercel é mais para front-end.
+
+[01:49] Vou clicar aqui à direita em “New Project” e eu vou trocar para o meu repositório, para o “omariosouto”. E ele já vai me mostrar o último projeto que nós pegamos. Eu vou clicar agora no “Import”.
+
+[02:04] E se você tiver alguma dúvida, vai voltando no vídeo, vê com calma, que às vezes passa rápido aqui, às vezes fica algum ponto extra. Mas é só ir clicando, a própria interface vai sugerindo para você as coisas.
+
+[02:16] Ele pede para sugerir o nome do projeto, eu vou manter o mesmo no repositório, para eu não me perder depois. Ele já sabe que estamos usando o Next, então ele vai usar todas as configurações otimizadas para o Next, porque a Vercel é a criadora do Next.js. Mas não que isso impeça de você usar com outras ferramentas, enfim, só para deixar claro.
+
+[02:35] Eu vou clicar aqui agora e fazer “Deploy”, é só isso. Nós clicamos para criar novo projeto, selecionamos o projeto no GitHub que já tínhamos e clicamos para fazer o deploy. E agora nós esperamos.
+
+[02:47] Ele vai demorar alguns segundos, porque ele vai ter que fazer o processo de buildar o nosso projeto, bater na nossa API, pegar o FAQ atualizado, tudo bonito. Mas vamos com calma, que ele já termina aqui as coisas e você pode até ir acompanhando o processo, o passo a passo, vendo o que ele está instalando, o que ele está baixando, o que falta baixar.
+
+[03:08] Eu vou deixar rodando aqui e enquanto isso eu gostaria de falar que você pode sempre monitorar esse build, caso dê algum erro, para você tentar entender, tenta sempre simular na sua máquina. Mas felizmente o nosso deu tudo certo, ele publicou, ele tirou até um print do nosso projeto, olha que bacana, teve chuva de de confete para celebrar o final do nosso curso.
+
+[03:27] Agora podemos vir aqui à direita em “Go to Dashboard”. E se clicarmos à direita em “Visit”, conseguimos ver o nosso projeto, ele está online numa URL, com HTTPS, configurado bonito.
+
+[03:38] O nosso FAQ ainda não está bonito, mas já vamos resolver isso e eu vou mostrar para vocês o recurso que vai deixar você assim, explodir a cabeça agora no final do curso, mas está sensacional.
+
+[03:48] E do jeito que está aqui, você pode vir à esquerda, em “Domains”, por exemplo, e configurar o seu próprio domínio. E você consegue [ININTELIGÍVEL - COMPRAR] o seu domínio, publicar e botar aqui.
+
+[03:58] No meu caso, eu vou configurar depois para um subdomínio do meu site pessoal, eu até comentei com vocês, quando fizemos o setup do Google Analytics, mas por hora, para mim o que tem aqui já vai servir para mostrar para vocês.
+
+[04:12] E o que eu queria fazer agora era mostrar aqui no GitHub. Quando eu carregar aqui agora, repara que ele tem esse “Environments” aqui embaixo, à direita. Então pelo GitHub você consegue saber como está o seu projeto, tudo bonito.
+
+[04:24] E por último, para fecharmos com chave de ouro, eu preciso mostrar uma feature que é uma vantagem de usar a Vercel. Olha que bacana. Se eu adicionar aqui um git checkout -b add-faq-page, para trazermos nossa página do FAQ.
+
+[04:40] Eu vou agora fazer o seguinte, eu vou aqui à esquerda, na pasta “pages”, abrir o nosso “faq.js”, ir lá no “screens”, criar a nossa “FAQScreen”. E dentro da nossa pasta “screens” teremos que ter a nossa “FAQScreen”, para bater com o nosso FAQ aqui.
+
+[04:55] Para facilitar a vida, eu já deixei pronto um gist aqui do GitHub que vai estar na descrição da aula para você, com o código que precisamos.
+
+[05:03] Basicamente teremos que pegar a página do FAQ que já está montada, então eu vou pegar aqui o código dela, e vou, dentro de “screens”, criar “FAQScreen”, “index.js”. Ele já tem aqui o defaultProps, deveria ser o faq aqui certo.
+
+[05:26] Fiz até um ajuste ali pequeno, o de vocês já vai estar corrigindo. Ele está pronto para receber o FAQ e para renderizar o FAQ, olhando aqui, se estiver vazio, se não estiver, está tudo pronto aqui. Recomendo você dar uma olhada nesse script depois.
+
+[05:46] E dentro da nossa “pages”, do “faq.js”, tudo que precisamos é só fazer o import. Precisamos vir aqui e fazer essas duas linhas, o import e o export.
+
+[05:59] Eu vou fazer o import, e o export, vou comentar essa função FAQ que temos aqui embaixo e esses dois imports que não vamos mais usar aqui. Agora que já temos o nosso import e o export do FAQ aqui, eu comentei a página antiga.
+
+[06:16] Tem alguns comentários que eu vou apagar no meu, no seu você pode manter se você achar melhor, mas é só porque eu quero deixar claro o que está acontecendo aqui dentro. Vou até apagar a nossa versão antiga aqui.
+
+[06:27] Estamos fazendo o import da tela do FAQ e o export, e a função do getStaticProps, independente de onde esteja o arquivo, vai passar esses props, qualquer coisa que passarmos aqui, vai passar para essa tela, vão receber o faq, que é esse faq aqui embaixo, que está batendo na API, e o nosso código vai ser resolvido e vai tudo ser carregado na nossa aplicação.
+
+[06:51] Para testar eu vou até rodar o yarn dev aqui, para vermos. Podemos abrir o navegador e ver aqui o FAQ carregando certo. Perfeito, agora está lindo.
+
+[07:08] O que faltou, tem algum crossOrigin aqui, em algum lugar. Vamos procurar esse crossOrirgin para ver se conseguimos resolver. “If you want to write it to the DOM”, tem o crossOrigin em alguma coisa solta aqui. Isso, aqui. Tem esse “preconnect” do valor.
+
+[07:32] Podemos vir aqui e até colocar, ele pede ali value.toString, então seria crossOrigin={true.toString()}. Vamos ver se ele para de reclamar? Parou, está certo. Nossa fonte segue carregando, tudo certo.
+
+[07:50] Agora eu vou usar a própria interface do VS Code para fazer o commit. Então vou adicionar as mudanças, vou “adicionando pagina do faq”, vou publicar aqui a página, nossa alteração. E nós não fizemos a alteração na main, nós criamos uma branch para isso.
+
+[08:17] Então aqui eu vou fazer o “Compare & pull request”, vou abrir um pull request, uma sugestão de mudança. Aqui, “Estamos deixando o FAQ Bonito agora”. E eu vou até botar o link aqui do gist, “Baseado nesse gist:”. “Create pull request”.
+
+[08:38] E agora que tem a maravilha. A Vercel vai gerar um link de preview para quem vai revisar o seu pull request poder verificar as alterações.
+
+[08:47] Com esse link de preview você consegue prever como vai ficar o seu FAQ e ir ajustando o seu projeto conforme você achar melhor. Ele gera uma URL específica para isso com o nome da branch que estamos, então fica um nome bem grande aqui de certa forma.
+
+[09:04] Mas para mim, o que importa aqui é que do jeito que está super funciona bem, super encaixa e super dá para você aqui só [ININTELIGÍVEL] o pull request. Quem for revisar tem essa vantagem e você pode acompanhar aqui do lado direito que a parte de produção está [ININTELIGÍVEL], ou seja, ele está gerando a parte de produção agora.
+
+[09:25] E você consegue ter todo esse controle, que para mim é super bacana. Você só adicionou a lib no seu projeto e consegue usá-la.
+
+[09:32] Se você estiver preocupado com relação a custo, para quem é usuário como pessoa física, você consegue tranquilamente usar, o limite é bem alto de uso free.
+
+[09:44] E se você for usar na sua empresa, basta você entrar em contato com o pessoal e ver o suporte, o preço como fica, mas também é uma coisa que não vai ficar ultra hiper mega caro, depende muito do seu projeto e eu espero que se for ficar muito caro, que o seu projeto dê a grana para pagar.
+
+[10:01] Mas por hora essas vantagens aqui eu acho que se pagam muito, vale muito a pena mesmo termos esse nível de recurso aqui. E eu acho que isso é o conteúdo que eu tinha para trazer para vocês nesse vídeo final.
+
+[10:15] No próximo temos a nossa conclusão e eu queria te dar um muito obrigado, e fique aí para você pegar o seu certificado depois do próximo vídeo, para fecharmos com chave de ouro o projeto. Até o próximo vídeo.
+
 ### Publicação do projeto
+
+Segundo a [documentação](`https://nextjs.org/docs/deployment#getting-started`) sobre deploy e hospedagem do projeto Next.js na Vercel, podemos afirmar que:
+
+a) **Alternativa correta:** HTTPS automático.
+- _Alternativa correta! A plataforma cuida dos certificados para você._
+
+b) **Alternativa correta:** São aceitos repositórios tanto privados quanto públicos do GitHub, GitLab e BitBucket.
+- _Alternativa correta! Após a seleção, a plataforma realizará o processo de build e você receberá uma URL para visualização._
+
+c) Não é possível declarar variáveis de ambiente.
+
+d) **Alternativa correta:** Domínios personalizados.
+- _Alternativa correta! Por padrão, os projetos terminarão com “.vercel.app”, porém você pode facilmente mudar para seu próprio domínio nas configurações do projeto._
+
 ### Faça como eu fiz: SSR e SSG
+
+No início do curso você aprendeu que o Next.js possibilita a renderização tanto do lado do servidor quanto do cliente e que ele também pode gerar páginas estáticas na hora do build.
+
+Na aula 4 você aprendeu como framework busca os dados da sua aplicação com GetServerSideProps ou GetStaticProps para implementar tais estratégias de renderização.
+
+Chegou a hora de colocar a mão na massa! Caso não lembre da sintaxe de getStaticProps e getServerSideProps visite a documentação sobre data-fetching.
+
+1) Comece um projeto Next.js novo com create-next-app.
+
+2) Crie uma página com a rota /ssr e implemente a função getServersideProps.
+
+a) Seu retorno deve ser uma variável mensagem com o valor “Fui renderizada para esta requisição!”
+
+b) O valor dessa variável deve ser mostrado em tela.
+
+3) Crie uma página com a rota /ssg e implemente a função getStaticProps.
+
+a) Seu retorno deve ser uma variável mensagem com o valor “Fui gerada durante o build!”.
+
+b) O valor dessa variável deve ser mostrado em tela.
+
+4) Na página / crie um Link para as páginas /ssr e /ssg.
+
+5) Utilize a função delay abaixo para criar um atraso artificial na renderização de cada página. Ela recebe como parâmetro quantos segundos o processo será atrasado.
+
+        function delay(seconds) {
+          return new Promise(function (resolve) {
+            setTimeout(resolve, seconds * 1000);
+          });
+        }
+
+6) Chame a função delay dentro de getServersideProps e getStaticProps.
+
+7) Rode o servidor com yarn dev e acesse as páginas /ssg e /ssr.
+
+O que você notou depois de acessar cada página?
+
+#### VER OPINIÃO DO INSTRUTOR
+
+Após a criação do projeto com yarn create next-app nome-do-projeto, foi criado a rota /ssr com o código:
+
+        function SSRPage({ mensagem }) {
+          return <div>{mensagem}</div>;
+        }
+
+        function delay(seconds) {
+          return new Promise(function (resolve) {
+            setTimeout(resolve, seconds * 1000);
+          });
+        }
+
+        export const getServerSideProps = async () => {
+          await delay(2);
+
+          return {
+            props: {
+              mensagem: 'Fui gerada pra essa requisição!',
+            },
+          };
+        };
+        export default SSRPage;
+
+E a rota /ssg com o código:
+
+        function SSGPage({ mensagem }) {
+          return <div>{mensagem}</div>;
+        }
+
+        function delay(seconds) {
+          return new Promise(function (resolve) {
+            setTimeout(resolve, seconds * 1000);
+          });
+        }
+
+        export const getStaticProps = async () => {
+          await delay(2);
+
+          return {
+            props: {
+              mensagem: 'Fui gerado no build',
+            },
+          };
+        };
+
+        export default SSGPage;
+        
+O atraso utilizado foi de 2 segundos.
+
+No componente da rota /, foram criados <Link>s para navegação SPA de cada página.
+
+        <Link href="/ssg">
+                    <a>
+                    Navegar para SSG
+                    </a>
+        </Link>
+         <Link href="/ssr">
+                    <a>
+                    Navegar para SSR
+                    </a>
+        </Link>
+
+OBS: O passHref não é necessário aqui, pois a tag `<a>` é filha direta do `<Link>` do Next.js.
+
+Após iniciar o servidor, era esperado que a página inicial carregasse rapidamente por ser estática. A página /ssr demorou cerca de 2 segundos para ser renderizada devido ao atraso dentro de getServerSideProps. Curiosamente, esse atraso também está presente em /ssg, mas durante o curso você aprendeu que o getStaticProps deveria rodar somente 1 vez durante o build, portanto, o atraso não deveria ocorrer no acesso à página.
+
+Isso acontece porque em ambiente de desenvolvimento (ou seja, quando usamos yarn dev), o getStaticProps é executado em cada requisição, se comportando de maneira semelhante ao getServerSideProps.
+
+Para ver o getStaticProps em ação, você deve executar o comando yarn build para que as páginas estáticas sejam geradas.
+
+Logs do build da aplicação Next.js
+
+Note que a página /ssg demorou 2070 ms para ser gerada devido ao atraso de 2 segundos (2000 ms).
+
+Para rodar o servidor em modo de produção, execute o comando:
+
+        yarn start
+
+Dessa vez, o atraso estará somente na página /ssr.
+
 ### Para saber mais: Referências da aula
-### Projeto final do curso
+
+Que tal saber o status HTTP correto das requisições com cachorrinhos???
+- [HTTP STATUS DOGS]('https://httpstatusdogs.com/')
+
+Para saber mais sobre redirects no Next, segue uma leitura incrível:
+- [Redirects]('https://nextjs.org/docs/api-reference/next.config.js/redirects')
+
+Para finalizar as leituras opcionais, recomendamos essa que mostra como o Next.js redireciona URLs com barras . Por exemplo /home/, redirecionará para /home. Você pode configurar esse comportamento para agir de maneira oposta, onde urls sem barras finais são redirecionadas para suas contrapartes com barras finais.
+- [Trailing Slash]('https://nextjs.org/docs/api-reference/next.config.js/trailing-slash')
+
 ### O que aprendemos?
+
+- O que é o next.config.js
+  - Neste arquivo, podemos modificar algumas configurações, como, por exemplo, redirects e adição do trailing slash no final da URL automaticamente.
+- Como fazer o deploy do seu projeto Next.js
+  - A criadora do framework (Vercel) oferece uma plataforma de hosting de forma gratuita e integrada ao GitHub.
+- Benefícios de hospedar na Vercel
+  - A plataforma oferece fácil integração com plataformas de versionamento de código, assim como HTTPs e domínios customizados.
