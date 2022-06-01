@@ -10,8 +10,27 @@
 
 ## 1. O desenvolvimento Front-end Ver primeiro vídeo
 ### Apresentação
-### Projeto desta aula
+
+[00:00] Olá, pessoas, eu sou Mario Souto, diretamente do canal “Dev Soutinho” em parceria com a Alura, para trazer para você esse curso sensacional, fazendo uma tour pelo Next.js.
+
+[00:10] Sim, você não leu errado, vamos fazer uma tour pelo Next. Esse, que é o framework que está proporcionando uma das melhores experiências de desenvolvimento front-end que já tivemos, e a minha ideia nesse curso é tirar aquela dúvida que eu sei que todo mundo tem, que é: Dá para usar Next se eu for fazer um site, se eu for fazer um blog, se eu for fazer um e-commerce? Que tipo de projeto faz sentido usar Next.js?
+
+[00:32] A minha ideia não é construir um projeto do zero e fazê-lo até o deploy, mas sim ensinar você a entender quais são os cenários que você pode aplicar os recursos do Netx.js, e você, aí sim, conseguir entender e tirar as suas conclusões se ele faz sentido. Vamos fazer essa exploração e aprender mais sobre o Next.js comigo?
+
 ### 7 princípios para construir web apps
+
+    LPC | FID | CLS
+
+    Loading
+        LPC - Largest Contentful Paint
+        Tempo de carregamento da página
+    Interactivity
+        FID - First Input Delay
+        Tempo de resposta as requisições dos usuários
+    Visual Stability
+        CLS - Cumulative Layout Shift
+        Tempo de atualização da página
+
 ### Estrutura de projeto I
 ### App personalizado
 ### Estrutura de projeto II
