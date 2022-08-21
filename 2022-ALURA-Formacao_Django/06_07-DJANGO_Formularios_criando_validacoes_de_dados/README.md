@@ -331,12 +331,318 @@ Vamos aprender como recuperar e exibir os dados do formulário em outra página 
 
 ### 2. Alterando e manipulando dados
 #### Exibindo dados
+
+Quando queremos exibir as informações de um formulário em outra página devemos usado no método class forms, temos:
+
+1. Em `views.py`, devemos criar um novo método:
+    
+    ...
+
+    def revisao_consulta(request):
+        if request.method == 'POST':
+            form = PassagemForms(request.POST)
+            contexto = {'form':form}
+            return render(request,'minha_consulta.html',contexto)
+
+1. Em `urls.py`, devemos criar uma nova rota:
+    
+    ...
+    
+    path('minha_consulta',views.revisao_consulta,name='minha_consulta')
+    
+1. Em `index.html`, devemos na criar um tag form:
+    
+        ...
+        <form action="{% url 'minha_consulta' %}" method="post">
+            {% csrf_token %}
+            {{ form }}
+        </form>
+
+1. Em `minha_consulta.html`, devemos recuperar apenas o valores do forms:
+        
+        ...
+        <section>
+            <h1>Passagem</h1>
+            <p>Sua origem é: {{ form.origem.value }}</p>
+            <p>Seu origem é: {{ form.destino.value }}</p>
+            <p>Sua origem é: {{ form.data_ida.value }}</p>
+            <p>Sua origem é: {{ form.data_volta.value }}</p>
+
+---
+
+[00:00] Assim que eu clico no botão “OK”, eu quero visualizar todos os dados que eu preenchi aqui do “Origem”, “Destino”, “Ida e Volta”; em uma outra tela, com uma descrição diferente. Por exemplo: sua origem é São Paulo, seu destino é Rio de Janeiro e assim por diante. Vamos fazer isso?
+
+[00:16] Para começar, eu vou precisar cadastrar essa nova URL, então eu vou ter uma nova URL, eu vou ter uma nova página. Essa página eu posso chamar de “minha_consulta”. Então, supondo que eu coloquei os dados aqui do meu formulário e que todos os dados são válidos, eu quero ir para essa página. Então eu vou chamar essa página aqui.
+
+[00:36] Vou dar um “path”, eu vou chamar essa minha página de “minha_consulta” e quem vai ser responsável por cuidar dessa requisição vai ser alguém lá de “views”, que eu vou chamar de “revisao_consulta”, por exemplo. O “name” que eu vou dar para essa página é “minha_consulta”.
+
+[01:08] Salvei. Ele vai falar: “opa! Em ‘views’ não tem ninguém!” Vamos lá em “views”. Temos aqui em “views” a nossa função “index” e vamos ter também uma nova função, um novo método agora para a “minha_consulta”. Então eu vou chamar aqui de “revisao_consulta”. Vamos receber como argumento a nossa requisição e aqui vamos precisar verificar algumas coisas.
+
+[01:36] Observe que tem um ponto bem interessante: nós criamos um “form” no Passagem, aqui no nosso template, na nossa “index”, nós criamos um “form”. Só que para conseguirmos de fato pegar as informações desse “forms” e passarmos para a nossa outra página, para a página de consulta, supondo que os campos e que os dados desse meu formulário são válidos, eu preciso indicar que isso aqui é um formulário, eu preciso indicar qual é o método HTTP que nós vamos utilizar.
+
+[02:05] E tudo isso nós aprendemos nos outros cursos, nós já sabemos. Então eu vou colocar aqui o “form”, a ação, quem vai ser responsável por atender esse formulário. Quem vai estar vinculado com esse formulário vai ser a URL de “minha_consulta”, então eu vou colocar aqui a URL que nós criamos. Deixe-me só visualizar aqui no nome para nós não ficarmos confusos. A URL que nós vamos vincular com esse formulário é o “minha_consulta”.
+
+[02:31] Então aqui eu vou colocar o “name” que nós utilizamos, “minha_consulta”. Nós sabemos que o “minha_consulta”, eu vou remover essa tag que fecha o “forms”, eu vou colocá-la aqui embaixo só para visualizarmos melhor e vou colocar aqui todo esse conteúdo, que é o formulário. O nosso botão de “input”, um pouco para lá para deixarmos indentado o nosso código.
+
+[02:58] Então, o que acontece agora? Olhe só, nós temos um formulário, nós indicamos qual é a URL que vamos utilizar. Nós precisamos passar qual é o método que vamos utilizar do HTTP, nós vamos utilizar o método “POST”.
+
+[03:10] O que não podemos esquecer agora é o “token” de segurança. Então eu vou passar aqui o “csrf_token”, porque queremos manipular as informações deste formulário em outro lugar.
+
+[03:24] Então, o que eu vou fazer agora? Eu vou verificar se o “request.method == 'POST' :” , ou seja, nós temos um requisição “POST” vindo para a “revisao_consulta”. O que eu quero fazer? Eu quero de fato buscar as informações que estavam naquele formulário e conseguir visualizar essas informações naquela página que nós criamos.
+
+[03:50] Então eu vou utilizar assim: para eu buscar informação do formulário, eu vou chamar aqui o “form = PassagemForms()”, só que aqui eu quero buscar o “PassagemForms”, não instanciar um novo “PassagemForms”. Eu quero buscá-lo dessa requisição “POST”.
+
+[04:07] Então eu faço da seguinte forma: “request.POST”. Então trouxemos esse formulário por requisição. Eu vou fazer algo bem parecido com isso aqui, eu vou até usar uma cola aqui. Então, o que eu vou fazer? Eu trouxe o formulário que veio da requisição “POST”, com todos os dados que ele tem, coloquei ele em uma variável de contexto e vou agora exibi-lo em uma página. Qual página?
+
+[04:29] Se observarmos aqui, nós ainda não temos uma página, nós só temos a página “index”. Eu vou criar uma nova página, que eu vou chamar de “minha_consulta.html”, ela vai ser super parecida com a “views”. Eu vou copiar aqui todo o código da “view”. Teclas “Ctrl + V”, vou copiar todo o código da “view” sem o nosso “form”. Eu quero exibir o resultado da passagem.
+
+[04:55] Então eu vou colocar aqui uma tag “
+
+”, por exemplo, e vou falar: “Sua origem é:” e quero exibir agora o valor da origem. Como eu consigo buscar lá do meu formulário o que eu escrevi no meu campo ‘Origem’? Da seguinte forma:
+
+[05:15] Eu vou utilizar “{{“, duas porque agora de fato eu não quero só processar a informação, eu quero exibir, então eu vou utilizar aqui “{{form.origem}}”. Eu quero a mesma coisa para os outros campos também, não só para origem. Eu quero para “Origem”, para o “Destino”, para a “Data de Ida” e “Data de Volta”.
+
+[05:32] Então, “Seu destino é:”, “Sua data de ida é:” e “Sua data de volta é:”. Aqui eu só altero, “Seu destino”. Aqui é um ponto importante também, no lugar de usar “Data de Ida”, eu preciso usar o mesmo nome que eu tenho lá no meu “forms”, então vamos visualizar só para não ficarmos confusos, “data_ida”. Então eu vou aqui na “minha_consulta”, vou colocar a “data_ida”, e aqui eu tenho “data_volta”.
+
+[06:06] Salvando essas informações eu volto aqui na “view”, salvo minha “view”. Então, renderizando não a página “index”, renderizando agora o “minha_consulta.html”, passando por “contexto”.
+
+[06:21] Voltando na aplicação, quando eu atualizar aqui, não temos nenhum dado. Vou colocar aqui. Então eu tenho: “São Paulo”, meu destino é “Rio de Janeiro”, eu vou viajar no dia “10/06/2020” e vou voltar no dia “12/06/2020”.
+
+[06:42] Quando eu aperto em “OK”, observe que exibimos as informações, só que elas estão em um campo “input”, então eu posso colocar: “São Paulo - São Paulo”. Vai ficar um pouco estranho, eu não queria exibir “São Paulo - São Paulo”, eu não queria exibir um campo “input”, eu queria exibir apenas o valor. Como que eu exibo apenas o valor daquele campo?
+
+[06:59] Lá no “minha_consulta” eu vou alterar, ao invés de exibir sua “Origem”, “form.origem”, “form.origem.value”, e vou fazer isso para todos os outros campos também, “.value” para o de baixo também e para o último também.
+
+[07:17] Então em todos os meus campos, eu quero só o valor deles. Quando eu volto e atualizo, ele pergunta se eu quero mandar essa requisição mesmo. Eu quero, e nós temos aqui não mais um campo “input”, mas temos aqui agora um campo de apenas o valor que tínhamos naqueles “inputs”.
+
+[07:36] Vamos voltar? Observe que para eu voltar está um pouco ruim também, eu tenho sempre que manipular na URL. No próximo vídeo nós vamos melhorar isso também.
+
+[07:43] Eu vou colocar um outro destino. Agora eu estou em “Minas Gerais”, eu quero ir para o “Rio de Janeiro”, eu vou no dia “10/08/2020” e vou voltar no dia “15/08/2020”. Quando eu aperto em “OK”, nós temos um resultado legal. Minas Gerais, com as datas e todas as outras informações certas.
+
+[08:14] No próximo vídeo nós vamos melhorar um pouco a navegação da nossa tela. Lembrando que essa página que criamos de “minha_consulta” vai ser a página onde teremos um formulário válido.
+
 #### Melhorando o código
+
+[00:00] Sempre que eu submeto um formulário, quando eu dou aqui um “OK”, nós vamos para uma página onde podemos visualizar os dados. Nós estamos aprendendo a manipular os dados de um formulário. Ficou legal, só que eu quero voltar para a outra página através de um navbar, eu quero clicar em um link aqui de um menu e voltar para essa página aqui.
+
+[00:16] Para isso, nós podemos usar um navbar do próprio Bootstrap. Eu vou digitar aqui “navbar bootstrap” e vou clicar aqui nesse primeiro link no “Navbar - Bootstrap” e vou copiar aqui essas duas primeiras linhas, porque eu só quero um link, eu não preciso de todos os outros links aqui do navbar.
+
+[00:32] Voltando lá no nosso código, na página do “minha_consulta” aqui do nosso “container”, embaixo dessa seção de “container” eu vou colocar o navbar. Vou fechar aqui a tag “ ”. Eu quero que esse navbar fique escrito “Passagem” e que sempre que eu clicar nele, voltar para a página “index”, para a nossa página principal.
+
+[00:54] Eu vou usar o código Python aqui para fazermos isso com “{” e “%”. Vou digitar “url” para ser direcionado para a página de “index”. Voltando na nossa aplicação quando eu atualizar... Deixe-me voltar aqui porque já preenchemos.
+
+[01:09] Agora sim, deixe-me ver. Vou atualizar essa página e nós teremos aqui o “Passagem”. Tem aqui o “Passagem”, essa “Passagem” não vamos precisar mais. Eu vou tirar, vou salvar e assim que eu atualizar, nós vamos ficar só com esse formulário aqui.
+
+[01:25] Então temos os dados e temos aqui o “Passagem”. Quando eu clico no “Passagem”, nós voltamos para a página principal. Na página principal está escrito “Passagem” com “”, eu não queria isso, eu queria manter na página principal esse mesmo layout que temos aqui. Então, o que eu vou fazer?
+
+[01:40] Para não ficarmos copiando código, duplicando código, nós podemos compartilhar o código HTML com outras páginas também. Nós já vimos isso lá no nosso primeiro treinamento.
+
+[01:49] Então eu vou criar um arquivo para manter códigos que serão usados em todas as páginas HTML, eu vou chamar de “base.html”. Nesse código eu vou manter todo nosso “head”, o “body” e todo esse conteúdo aqui. Vou até copiar essa parte aqui da “section” também, vou apertar as teclas “Ctrl + C” nessa parte. Vou copiar do “minha_consulta”, é melhor porque já temos o navbar.
+
+[02:13] Então eu vou copiar aqui todo esse código, “Ctrl + C”, venho aqui no “base.html”, vou colocar ele com as teclas “Ctrl + V”. Nós queremos inserir todo o conteúdo da nossa página aqui embaixo, seja ela os nossos parágrafos ou o nosso próprio formulário. Então, o que eu vou fazer? Eu vou copiar só a parte final, fechando a “section” aqui e fechando aqui o “body”. Nós vamos colocar partes de outros códigos aqui dentro.
+
+[02:44] Então eu vou colocar aqui através de código com “{” e “ %” também, e vou indicar que aqui tem um bloco de código aqui que eu quero inserir. Então, “block content”. Nós precisamos indicar onde esse bloco termina. Então eu vou colocar aqui o “endblock” e vou salvar. Não vou mais precisar desse final de trecho e não vou precisar mais de todo esse código aqui. Nós vamos manter só esse nosso código aqui.
+
+[03:15] Selecionando tudo e apertando as teclas “Command + [” nós vamos empurrando o nosso código para o lado e agora temos esse código aqui. Deixe-me voltar um só para mantermos assim. Legal, salvei!
+
+[03:27] Só que eu preciso indicar que nessa página aqui e na nossa página “index”, eu vou tirar isso aqui também. Nós vamos deixar só as coisas relacionadas nesta página, nós não queremos conteúdo de outras páginas aqui também. Então, selecionando tudo e apertando as teclas “Command + [” nós conseguimos voltar o nosso código.
+
+[03:46] Então temos aqui o formulário e aqui temos o trecho da nossa outra página. Assim, escrevemos o navbar uma vez só que nós indicamos. Nós vamos inserir um bloco de código aqui e temos que mostrar isso nas outras páginas também. Então, como eu vou fazer?
+
+[04:02] Eu vou dizer que esse código que eu tenho aqui precisa ser uma herança, eu preciso herdar desse “base.html”, então com “{” e “%“ eu vou digitar aqui “{% extends “base.html” %}”, para herdarmos de “html”. Eu vou indicar que o trecho de código que queremos inserir, o bloco de código que queremos inserir “html” é esse aqui.
+
+[04:36] Então eu vou colocar aqui um “{% block content %}” para indicar que esse trecho de código acaba em algum lugar. Vou colocar aqui no final “{% endblock %}” e vou salvar. Esse mesmo comportamento, eu quero na minha consulta também. Aqui embaixo eu também tenho um “{% endblock %}”. Legal!
+
+[05:11] Voltando na nossa aplicação. Então, o que fizemos? Nós indicamos que temos um conteúdo para inserir, nas outras páginas nós herdamos esse código HTML e inserimos aqui as tags do Djang”, do “block content” e do “end content”. Vamos ver na nossa aplicação, se houve alguma alteração?
+
+[05:34] Vou clicar aqui em “localhost:8000” apenas para visualizarmos. Quando eu aperto a tecla “Enter”, ficou ali um “Passagem”, que eu esqueci de tirar aqui do nosso “index”. Vou tirar esse “” aqui, não vai ter mais. Nós temos apenas o “form”. Observe que o nosso código agora vai ficar muito mais limpo, vai ficar bem melhor para trabalharmos.
+
+[05:50] Então eu tenho “Passagem”. Quando eu clico no “Passagem”, nós sempre vamos para a nossa página principal. Se eu preencher aqui, eu estou no Rio de Janeiro, eu quero ir para Minas Gerais, e eu vou no dia 10 e vou voltar no dia 20, por exemplo, e clico em “OK”. Observe que temos aqui o mesmo comportamento. Dessa forma nós evitamos código duplicado nas nossas páginas de HTML e vai ficar mais limpo para trabalharmos aqui no nosso “form” também.
+
+[06:12] Observe que todo nosso formulário, todo o formulário gerado aqui, “Origem”, “Destino”, esses “inputs” e o “ok”; se apertarmos com o botão esquerdo e colocar aqui “inspect”, nós vamos ver que existe uma série de código HTML gerado aqui. Todo código que foi gerado da nossa aplicação, todo esse código aqui, foi gerado.
+
+[06:36] Nós não escrevemos nenhuma “label” direto nas tags HTML, nós utilizamos o “Django Forms”. Todo “form” é gerado através desse código, e estamos exibindo depois, buscando, ou não, os valores deste formulário aqui nessa outra página de “minha_consulta”.
+
 #### Widget e calendário
+
+[Tempus Dominus Django]('https://pypi.org/project/django-tempus-dominus/')
+
+        pip install django-tempus-dominus
+
+1. Em `settings.py`, temos que:
+
+        ...
+        INSTALLED_APPS = [
+            ...,
+            'tempus_dominus',
+            ...
+        ]
+
+        TEMPUS_DOMINUS_LOCALIZE = True #Para funcionar conforme a localização
+
+1. Em `forms.py`, temos que:
+
+        import tempus_dominus.widgets import DatePicker, TimePicker, DateTimePicker
+
+        class PassagemForms(form.Form):
+            ...
+            data_ida = forms.DateField(label='Ida',widget=DatePicker())
+            data_volta = forms.DateField(label='Volta', widget=DatePicker())
+
+1. Em `base.html`, temos que adicionar a tag do BootStrap e Java Script e:
+
+        <head>
+            {{ form.media }}
+        </head>
+
+---
+
+[00:00] Assim que eu preencho o meu formulário, o meu campo de ida e o meu campo de volta, que deveriam ser a data, eu posso colocar algo diferente. Por exemplo: na ida eu vou escrever “Ida” e na volta eu vou escrever “Volta”. Quando eu clico em “OK”, observe o que acontece, fica “Sua origem é: São Paulo”, “Seu destino é: Rio”, “Sua data de ida é: ida” e “Sua data de volta é: volta”. Não é esse comportamento que eu queria para a nossa aplicação.
+
+[00:21] Eu gostaria que esse campo aqui de ida e de volta, quando nós clicarmos neles, fosse exibido um calendário onde a pessoa escolhe, seleciona ali a data que ela quer viajar e a data que ela quer voltar. Vamos fazer isso?
+
+[00:33] Nós vamos utilizar um módulo chamado “tempus-dominus-django”. Nesse primeiro link aqui “django-tempus-dominus”. Nós vamos abrir essa biblioteca. Temos aqui como utilizar essa biblioteca e vamos seguir o passo a passo dessa documentação.
+
+[00:51] Nessa linha aqui, observe que temos uma notícia que essa biblioteca não vai receber mais atualizações e ele não garante também que vai funcionar no Django 3. Nós aqui da Alura fizemos os testes dessa biblioteca e vamos ter o comportamento que estamos querendo na versão do Django 3. Nós testamos e ele está funcionando nessa versão também.
+
+[01:11] E ele falou que talvez no futuro ele pode voltar a utilizar esse módulo também no Django, desse módulo o “tempus-dominus-django” também pode acontecer isso de ter alteração, ou não. Então como testamos e funcionou, tivemos o comportamento que queríamos, vamos utilizar ele.
+
+[01:28] Então a primeira coisa que temos que fazer é instalarmos. Eu vou copiar essa linha aqui, “pip install django-tempus-dominus”. Copiei essa linha, lá na nossa aplicação o terminal 1 está rodando o meu servidor. Vou abrir o terminal 2. Deixe-me fechar esses dois porque conseguimos visualizar melhor.
+
+[01:47] Eu vou apertar as teclas “Ctrl + V”, “pip install”. Quando eu aperto a tecla “Enter”, observe que esse módulo já foi instalado. Ele fala depois também para adicionarmos o “tempus_dominus” lá nos apps instalados.
+
+[01:59] Então, o que eu vou fazer? Abrindo aqui a nossa aba de navegação, aqui no nosso “setup” em “settings.py”, onde dizemos todos os apps que nós temos instalados, vamos colocar também o “tempus_dominus” aqui e vamos salvar.
+
+[02:18] Vamos ver seguindo a documentação para vermos o que nós precisamos fazer também. Ele fala aqui sobre a localização. Aqui é um ponto importante, nós não queremos exibir o calendário da nossa página em inglês, então pense: a nossa aplicação tem “Origem” e “Destino” escritos na língua portuguesa. Quando clicamos no calendário, aparece o calendário em inglês. Não é o que queremos, nós queremos mostrar o calendário em português. Ele dá aqui uma dica.
+
+[02:43] Ele fala que se você deixar o “tempus_dominus” com o “localize”, você vai poder configurar para a língua que você estiver utilizando na aplicação, e é o que queremos. Então eu vou copiar essa variável aqui, “TEMPUS_DOMINUS_LOCALIZE”. Lá na última linha, aqui eu vou apertar as teclas “Ctrl + V” e vou falar que eu quero utilizar. Então eu vou falar que eu quero utilizar a localização de idioma para esse nosso calendário. Então eu deixei como “true”.
+
+[03:14] O que precisamos fazer também? Vamos ver... Ele fala aqui sobre o padrão do que vamos utilizar. Agora, olhe só: lá no nosso “forms” ele fala para alterarmos, nós vamos colocar essa propriedade “widget” aqui no nosso formulário. O que é essa propriedade “widget”, na verdade? O que ela faz?
+
+[03:34] “Widget” é a representação que vamos utilizar no nosso “imput” lá no HTML, então é como o Django vai criar esse “imput” no HTML. Então a primeira coisa que temos que fazer é importarmos.
+
+[03:45] Nós vamos utilizar apenas, para a nossa aplicação, o “DatePicker”, então eu vou copiar do “tempus_dominus”, que já instalamos via “pip install”. Nós vamos importar o “DatePicker”.
+
+[03:56] Então eu vou lá no meu “forms”. Vou fechar aqui. Vou em “setup” aqui no nosso “Passagens”, no “forms.py” nós vamos importar esse “DatePicker”. Deixe-me minimizar aqui só para visualizarmos melhor. Observe que trouxemos o “DatePicker”, só que nenhum momento nós passamos esse “DatePicker” para a data de Ida e para a data de Volta. Nós queremos alterar a forma como ele vai mostrar esses campos.
+
+[04:22] Então, o que ele fala? Existe essa propriedade “widget-DatePicker” que vamos utilizar. Então, o que eu vou fazer? Eu vou colocar aqui do lado do “label”. Se eu colocar “widget”, observe que ele já aparece aqui para mim. Eu vou apertar a tecla “Enter”, vou escrever “DatePicker” e vou colocar aqui para executar essa nossa função. Vou fazer o mesmo também para a data de volta, “widget=DatePicker” função, abre parênteses e fecha parênteses. Legal, vou salvar!
+
+[04:53] Vamos ver qual o outro passo que precisamos fazer. Ele fala também que é necessário que utilizemos o JQuery para exibirmos esse nosso calendário. Então eu vou copiar essas duas linhas, porque as duas linhas que nós copiamos lá no nosso “base.html”, aqui no nosso template no “base.html”, essas duas linhas são referentes ao Bootstrap que copiamos.
+
+[05:18] Agora eu quero utilizar também o JQuery para conseguir exibir o nosso calendário conforme a documentação que ele passa aqui. Uma outra coisa: ele também coloca essa tag aqui, “included” essa tag do “form.media”. Então, “{{ form.media }}”. Vou apertar as teclas “Ctrl + C”.
+
+[05:37] Ainda aqui no nosso arquivo de meta, deixe-me minimizar para nós visualizarmos melhor. Eu vou colar ela aqui. Então, o que fizemos? Trouxemos o JQuery para cá e passamos essa tag “form.media” aqui na nossa tag do “head”. Legal, trouxe isso! Depois temos outras opções aqui para exibir. Vamos ver como ficou na nossa aplicação.
+
+[05:59] Vou atualizar. Ele ficou bem grande aqui, olhe a data de ida, ficou bem grande. A data de volta ficou bem grande também. Nós já vamos arrumar isso. Então, “Origem”, vamos lá! Vamos passo a passo.
+
+[06:09] Eu vou colocar aqui “São Paulo” e “Destino: Rio”. Na data de ida, quando eu clicar, aparece aqui um calendário já em português, olhe só, “março 2020”. Então eu vou viajar no dia 10 e vou voltar no dia 25. Aperto em “OK” e ele nos mostra, “Sua origem é: São Paulo”, “Seu destino é: Rio”, “Sua data de ida é: 10/03/2020” e “Sua data de volta é: 10/03/2020”.
+
+[06:36] Observe que nesse campo, por mais que eu escreva, sempre quando eu volto, eu não tenho mais aquele campo, eu não tenho mais aquele valor escrito. Sempre quando eu altero, ele já nos cria essa validação no nosso HTML.
+
+[06:54] Ficou legal! Tivemos um comportamento, está exibindo o calendário já em português, tudo isso ficou bem bacana. Só que o que eu quero fazer agora é não deixá-lo tão grande assim, está desproporcional o “Origem”, o “Destino”, o “Ida” aqui e “Volta”. Eles estão desproporcionais com a nossa aplicação.
+
+[07:14] O que podemos fazer é: lá no nosso formulário... Deixe-me fechar aqui. Voltando aqui no nosso template onde estamos exibindo o nosso formulário nesse “form action” e vou criar uma seção.
+
+[07:25] Então eu vou criar aqui uma nova seção. Vou incluir todo o nosso formulário nessa seção, apertar as teclas “Ctrl+ X” e vou passá-lo aqui em baixo para fechar a nossa seção. Legal!
+
+[07:39] O que eu vou fazer? Nessa seção eu vou importar uma classe para determinar o tamanho dele. Então eu vou colocar aqui “col-8”, só para testarmos. Opa! Eu esqueci da palavra “class” aqui. Agora sim, vou colocar aqui “col-8” e vou tirar esses outros campos daqui. Vamos ver como vai ficar? Voltando aqui na nossa aplicação. Legal!
+
+[08:11] O que nós vamos fazer na sequência é melhorarmos a exibição do nosso formulário, porque ele ficou todo desproporcional aqui. Nós vamos aprender como é que fazemos isso no próximo vídeo.
+
 #### Estilizando os inputs
-#### Faça como eu fiz na aula
+
+[00:00] Assim que eu preencho o meu formulário, o meu campo de ida e o meu campo de volta, que deveriam ser a data, eu posso colocar algo diferente. Por exemplo: na ida eu vou escrever “Ida” e na volta eu vou escrever “Volta”. Quando eu clico em “OK”, observe o que acontece, fica “Sua origem é: São Paulo”, “Seu destino é: Rio”, “Sua data de ida é: ida” e “Sua data de volta é: volta”. Não é esse comportamento que eu queria para a nossa aplicação.
+
+[00:21] Eu gostaria que esse campo aqui de ida e de volta, quando nós clicarmos neles, fosse exibido um calendário onde a pessoa escolhe, seleciona ali a data que ela quer viajar e a data que ela quer voltar. Vamos fazer isso?
+
+[00:33] Nós vamos utilizar um módulo chamado “tempus-dominus-django”. Nesse primeiro link aqui “django-tempus-dominus”. Nós vamos abrir essa biblioteca. Temos aqui como utilizar essa biblioteca e vamos seguir o passo a passo dessa documentação.
+
+[00:51] Nessa linha aqui, observe que temos uma notícia que essa biblioteca não vai receber mais atualizações e ele não garante também que vai funcionar no Django 3. Nós aqui da Alura fizemos os testes dessa biblioteca e vamos ter o comportamento que estamos querendo na versão do Django 3. Nós testamos e ele está funcionando nessa versão também.
+
+[01:11] E ele falou que talvez no futuro ele pode voltar a utilizar esse módulo também no Django, desse módulo o “tempus-dominus-django” também pode acontecer isso de ter alteração, ou não. Então como testamos e funcionou, tivemos o comportamento que queríamos, vamos utilizar ele.
+
+[01:28] Então a primeira coisa que temos que fazer é instalarmos. Eu vou copiar essa linha aqui, “pip install django-tempus-dominus”. Copiei essa linha, lá na nossa aplicação o terminal 1 está rodando o meu servidor. Vou abrir o terminal 2. Deixe-me fechar esses dois porque conseguimos visualizar melhor.
+
+[01:47] Eu vou apertar as teclas “Ctrl + V”, “pip install”. Quando eu aperto a tecla “Enter”, observe que esse módulo já foi instalado. Ele fala depois também para adicionarmos o “tempus_dominus” lá nos apps instalados.
+
+[01:59] Então, o que eu vou fazer? Abrindo aqui a nossa aba de navegação, aqui no nosso “setup” em “settings.py”, onde dizemos todos os apps que nós temos instalados, vamos colocar também o “tempus_dominus” aqui e vamos salvar.
+
+[02:18] Vamos ver seguindo a documentação para vermos o que nós precisamos fazer também. Ele fala aqui sobre a localização. Aqui é um ponto importante, nós não queremos exibir o calendário da nossa página em inglês, então pense: a nossa aplicação tem “Origem” e “Destino” escritos na língua portuguesa. Quando clicamos no calendário, aparece o calendário em inglês. Não é o que queremos, nós queremos mostrar o calendário em português. Ele dá aqui uma dica.
+
+[02:43] Ele fala que se você deixar o “tempus_dominus” com o “localize”, você vai poder configurar para a língua que você estiver utilizando na aplicação, e é o que queremos. Então eu vou copiar essa variável aqui, “TEMPUS_DOMINUS_LOCALIZE”. Lá na última linha, aqui eu vou apertar as teclas “Ctrl + V” e vou falar que eu quero utilizar. Então eu vou falar que eu quero utilizar a localização de idioma para esse nosso calendário. Então eu deixei como “true”.
+
+[03:14] O que precisamos fazer também? Vamos ver... Ele fala aqui sobre o padrão do que vamos utilizar. Agora, olhe só: lá no nosso “forms” ele fala para alterarmos, nós vamos colocar essa propriedade “widget” aqui no nosso formulário. O que é essa propriedade “widget”, na verdade? O que ela faz?
+
+[03:34] “Widget” é a representação que vamos utilizar no nosso “imput” lá no HTML, então é como o Django vai criar esse “imput” no HTML. Então a primeira coisa que temos que fazer é importarmos.
+
+[03:45] Nós vamos utilizar apenas, para a nossa aplicação, o “DatePicker”, então eu vou copiar do “tempus_dominus”, que já instalamos via “pip install”. Nós vamos importar o “DatePicker”.
+
+[03:56] Então eu vou lá no meu “forms”. Vou fechar aqui. Vou em “setup” aqui no nosso “Passagens”, no “forms.py” nós vamos importar esse “DatePicker”. Deixe-me minimizar aqui só para visualizarmos melhor. Observe que trouxemos o “DatePicker”, só que nenhum momento nós passamos esse “DatePicker” para a data de Ida e para a data de Volta. Nós queremos alterar a forma como ele vai mostrar esses campos.
+
+[04:22] Então, o que ele fala? Existe essa propriedade “widget-DatePicker” que vamos utilizar. Então, o que eu vou fazer? Eu vou colocar aqui do lado do “label”. Se eu colocar “widget”, observe que ele já aparece aqui para mim. Eu vou apertar a tecla “Enter”, vou escrever “DatePicker” e vou colocar aqui para executar essa nossa função. Vou fazer o mesmo também para a data de volta, “widget=DatePicker” função, abre parênteses e fecha parênteses. Legal, vou salvar!
+
+[04:53] Vamos ver qual o outro passo que precisamos fazer. Ele fala também que é necessário que utilizemos o JQuery para exibirmos esse nosso calendário. Então eu vou copiar essas duas linhas, porque as duas linhas que nós copiamos lá no nosso “base.html”, aqui no nosso template no “base.html”, essas duas linhas são referentes ao Bootstrap que copiamos.
+
+[05:18] Agora eu quero utilizar também o JQuery para conseguir exibir o nosso calendário conforme a documentação que ele passa aqui. Uma outra coisa: ele também coloca essa tag aqui, “included” essa tag do “form.media”. Então, “{{ form.media }}”. Vou apertar as teclas “Ctrl + C”.
+
+[05:37] Ainda aqui no nosso arquivo de meta, deixe-me minimizar para nós visualizarmos melhor. Eu vou colar ela aqui. Então, o que fizemos? Trouxemos o JQuery para cá e passamos essa tag “form.media” aqui na nossa tag do “head”. Legal, trouxe isso! Depois temos outras opções aqui para exibir. Vamos ver como ficou na nossa aplicação.
+
+[05:59] Vou atualizar. Ele ficou bem grande aqui, olhe a data de ida, ficou bem grande. A data de volta ficou bem grande também. Nós já vamos arrumar isso. Então, “Origem”, vamos lá! Vamos passo a passo.
+
+[06:09] Eu vou colocar aqui “São Paulo” e “Destino: Rio”. Na data de ida, quando eu clicar, aparece aqui um calendário já em português, olhe só, “março 2020”. Então eu vou viajar no dia 10 e vou voltar no dia 25. Aperto em “OK” e ele nos mostra, “Sua origem é: São Paulo”, “Seu destino é: Rio”, “Sua data de ida é: 10/03/2020” e “Sua data de volta é: 10/03/2020”.
+
+[06:36] Observe que nesse campo, por mais que eu escreva, sempre quando eu volto, eu não tenho mais aquele campo, eu não tenho mais aquele valor escrito. Sempre quando eu altero, ele já nos cria essa validação no nosso HTML.
+
+[06:54] Ficou legal! Tivemos um comportamento, está exibindo o calendário já em português, tudo isso ficou bem bacana. Só que o que eu quero fazer agora é não deixá-lo tão grande assim, está desproporcional o “Origem”, o “Destino”, o “Ida” aqui e “Volta”. Eles estão desproporcionais com a nossa aplicação.
+
+[07:14] O que podemos fazer é: lá no nosso formulário... Deixe-me fechar aqui. Voltando aqui no nosso template onde estamos exibindo o nosso formulário nesse “form action” e vou criar uma seção.
+
+[07:25] Então eu vou criar aqui uma nova seção. Vou incluir todo o nosso formulário nessa seção, apertar as teclas “Ctrl+ X” e vou passá-lo aqui em baixo para fechar a nossa seção. Legal!
+
+[07:39] O que eu vou fazer? Nessa seção eu vou importar uma classe para determinar o tamanho dele. Então eu vou colocar aqui “col-8”, só para testarmos. Opa! Eu esqueci da palavra “class” aqui. Agora sim, vou colocar aqui “col-8” e vou tirar esses outros campos daqui. Vamos ver como vai ficar? Voltando aqui na nossa aplicação. Legal!
+
+[08:11] O que nós vamos fazer na sequência é melhorarmos a exibição do nosso formulário, porque ele ficou todo desproporcional aqui. Nós vamos aprender como é que fazemos isso no próximo vídeo.
+
 #### Dados do formulário
+
+Pensando em otimizar o trabalho com formulário, o Django realiza as principais ações, dentre elas:
+
+Preparar e estruturar os dados que serão exibidos no formulário
+Criação do html do formulário que será renderizado
+Recebimento e processamento dos dados enviados pelo formulário
+Em relação ao recebimento e processamento dos dados enviados pelo formulário, analise as afirmações abaixo e marque as verdadeiras:
+
+a. **Alternativa correta:** Para exibir um formulário na página html, podemos passar a instância do formulário como contexto, como ilustra o código abaixo:
+
+    return render(request, 'index.html',{'form': form})
+
+    Certo! Após passar o formulário como argumento da função render, para exibir este formulário, podemos utilizar o seguinte código na página html:
+
+    {{ form }}
+
+b. **Alternativa correta:** Para recuperar os dados de um formulário enviados por uma requisição post, podemos utilizar o seguinte código:
+
+    form = NOME_DO_FORMULARIO(request.POST)
+
+    Certo! Desta forma, os dados enviados pelo formulário na requisição do cliente, serão atribuídos na variável form.
+
+c. Para exibir apenas o valor de um campo do formulário em outra página, podemos utilizar o seguinte código:
+
+    {{ form.nome_do_campo}}
+
 #### O que aprendemos?
+
+##### Nesta aula:
+
+- Aprendemos como manipular as informações do Formulário, exibindo os dados em outra página;
+- Evitamos código duplicado nos arquivos HTML criando o arquivo base.html;
+- Alteramos o visual do formulário adicionando widget e classes do bootestrap.
+
+##### Projeto desenvolvido nesta aula
+Aqui você pode baixar o zip da aula 02 ou acessar os arquivos no [Github]('https://github.com/guilhermeonrails/django_forms_curso/tree/aula_2')!
+
+Na próxima aula
+Vamos criar campos de tipos diferentes no nosso formulário!
+
 ### 3. Novos campos e alterando o visual
 #### Novos campos
 #### Widget tweaks
