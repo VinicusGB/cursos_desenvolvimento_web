@@ -645,10 +645,141 @@ Vamos criar campos de tipos diferentes no nosso formulário!
 
 ### 3. Novos campos e alterando o visual
 #### Novos campos
+
+[00:00] Nosso formulário hoje conta com quatro campos. Eu quero criar novos campos para esse meu formulário.
+
+[00:05] Então eu vou fechar aqui o meu “index.html”, vou abrir aqui o meu “Passagens” e vou no “forms.py”. Observe que nós temos os nossos quatro campos aqui, o “Origem”, “Destino”, data de “Ida” e data de “Volta”.
+
+[00:16] Eu quero criar um novo campo, eu quero criar um campo onde mostra quando eu estou fazendo essa pesquisa, então eu vou chamar de “data_pesquisa”. Eu quero que ele seja bem parecido com os nossos outros campos, eu quero que ele seja. Vou colocar aqui o “data_pesquisa = forms.DateField” também e eu vou chamar a “label” dele de... Vou escrever “label=’Data da pesquisa’ ”.
+
+[00:47] Eu quero também que além da data e da pesquisa para esse meu campo, eu quero deixar esse campo desabilitado. Eu não quero que a pessoa consiga alterar, ela vai consiga ver, mas que não consiga alterar.
+
+[00:57] Então eu vou colocar um a propriedade aqui chamada “disabled=“ e vou passar aqui o valor “True”. Então eu quero que seja verdadeiro, que ela não consiga alterar, e eu quero que ela veja também a data de hoje, então eu vou colocar a propriedade “initial=”. Eu quero usar a data de hoje, eu quero que ele sempre pegue a data de hoje do sistema.
+
+[01:16] Para ele conseguir pegar a data de hoje nós vamos importar um módulo aqui, então, “from datetime import”. Eu quero importar o “datetime” e eu vou usar aqui no “initial” essa propriedade que importamos, “datetime.today”, para ele pegar a data de hoje.
+
+[01:39] Vou salvar, voltar na nossa aplicação e atualizar. Nós temos aqui um “input”, podemos ver que é um “input” aqui. Só que não conseguimos selecioná-lo, não conseguimos alterar. Ficou legal, era o que eu queria.
+
+[01:51] Outro campo que eu quero inserir na nossa aplicação é qual o tipo de classe que a pessoa quer viajar aqui na nossa aplicação. Então, para isso, eu vou criar uma categoria “tipos de classes” e vou selecionar esses tipos de classes. Quando a pessoa entrar na nossa aplicação, vai abrir. Quando ela clicar, não vai conseguir digitar e vai abrir uma sequência de classes que ela pode escolher, se é classe executiva, se é primeira classe e assim por diante. Então, vamos lá?
+
+[02:18] Eu vou criar aqui um novo arquivo onde estamos mesmo e vou chamá-lo de “classe_viagem.py”. Nesse “classe_viagem.py” eu vou criar aqui uma tupla, eu vou colocar aqui “tipos_de_classe =“ e aqui entre “{}” eu vou criar uma tupla para cada classe.
+
+[02:45] Então eu vou colocar aqui, por exemplo: eu vou deixar “1”, e vou escrever aqui que “1” vai ser a classe “{1, 'Econômica' },”. Aqui “(2, 'Executiva'),” e para finalizar a (3, 'Primeira classe')”. Vou salvar.
+
+[03:19] O que eu preciso fazer agora? Aqui no nosso “forms” eu quero criar esse novo campo, eu quero que consigamos escolher uma dessas classes aí. Então eu vou chamar essa propriedade “classe_viagem = forms.ChoiceField()”, ou seja, nós vamos conseguir escolher o “ChoiceField”.
+
+[03:45] Então dentro desse “ChoiceField”, eu vou passar um nome para ele também, uma “label” eu quero exibir, então eu vou chamar essa “label” de “ 'Classe do vôo' ”. Eu vou colocar uma vírgula aqui e nós vamos passar outras propriedades.
+
+[04:11] E eu quero que o “Choice” seja igual aqueles tipos de classes que eu criei. Para isso, nós precisamos importar esse arquivo aqui para o nosso “forms”, então eu vou passar aqui “from passagens.classe_viagem import tipos_de_classe”. Aqui nós temos no “Choice” e já podemos utilizar o “tipos de classe”.
+
+[04:38] Salvei. Vamos visualizar? Eu vou atualizar a minha aplicação. Tem aqui, olhe: “Classe de vôo”, está “Econômica”, “Executiva” e “Primeira classe”. Ficou legal, era o que eu queria também.
+
+[04:48] Além disso, eu quero um campo de informações extras. Por exemplo: já que o nosso site é um site onde as pessoas vão pesquisar, elas vão colocar ali esses destinos, vão dar um “OK” e teoricamente teria uma busca ali em vários outros sites para ver quais são os voos mais baratos. Nós podemos colocar umas informações extras para a pessoa escrever.
+
+[05:08] Por exemplo: eu quero viajar a noite ou quero sentar na janela, alguma coisa desse tipo, então eu vou chamar de “informacoes”. Esse “informacoes” vai ser do tipo “forms” também, e vai ser um tipo “CharField”, só que eu quero ele diferente. Nós vamos ver aqui como criamos esse “CharField” diferente.
+
+[05:26] Por exemplo: nesse “CharField”, eu não quero que seja igual o outro, que apareça só um “input” pequeno aqui. Eu quero que tenha mais coisa, eu quero que seja uma caixa para a pessoa de fato escrever. Então nós podemos alterar esse conteúdo. Por exemplo: a “label” dele, eu vou escrever “Informações extras”, vou dar uma vírgula aqui e vou falar que o máximo de caracteres que nós vamos permitir serão “200” caracteres.
+
+[05:55] E agora nós vamos alterar a forma como ele vai ser exibido lá no HTML, da mesma forma como colocamos o “widget date picker” para data de volta, para ele alterar como vai ser exibido. Nós vamos passar também as propriedades “widget”.
+
+[06:12] Só que nós vamos alterar, nós não vamos usar o “date picker” aqui, nós vamos usar o “Textarea”. Eu vou colocar aqui que ele é uma função também e vou falar que ele não precisa ser obrigatório. Caso a pessoa preencha todos os outros campos e não preencha esse campo, não vai fazer diferença para a nossa aplicação.
+
+[06:35] Então eu vou passar aqui um “required=False”. Salvei, voltando na nossa aplicação, atualizando. Alguma coisa deu errado, eu escrevi errado, é “forms.Textarea()”. Agora sim, voltando na nossa aplicação e atualizando, agora conseguimos visualizar aqui o nosso “form”, o nosso “Informações extras”. Perceba que aqui o visual já não ficou tão legal, mas depois nós vamos deixar ainda melhor esse nosso visual.
+
+[07:13] Para finalizar, o que eu posso fazer é criar também um campo de e-mail, que é muito comum nos formulários preenchermos o e-mail. Então eu vou colocar aqui o “email” da pessoa que está fazendo essa pesquisa, então vai ser tipo “forms” também. Eu vou colocar aqui “forms.”.
+
+[07:31] Nós já temos as propriedades “EmailField”, a “label” que eu vou utilizar vai ser “Email” mesmo. Eu vou falar também aqui que a quantidade máxima de caracteres vai ser de 150 caracteres.
+
+[07:45] Voltando na aplicação, atualizando. Temos agora “Origem”, “Destino”, data de “Ida” e de “Volta”. Temos a “Data da pesquisa”, que não deixamos habilitado, temos aqui um “Primeira classe”, “Executiva” e “Econômica”. Eu vou deixar aqui o “Executiva”. Aqui em “Informações extras” vou escrever “ Info extra”. Tem aqui o “Email”. No “Email” eu vou colocar “gui@alura.com”.
+
+[08:16] Quando eu clico em “OK”, olhe o que vai acontecer... Opa! Eu esqueci o “Origem” e o “Destino”! O principal eu esqueci. Vamos lá! São Paulo e vou para Minas Gerais, “São Paulo” e “Minas Gerais”. Quando eu clico em “OK”, exibe quatro informações. Por quê?
+
+[08:35] Nós alteramos essas informações lá na nossa “index”, aqui no nosso “forms”, só que quando vamos exibir nós não alteramos, e precisamos alterar. Então aqui no “minha_consulta.html”, observe que eu tenho aqui só alguns valores. Eu quero os outros valores também.
+
+[08:51] Então eu vou copiar esse link e vou colocar os outros campos também. Se eu não me engano, foram alguns outros campos. Então olhe: data de ida, data de volta; vamos visualizar lá. Já conseguimos ver!
+
+[09:04] Então olhe: “Data da pesquisa”, “data_ida”, “data_volta” e “data_pesquisa”. Também temos além do “data” e da “pesquisa”, temos a classe de voo, “classe_viagem”, só para lembrarmos, “classe_viagem”, “informacoes”. Então aqui no “form” “informacoes” e o “email”.
+
+[09:49] Então, vamos lá! “Sua data de volta é:”, não! “data_ida”, “data_volta”, “data_pesquisa”. Vou colocar “Pesquisa realizada em:”, só “Pesquisa realizada:”, já fica legal. Aqui “Classe de vôo”, “Informações extras”, “Sua data de volta é:” vai ser alterado para “Email:”. Salvei, voltando na aplicação. Eu voltei aqui só para não precisarmos preencher tudo de novo, quando eu clico em “OK”, agora nós temos todas as informações.
+
+[10:47] “Sua origem é:” e “Seu destino é:”. “Sua data de ida é:”, “Sua data de volta é:”, “Pesquisa realizada: 03 de Março 2020 às 14:34”. Específico! “Classe de vôo: 2”, que foi o tipo que criamos lá, que vamos ver depois como alteramos isso também. “Informações extras:”, aqui eu coloquei “Info extra”, e o “Email:”.
+
+[11:04] Legal! Então, dessa forma nós sabemos como manipular mais tipos dentro do “forms”. A coisa mais legal também, uma das coisas mais importantes é: observe que em nenhum momento eu precisei alterar o código que estamos de fato criando esse formulário. A única coisa que temos aqui, para cada campo visível, coloca o “form group” e exibe a “label e exibe o campo. Fizemos isso e agora temos o resultado. Temos um formulário com muito mais campos.
+
 #### Widget tweaks
+
+[Python Django Tweaks]('https://pypi.org/project/django-widget-tweaks/')
+Formatação de widgets forms para renderizar no html. Facilita para adicionar conteúdo css no meu html.
+
+---
+
+[00:00] Assim que inserimos novos campos nós percebemos que o nosso formulário ficou todo bagunçado. Ele está bem maluco aqui!
+
+[00:05] Então observe que temos aqui um campo mais para a esquerda que não está legal. Eu gostaria de dar um exemplo do que nós poderíamos fazer na nossa aplicação. Esse exemplo você não precisa fazer na sua casa, é só para observarmos.
+
+[00:16] Eu vou dar um “inspect” aqui na página, vou selecionar aqui a seta do mouse e vou selecionar esse nosso campo de origem. Observe que aqui temos o HTML que foi gerado através do “form”. Eu vou editar e vou passar uma propriedade do Bootstrap, uma classe do Bootstrap para esse “input”, “class =”, e vou passar aqui o “form-control”. Vou fechando aqui a “streaming”.
+
+[00:40] Observe como vai ficar o nosso “form-control”, nós teríamos a “label” em cima e embaixo o “input” de cada campo. Isso ficaria muito mais bonito, só que como eu passo essa propriedade, que é a “class form control” para todos os nossos campos, ou seja, lá na nossa aplicação nós temos aqui o “field”, que é o campo que nós temos.
+
+[01:02] Só que eu quero falar assim: “todo o meu campo ‘field’ vai ser do tipo ‘form-control’. Ele vai utilizar uma classe do Bootstrap chamada ‘form-control’ ”. Ele ficaria com o visual, todos ficariam com um visual padrão. Vamos fazer isso, então?
+
+[01:15] Para isso, nós vamos utilizar um módulo do Python. Eu vou escrever: “phyton django whitget tweaks”. Então clicando aqui nesse primeiro link nós temos aqui a documentação, como instalamos, como utilizamos essa biblioteca e como deixamos o nosso formulário de uma forma muito mais rápida e muito mais bonita.
+
+[01:44] Então vamos instalar! Eu cliquei aqui para copiar. Havia saído da página, eu vou voltar aqui, vou fechar aqui do lado e abrir o nosso terminal. Teclas “Ctrl + L”, vou apertar as teclas “Ctrl + V” para instalar esse “whitget-tweaks”. Ele já instalou, é rápido. O que precisamos fazer?
+
+[02:03] Lá nos nossos apps instalados precisamos colocar, precisamos falar: “olhe, nós vamos utilizar o ‘whitget-tweaks’ ”. Então eu vou minimizar aqui o nosso terminal e vou abrir aqui do lado. Então em “setup”, “setings.py”, onde temos todos os apps instalados nós vamos colocar também o que nós vamos utilizar, o “widget-tweaks”.
+
+[02:26] Coloquei os dois, fiz o “import” dos dois, só que agora nós vamos ver se mudou. Será que só isso é suficiente para mudarmos aqui no nosso código? Não! Nós temos o mesmo código. Deixe-me fechar aqui. Observe que nós temos a mesma configuração, de alguma forma precisamos indicar lá no nosso formulário.
+
+[02:43] Deixe-me fechar essas páginas para não ficarmos confusos, vou deixar só a página onde exibimos o nosso formulário aqui na nossa “index”. Nós precisamos indicar aqui na nossa “index” que vamos utilizar esse método do “widgets-tweaks”. E como fazemos isso?
+
+[03:01] A primeira coisa: precisamos carregar esse módulo que instalamos aqui. Então eu vou utilizar o código Python com “{%}” e vou dar aqui o código “{% load widget_tweaks %}”. Importamos, carregou esse módulo aqui para a nossa página de links onde vamos utilizar.
+
+[03:29] Agora o que eu quero fazer é adicionar o “form-control” para todos os meus outros campos. O que eu vou utilizar? Eu vou usar a reta transversal, a tecla “|”. Aqui eu vou colocar “{{field|add_class:'form-control'}}”. Eu vou apertar as teclas “Command + B” só para nós visualizarmos melhor.
+
+[03:56] Então, o que eu fiz? Carreguei o “tweaks” e coloquei aqui do lado do “{{field|add_class: 'form-control'}}”. Salvei. Voltando na nossa aplicação e atualizando, nós temos aqui um visual bem melhor. Olhe só, muito melhor.
+
+[04:13] Observe que os campos estão com um formato, eles estão bem grandes. Nós podemos alterar esse formato também. Por exemplo: eu posso criar aqui uma outra “section”. Deixe-me colar essa aqui embaixo só para fechar, então eu posso colocar aqui uma outra “section” e aqui eu posso trazer uma classe do Bootstrap, por exemplo, para alterarmos o tamanho desses nossos campos.
+
+[04:37] Então eu vou colocar aqui o “col-8”, por exemplo. Quando atualizarmos, nós vemos que ele já diminuiu aqui. Outra coisa que podemos fazer também é colocá-lo dentro de um “container”. Eu vou colocar aqui “container”, vamos ver como vai ficar, muito melhor.
+
+[04:56] Então temos um “container” agora para essa nossa classe. Observe que todos os outros campos ficaram com um tamanho padronizado. Além de quando selecionamos o campo, ele dá essa marcação azul também.
+
+[05:07] Então eu vou colocar aqui: “São Paulo”, destino vai ser “Minas Gerais”. Eu vou amanhã no dia 04, e volto no dia 20, por exemplo. Aqui, a data de pesquisa nós não podemos preencher. Tipo de classe eu vou de executiva. Em informações extras eu não vou preencher nada, nós vamos ver o que ele vai fazer. Aqui no e-mail “gui@alura.com”.
+
+[05:39] Quando eu clico em “OK” nós temos lá todas as nossas informações, e informações extras não mostrando nada. Aqui conseguimos submeter esse formulário, agora muito mais organizado.
+
 #### Faça como eu fiz na aula
+
+Chegou a hora de você seguir todos os passos realizados por mim durante esta aula. Caso já tenha feito, excelente. Se ainda não, é importante que você implemente o que foi visto no vídeo para poder continuar com a próxima aula, que tem como pré-requisito todo o código aqui escrito.
+
 #### Para saber mais
+
+Tipos de campos do fomulário e widgets
+Um widget é uma representação do Django de um elemento input do HTML e a biblioteca do Forms vem com um conjunto de classes de campo diferentes.
+
+Abaixo, segue uma lista com os tipos mais comuns:
+
+- BooleanField | Widget* padrão: CheckboxInput
+- CharField | Widget padrão: TextInput
+- ChoiceField | Widget padrão: Select
+- TypedChoiceField | Semelhante ao ChoiceField, porém recebe dois argumentos extras: coerce e empty_value. | Widget padrão: Select
+- DateField | Widget padrão: DateInput
+- DecimalField | Widget padrão: NumberInput quando Field.localize for False, senão TextInput.
+- EmailField | Widget: EmailInput.
+- Outros tipos: Você pode encontrar outros tipos de campos clicando [neste link]('https://docs.djangoproject.com/en/3.0/ref/forms/fields/#built-in-field-classes').
+
+: )
+
 #### O que aprendemos?
+
+Nesta aula:
+- Criamos novos campos no formulário como data da pesquisa, informações extras e email;
+- Adicionamos a classe form-control nos campos sem duplicar o código, utilizando o widget tweaks.
+
+Na próxima aula
+Vamos aprender como incluir validações no formulário de duas formas diferentes!
+
 ### 4. Validações
 #### Clean_field
 #### Exibindo mensagem de erro
