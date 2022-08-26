@@ -1127,9 +1127,204 @@ Vamos aprender como recuperar e exibir os dados do formulário em outra página 
 ### 5. Modelos e formulários
 #### Preparando o ambiente
 #### Criando modelos
-#### ModelForm
+
+Até o momento estamos criando formulários e validações com a class Form mas podemos criar validações de formulários a partir da class Models. Que faz buscas no nosso banco de dados.
+
+---
+
+[00:00] Até o momento, nós criamos um formulário utilizando a classe “forms”. Se observarmos aqui o nosso “forms.py”, temos aqui o “PassagemForms”, porque estamos gerando esse formulário a partir do “forms” com todos os campos ali embaixo.
+
+[00:15] O que vamos fazer agora é diferente. Nós queremos gerar um formulário, mas não através do “forms”, e sim de um modelo. Baseado em um modelo, eu quero gerar um formulário.
+
+[00:26] Para não investirmos tanto tempo desenvolvendo os nossos modelos, o que nós vamos fazer? Nós vamos disponibilizar um pacote aqui chamado “models” que tem alguns arquivos que vamos inserir na nossa aplicação.
+
+[00:40] Então eu vou pegar aqui o “passagens”. Eu tenho aqui na classe de “passagens”. Eu vou apertar as teclas “Ctrl + C” e “Ctrl + V”, nesse arquivo de “models”. Temos ele aqui também. Se você quiser copiar ou arrastar para cá, você pode também.
+
+[00:52] Então dentro da nossa aplicação, nós temos aqui uma pasta com os modelos. Temos aqui o “init.py”, a “classe_viagem.py”, a “passagem.py” e o “pessoa.py”. Nós vamos entender cada um desses arquivos.
+
+[01:05] Aqui o “init.py” nós temos para inicializar essas classes, esses modelos serem manipulados na hora que formos gerar essas informações no banco de dados. Como o nosso curso o foco não é banco de dados, nós vamos utilizar o SQlite apenas para exemplificar.
+
+[01:23] Na “classe_viagem.py”, o que nós temos? Observe que temos aqui “classe_viagem.py”, nós vamos manter na nossa base de dados todas essas informações aqui, “Econômica”, “Executiva” e “Primeira classe”. Vamos exibir para as pessoas esse conteúdo, “Econômica”, “Executiva” e “Primeira classe”. Porque nós vamos gerar essas informações direto no banco de dados?
+
+[01:48] Porque os nossos dados estão sensíveis. O que eu quero dizer com sensíveis? Se eu for aqui no “classe_viagem.py” e, por exemplo, excluir essa linha 2. Exclui. Só temos duas classes agora, ou “Econômica” ou “Primeira classe”.
+
+[02:01] Se voltarmos na nossa aplicação e atualizarmos. Observe que aqui na “Classe de vôo”, nós vamos ter “Econômica” e “Primeira classe”. Só porque eu deletei uma linha, nós já perdemos todo o conteúdo daquele outro tipo.
+
+[02:13] Então, para ficar mais clara essas informações, nós vamos criar um modelo, que chamamos aqui de modo “text choice”, que a partir dele vamos manipular as informações salvas no banco de dados de forma muito mais segura. Então esse é o nosso primeiro arquivo de modelo.
+
+[02:31] Nosso segundo modelo vai ser o modelo de passagem. O que nós vamos ter nesse modelo? Origem, destino, data de ida, data de volta. Porém, diferentemente do nosso “forms”, ele sempre vai ser gerado através de um “model”, e não de um “forms”.
+
+[02:45] Se observarmos aqui o nosso “forms.py”, observe que temos os campos aqui de forma parecida, “origem” é um “forms” que vem de “charfield”. Temos a “label” e temos o “max_legnght”. Aqui não precisamos passar o nome da “label”, nós só passamos a quantidade de caracteres que queremos, passamos as escolhas.
+
+[03:01] Por exemplo: aqui no “classe_viagem” nós usamos o “models.TextField”, com o argumento aqui, o “choices” falando que nós vamos usar a classe de viagem “choice”, passando aqui as outras propriedades, como: “max_length” (quantidade de caracteres máximo que vamos precisar).
+
+[03:16] Precisamos passar quando utilizamos o “choice”. Aqui o valor “default” dele vai ser o “0”. Se eu não me engano é a classe econômica. Então temos essas informações aqui do “Passagem”, agora gerando através de modelo, e não do “forms”.
+
+[03:31] E vamos ver, por último: temos aqui também o nosso “models pessoa.py”. O que é o “pessoa”? Temos dois campos que vamos mostrar o seguinte exemplo.
+
+[03:42] Vamos supor que eu tenha um modelo que eu não estou exibindo todos os campos que tem nesse modelo lá na minha página, ou seja, eu tenho aqui o “nome” e o “email”. Só que na nossa aplicação nós não usamos o “nome”, nós só usamos o “email”.
+
+[03:54] Como eu não utilizo algumas informações no meu “model”? Nós vamos aprender isso através desse exemplo de “Pessoa”. Então vamos gerar um formulário para “Passagem”, vamos gerar um formulário para “Pessoa”, exibir esses dois formulários lá na nossa tela e depois nós vamos ver como não exibir alguns campos do modelo.
+
+[04:13] Sabendo disso, sabendo como estão os nossos “models”, o que eu vou fazer? Eu vou abrir o meu terminal, vou parar aqui o meu servidor nessa parte e vou rodar o seguinte comando: “python manage.py makemigrations”. O que ele vai fazer? Ele vai gerar os scripts de migrações para criar esses conteúdos no banco de dados. Ele já criou para mim, então, “python manage.py makemigrations”.
+
+[04:38] O segundo comando que vamos usar vai ser para de fato realizar a migração, “python manage.py migrate”. Quando eu apertar a tecla “Enter”, ele já está criando para mim toda a migração no banco de dados. Ele criou, agora nós temos na nossa base de dados esses arquivos feitos.
+
+[04:57] No nosso próximo vídeo nós vamos aprender a como alterarmos o nosso “forms” para gerarmos um formulário baseado no nosso modelo.
+
+#### [ModelForm]('https://docs.djangoproject.com/pt-br/4.1/topics/forms/modelforms/')
+
+1. Em forms.py, devemos alterar class Forms para class Models, conforme a seguir:
+
+        class PassagemForms(forms.ModelForm):
+            class Meta:
+                model = Passagem # Model que vou utilizar em meu forms
+                fields = ['origem'] # traz campos especificos
+                fields = '__all__' # traz todos os campos
+                exclude = ['nome']
+                labels = {'data_ida':'Data de volta'} # forma os campos para aparecer no html
+                widgets = {'data_ida':DatePicker()}
+
+---
+
+[00:00] Eu tenho um “PassagemForms” sendo gerado a partir de um “Form” aqui, passando todos os campos. Eu quero fazer algo diferente, eu quero utilizar o modelo que eu fiz a migração na aula passada, aqui e agora. Como nós vamos fazer isso?
+
+[00:14] A primeira coisa que vamos fazer é indicarmos que essa nossa classe “PassagemForms” não vai ser mais do tipo “Form”, ela vai ser do tipo “forms.ModelForm”. Legal!
+
+[00:25] Outra coisa que nós vamos precisar fazer é: se eu vou utilizar o “ModelForm”, eu preciso saber qual é o modelo que eu estou querendo utilizar, eu preciso importar os meus modelos para esse arquivo. Então, “from passagens.models”. Eu quero importar “import Passagem”. Eu quero importar “ClasseViagem,” e eu quero importar também “Pessoa”. Legal!
+
+[00:47] Trouxe os meus três modelos. O que eu preciso fazer agora? Como eu tenho um “ModelForms” para ser gerado, eu preciso indicar qual é o modelo desse “PassagemForms”, qual é o modelo que eu quero gerar o meu formulário. Para isso, nós vamos utilizar uma classe.
+
+[01:02] Eu vou criar aqui uma classe chamada “meta”. O que essa classe “meta” vai fazer? Ela vai ser responsável por manipular as informações que estão no nosso modelo para gerar no nosso formulário. A primeira coisa que passamos de propriedade para ela é quem é o modelo que nós vamos gerar, qual é o modelo que vamos usar como base.
+
+[01:18] Eu vou usar como base o modelo de “Passagem”. Outra coisa que vamos precisar fazer também é indicar quais são os campos que queremos exibir. Então eu vou colocar aqui a propriedade “fields” e vou passar aqui “['origem']”, para nós visualizarmos. Eu vou remover aqui “origem”, “data_ida” e “data_volta”, vou remover esses três.
+
+[01:42] Agora, algo muito importante que eu gostaria que você fizesse também: essa “data_pesquisa” aqui eu vou comentar, eu vou colocar uma “#” aqui na frente, para só comentarmos. Essas “classe_viagem” e “informações”, essas outras propriedades, nós não vamos utilizar, então eu vou removê-las daqui. Essa aqui que comentamos nós vamos entender depois o porquê. Eu vou deixar as validações aqui embaixo mesmo. Salvei.
+
+[02:10] Voltando na nossa aplicação, deixe-me ver se estou com o servidor rodando. Estou com o servidor rodando, eu tenho aqui o “Origem”, eu posso preencher. “Origem: São Paulo”. Se eu der um “OK”, o que vai acontecer? Dei um “OK”, ele vai exibir uma mensagem de erro. Por quê?
+
+[02:25] Aqui só temos o campo “Origem”, mas ele está esperando o “Origem”, o “Destino”, o “Data de ida”, “Data de volta” e “Data de pesquisa”. Nós temos informações para serem exibidas aqui, validações para serem exibidas, mas não encontramos esses campos aqui no momento que fizemos validação. Então eu vou trazer o outro campo, “ 'destino' ”. Vou trazer o outro, que é “ 'data_ida' ”.
+
+[02:53] Só que pense comigo uma coisa: eu vou abrir aqui o meu formulário em “forms”, eu tenho aqui “forms passagem”, observe comigo. Eu tenho um, dois, três, quatro, cinco, seis, sete campos que eu quero exibir no meu formulário. Pense: se eu tivesse setenta campos para exibir, eu teria que trazer todos os campos aqui. Isso é um pouco complicado.
+
+[03:15] Pare para pensar que, quanto maior esses números de campos, mais trabalho eu vou ter para indicar todos os campos que eu tenho aqui. Por exemplo: eu trouxe esses três, se eu voltar na nossa aplicação e exibir aqui, recarregar, observe que eu já vou ter três, “origem”, “destino” e “data_ida”. Alguém já deve ter passado por esse problema e pensou: “bom, vamos criar uma forma de conseguirmos trazer todos os campos!” E existe essa forma, que eu vou mostrar agora.
+
+[03:39] Então, se quisermos trazer um determinado campo, podemos trazer assim. Se eu quiser trazer todos os campos entre aspas simples, eu vou colocar a propriedade “ '__ all__' ”. Salvando, voltando lá na nossa aplicação e atualizando. Agora sim, nós temos todos os nossos campos. Legal!
+
+[03:55] Maravilha, temos todos os campos aqui! Só que o “Data ida” e o “Data volta”, as “labels”, estão com nomes estranhos. Olhe só, “Origem”, “Destino”, “Data ida”, “Data volta”, “Data pesquisa”, “Classe viagem”. Não é “Classe da viagem”.
+
+[04:10] Aqui, o pior “informacoes”, porque está o nome que demos lá no nosso modelo, na hora que criamos o nosso modelo, “informacoes”. Nós não vamos usar acento aqui, só que nessa parte aqui, principalmente nessa “label” aqui seria importante se tivéssemos escrito “Informações”. Como alteramos as “labels” da nossa aplicação através de um modelo?
+
+[04:30] Nós vamos colocar a propriedade “label”, e através de “{ }” nós vamos indicar o nome do campo e a “label” que queremos exibir. Por exemplo: vamos visualizar aqui qual “label” queremos alterar, “Origem”, “Destino”, “Data ida” e “Data de ida”, não é, vai ficar melhor.
+
+[04:44] Então eu vou colocar aqui “{'Data_ida'}” e o nome da “label” que eu quero exibir para ele, “{'Data de ida, 'data_volta'}”, que é o nome do meu campo e a “label” que eu quero exibir para ele “ {'Data de volta'}”.
+
+[05:10] Salvando, voltando na nossa aplicação e atualizando. Nós temos “Data de ida”, “Data de volta”, “Data pesquisa” e “Informacoes”. Vamos alterar “Informacoes” também, porque queremos exibir escrito “Informações”. Salvando, voltando e atualizando. Ficou um erro, deixe-me ver o que eu fiz de errado aqui. Agora sim, agora deu certo. Carregando. Temos aqui “Informações”.
+
+[05:47] “Classe viagem” pode ser “Classe da viagem”, vai ficar melhor. Então vamos alterar também! Vou colocar uma vírgula aqui do lado e vou escrever “ 'classe_viagem' : 'Classe do vôo' ”. Atualizando. Agora sim, “Classe do vôo”.
+
+[06:19] Maravilha! Temos algo parecido com o que tínhamos antes, com as “labels” legais. Só que, outro ponto: “Data de ida” e “Data de volta”, não estamos usando o “DatePicker”. Precisamos utilizar o “DatePicker” aqui também. Como utilizamos o “DatePicker” aqui?
+
+[06:34] Podemos fazer da seguinte forma: eu vou colocar aqui que vamos utilizar “widgets = {'data_ida'}” e nós vamos utilizar também no “ 'data_volta' “. No “data_ida” queremos utilizar o “:DatePicker(),” e no “data_volta” vamos utilizar o “:DatePicker” também, para esses dois.
+
+[07:02] Atualizando a nossa aplicação. “Origem”, “Destino”, “Data de ida”. Legal, está aparecendo aqui! “Data de volta” está aparecendo aqui. Chegamos na “Data pesquisa”... “Data da Pesquisa”, precisamos alterar a “label” também.
+
+[07:16] E acontece um ponto interessante, olhe só: na data de pesquisa nós queremos alterar a “label”, nós queremos colocar um valor inicial, queremos desabilitar essa propriedade. Então quando queremos de fato alterar muitas informações, muitos campos em relação à mesma parte do nosso código. O que podemos fazer?
+
+[07:39] Vou selecionar todo ele aqui, vou colocá-lo aqui em cima. Então, na data da Pesquisa, nós vamos fazer uma manipulação dela de forma diferente. Ela vai estar antes dos nossos outros campos. Vou salvar. Se voltamos nessa aplicação e atualizamos, observe que temos aqui o “Data da pesquisa” não conseguimos alterar.
+
+[07:59] “Data da ida”, dia 04, “Data de volta”, 11. Vou colocar aqui um formulário válido. “São Paulo”, eu quero ir para o “Rio de Janeiro”. “Informações”, eu vou deixar sem nada. Vou dar um “OK” e ele nos exibe as informações.
+
+[08:17] Será que as nossas validações estão funcionando? As validações estão aqui embaixo, vamos colocar origem e destino iguais. “São Paulo”, “São Paulo”, “Origem e destino não podem ser iguais”. Maravilha! Vamos voltar então, para o “Rio de Janeiro”. Eu vou colocar uma data menor do que a data de hoje, vou colocar dia 03.
+
+[08:38] Quando eu clicar em “OK”, “Data de ida não pode ser menor que hoje”. Legal! Eu vou colocar então a data no dia 04 e quero voltar no dia 01. Nossa, maior bagunça! Eu vou colocar, “Data de volta não pode ser menor que a data de ida”. Maravilha!
+
+[08:52] Nós temos o comportamento que queríamos na nossa aplicação. Está realizando aqui as nossas validações. Se colocamos conteúdo e valores válidos, conseguimos visualizar.
+
+[09:02] O que vamos fazer na sequência? Na sequência nós vamos criar um formulário para a pessoa e vamos exibir a propriedade do campo “Email” neste formulário aqui embaixo, assim como tínhamos anteriormente, só que agora vinculando de um modelo.
+
 #### Formulários
+
+[00:00] Agora que sabemos trabalhar um pouco melhor com o “ModelForms”, eu quero criar um formulário de pessoas. O que acontece é que no nosso modelo de pessoa temos o nome e o e-mail, só que eu não quero exibir no formulário o nome. Eu quero exibir apenas o e-mail, para visualizarmos na nossa aplicação, assim como tínhamos antes. Legal!
+
+[00:18] Então, o que eu vou fazer? Eu vou criar aqui uma classe igual a que fizemos, uma classe que eu vou chamar de “PessoaForms”. Essa “PessoaForms” vai ser do tipo “forms.ModelForm” porque vamos ter um modelo vinculado. Eu vou criar uma “class” que eu vou chamar de “Meta”. Nós vamos passar algumas propriedades para essa “class Meta:”.
+
+[00:39] Essa “class Meta” de “Pessoa” nós vamos precisar indicar quem é o modelo. O modelo dela vai ser modelo de “Pessoa”. Além disso, precisamos passar quais são os campos que vamos utilizar. Temos duas opções: podemos falar que o campo que vamos utilizar é o campo “email”. Então eu poderia fazer assim: que os campos dessa classe, o campo “email” apenas. Eu vou passar só o campo “email”.
+
+[01:03] Ou, o que podemos fazer é pegarmos todos os campos, exceto o campo “nome”. Então eu não quero exibir o nome, eu quero exibir apenas o “email”. Eu posso fazer assim, ou posso fazer “exclude = [ 'nome']”, dessa forma ele vai trazer todos os campos, exceto o “nome”.
+
+[01:20] Qual é a diferença do “fields”? Quando eu coloco “fields”, eu estou especificando quais são os campos que eu quero trazer. Ele não vai me trazer todos. Quando eu uso o “exclude”, ele vai trazer todos, exceto esse campo que eu marquei.
+
+[01:31] Criamos aqui o “PessoaForms” e indicamos que vamos ter o e-mail nele. O que eu quero fazer agora é: lá no nosso arquivo “views.py” eu vou indicar que eu também, além do “PassagemForms”, eu vou utilizar também o “PessoaForms”. Aqui eu vou colocar o “pessoa_form = PessoaForms()”.
+
+[02:04] Então na nossa “index” vamos ter além do “form”, que é o formulário de pessoa, vamos ter um formulário agora para manter as informações de pessoa, que eu vou chamar de “pessoa_form”. Então eu vou colocar uma vírgula aqui, vou chamar de “pessoa_form”, e ele vai ser do tipo “:pessoa_form”, e nós passamos por contexto.
+
+[02:27] Passamos dois formulários por contexto, o que precisamos fazer? Lá na nossa página, lá onde mantemos o nosso código HTML, nossos arquivos HTML, no “index.html”, o que eu quero fazer? Temos logo após esse “{% endfor %}” aqui eu quero exibir as informações de “pessoa form”, então eu vou colocar aqui “{{pessoa_form}}” para nós visualizarmos.
+
+[02:52] Lá na nossa aplicação, eu vou clicar aqui em “Passagem” só para visualizarmos. Eu não estou com o terminal rodando, deixe-me abrir meu terminal, teclas “Command + J” aqui. Estou na “venv”. Vamos abrir aqui o nosso terminal, “pyton manage.py runserver”.
+
+[03:13] Agora sim, rodando nosso servidor. Temos aqui todas as informações e temos aqui embaixo o “Email”. Ficou legal! Aparentemente está funcionando, só que ele não está com o visual legal, não ficou com visual bonito igual tínhamos nos nossos outros campos também.
+
+[03:28] Então, o que podemos fazer? Podemos pegar a mesma propriedade que temos aqui em cima. Para cada campo visível, eu vou copiar todas essas informações aqui, até essa nossa “div” para passar do “form-control”. Vou selecionar aqui, vou colocar aqui, e não vai ser mais do nosso “form”, vai ser do “pessoa_form”. Vou salvar essas informações.
+
+[03:52] Voltando aqui e atualizando. Deu um erro porque eu esqueci do “end block”, nós copiamos o código aqui do “for”, e não colocamos o “endblock”, vou copiar aqui o “endblock” também. Teclas “Ctrl + C”. Embaixo dessa “div”, o “{% endfor %}”. Agora sim, atualizando temos aqui o nosso e-mail como tínhamos anteriormente, a “label” em cima e as informações embaixo.
+
+[04:17] Vou colocar aqui a origem como “São Paulo”, vou colocar aqui “Rio de Janeiro”. “Data de ida”, vamos ver, eu vou viajar no dia 04 e vou voltar no dia 06. “Econômica”. “Email”, vamos lá, “gui@alura.com”. Quando eu der um “OK” vai para as informações, só que não está mostrando o meu e-mail. Porque não está mostrando o meu e-mail aqui?
+
+[04:41] Olhe só que interessante: lá no nosso arquivo “views.py”, vou apertar as teclas “Command + J” para minimizar o nosso terminal. No nosso arquivo “views.py” nós trazemos as informações de “PessoaForms”, mas onde estão as informações de “PessoaForms”? Nós não trouxemos, precisamos trazer também.
+
+[05:01] Vou apertar as teclas “Ctrl + C” aqui, um “Ctrl + V”, vou chamar esse formulário de “pessoaform”. Ele vai ser relacionado a “PessoaForms”. Trazemos ele da requisição também e passamos por contexto essas duas informações.
+
+[05:16] Então eu vou passar essas duas informações por contexto, o nosso “forms”, que é relacionado a Passagem, e o “pessoaform”. Eu vou fazer a mesma coisa aqui embaixo também, dessa forma vamos conseguir visualizar o nosso campo “Email”. Então, vamos lá?
+
+[05:31] Deixe-me voltar, acho que é mais rápido. Voltando. “São Paulo” e “Rio de Janeiro”. Legal! Eu tenho aqui o guia. Quando eu dou um “OK”, recebo uma mensagem de erro aqui: “pessoa_form”, eu esqueci aqui do “ _ “, eu escrevi o “pessoa form” sem o “ _ “.
+
+[05:44] Agora sim, salvando e voltando na nossa aplicação. Voltei, tenho aqui as informações, dou um “OK”. Não conseguimos visualizar porque faltou irmos lá no nosso código HTML, no “minha_consulta” ele não vem mais de “form”, ele vem de “pessoa_form.email.value”.
+
+[06:11] Salvando, voltando lá no nosso código, eu vou submeter de novo esse formulário. Agora sim, temos o email “guia@alura.com”.Legal!
+
 #### Faça como eu fiz na aula
+
+Chegou a hora de você seguir todos os passos realizados por mim durante esta aula. Caso já tenha feito, excelente. Se ainda não, é importante que você implemente o que foi visto no vídeo para finalizar este curso.
+
 #### O formulário da Valentina
+
+Valentina estava desenvolvendo um site com uma tela de cadastro de produtos. Alguns campos são baseados em uma classe modelos, porém outros não.
+
+Além disso, Valentina precisa validar esses campos enviando mensagens de erro para as pessoas que irão utilizar o formulário.
+
+Sabendo disso, analise as afirmações abaixo e marque as verdadeiras:
+
+a) **Alternativa correta:** Para criar um formulário baseado num modelo, podemos utilizar a classe Meta para informar o nome do modelo, quais campos serão exibidos, alterar labels ou personalizar os widgets por exemplo.
+- _Certo! Quando queremos configurar labels ou widgets de algusn campos, podemos utilizar a classe Meta_
+
+b) **Alternativa correta:** Quando a classe Meta é criada, não podemos editar nenhum campo fora desta classe.
+
+c) **Alternativa correta:** Quando optamos por validações utilizando o método clean, para que de fato essas validações sejam executadas, precisamos verificar se o formulário é válido com o seguinte código no arquivo views.py:
+- _if form.is_valid(): Certo! Com esse código, as validações do método clean serão executadas._
+
 #### O que aprendemos?
+
+##### Nesta aula:
+- Iniciamos a aplicação criando o app de passagens;
+- Criamos um formulário utilizando o Django forms;
+- Melhoramos o visual do formulário exibindo incluindo o bootstrap.
+
+##### Projeto final do curso
+Aqui você pode baixar o zip do projeto final do curso ou acessar os arquivos no [Github]('https://github.com/alura-cursos/django_forms_curso/tree/aula_5)'!
+
 #### Conclusão
+
+[00:00] Se você chegou até aqui, parabéns! Você está finalizando mais um treinamento aqui da Alura.
+
+[00:05] Neste curso nós começamos gerando um formulário que não estava lá tão bonito, e depois ele foi melhorando, foi ficando com uma aparência melhor.
+
+[00:12] Depois fomos inserindo validações para auxiliarmos a pessoa que vai mexer na nossa aplicação, que vai preencher o nosso formulário, incluindo ali mensagens da validação.
+
+[00:22] Depois criamos um modelo e vinculamos, criamos um formulário a partir de um modelo. Isso ficou bem legal.
+
+[00:29] Deixamos o nosso código com as principais convenções do Django, não repetindo código. Seguimos as boas práticas de programação e deixamos a nossa aplicação bem legal.
+
+[00:40] Eu espero que você tenha gostado deste treinamento, espero que você tenha aproveitado bastante cada informação passada e que você aprofunde ainda mais seus conhecimentos neste incrível framework, que é o Django.
+
+[00:52] Legal! Não se esqueça de dar a nota desse curso e falar como foi a sua experiência, essa informação é muito importante para nós aqui da Alura. Nos vemos em um próximo curso. Tchau, tchau!
