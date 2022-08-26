@@ -781,13 +781,349 @@ Na próxima aula
 Vamos aprender como incluir validações no formulário de duas formas diferentes!
 
 ### 4. Validações
-#### Clean_field
+#### [Clean_field]('https://docs.djangoproject.com/en/4.0/ref/forms/validation/')
+
+A DJANGO possui um forma muito fácil de validar formulários.
+
+1. Em forms.py devemos:
+
+    class PassagemForms(forms.Form):
+        ...
+        def clean_origem(self):
+            origem = self.cleaned_data['data'] # retorna o erro
+            origem = self.cleande_data.get('origem')
+            if any(char.isdigit() for char in origem):
+                raise forms.ValidationError('Origem inválida: Não inclua número neste campo!')
+            else:
+                return origem
+
+1. Em views.py:
+
+    def revisao_consulta(request):
+        if request.method == 'POST':
+            ...
+            if form.is_valid():
+                contexto = {'form':form}
+                return render(request, 'minha_consulta.html', contexto)
+            else:
+                print('Form inválido)
+                contexto = {'form':form}
+                return render(request, 'index.html',contexto)
+
+
+---
+
+[00:00] Um trabalho muito comum quando utilizamos formulário, é validar os campos. O que acontece aqui?
+
+[00:05] Observe que eu preenchi todos os campos aqui, aparentemente eles estão corretos, porém na hora de escrever “São Paulo” eu esbarrei na letra “0”, ao invés de colocar a letra “o”. Quando eu submeto este formulário, eu dou aqui um “OK”, aparece aqui o “São Paul0” com o “0”, e não a letra “o”.
+
+[00:21] O que eu queria fazer? Eu queria validar esse campo, eu queria não permitir que dígitos numéricos fossem permitidos aqui no campo “Origem” e que ele exibisse uma mensagem de erro para facilitar a pessoa que está mexendo no sistema. Então ele fala: “olhe, não inclua dígitos nesse campo”, por exemplo. Vamos fazer isso?
+
+[00:39] O Django fornece duas maneiras de validarmos os campos, neste vídeo eu quero mostrar uma delas. A primeira coisa que vamos fazer vai ser acessar o nosso arquivo “forms.py”. Nesse nosso arquivo, observe que eu tenho aqui a minha classe “PassagemForms”.
+
+[00:55] Ainda nesta classe, eu vou clicar aqui, vou apertar a tecla “Enter”. Eu ainda estou nessa classe. Perceba que eu tenho aqui um “tab”, ou quatro espaços. Eu vou criar um método para validar, para saber se eu tenho caracteres numéricos no campo de origem.
+
+[01:10] Então eu vou criar aqui uma função “def”, essa função eu preciso nomeá-la de “clean”, “clean_” e o nome do campo que eu quero validar. Eu quero validar o campo “Origem”, então eu vou colocar aqui “clean_origem”. Como argumento, sempre quando acessamos um formulário, nós estamos instanciando essa classe “PassagemForms”.
+
+[01:36] Então, o que eu vou fazer? Sempre quando eu quiser validar esse “Origem”, eu quero passar a instância que estiver sendo exibida lá, então eu vou passar aqui a palavra “self”. O que nós precisamos fazer agora é buscarmos o valor que está no campo de “Origem” para sabermos, para conseguirmos validar.
+
+[01:53] Então eu vou armazenar essa informação dentro dessa variável “Origem”. Como eu consigo recuperar para validar esse campo de “Origem”? O Django fornece duas formas de conseguirmos recuperar esse valor. A primeira eu vou utilizar a instancia que eu estou, “self”, e temos uma propriedade chamada “clean data”.
+
+[02:15] Se eu usar apenas o “clean data” e retornar o campo de “Origem” utilizando “[ ]” aqui, o que vai acontecer? Caso esse meu campo esteja vazio, esteja em branco, o Django vai retornar um “key error” para mim, e não é isso o que eu quero. Se o campo estiver em branco, eu quero receber como retorno um “none”, por exemplo, um campo vazio.
+
+[02:38] Então, o que vamos fazer? No lugar de usar o “[ ]”, vamos utilizar o “( )” e vamos utilizar aqui na frente “cleaned_data.get”. Está bom, qual é a diferença desse aqui para o primeiro que eu tinha mostrado? A diferença é que esse, caso o campo dele esteja em branco, ele vai nos retornar um “none”, e é o que queremos. Então vamos utilizar o “cleaned_data.get”, e vamos utilizar “( )” o nome do campo que queremos validar.
+
+[03:12] Criei aqui o meu campo. O que eu quero fazer agora é validar, eu quero de fato saber se esse campo tem ou não algum carácter numérico. Então vamos fazer isso!
+
+[03:23] Vou criar aqui um “if”. Se algum carácter for numérico, eu vou colocar aqui “any”. Aqui eu vou buscar “char.isdigit()”. Se alguns desses dígitos for numérico, para cada letra dentro de “Origem” se algum deles for numérico eu quero exibir uma mensagem de erro. Então eu vou colocar aqui um “raise forms.ValidationError()” e aqui eu vou passar a minha mensagem de erro, eu vou passar “Origem inválida: Não inclua números”, algo desse tipo.
+
+[04:14] Passei aqui a mensagem de erro. Caso não tenha nenhum dígito numérico, o que eu quero fazer? Eu vou colocar aqui um “else”, eu quero retornar, “return origem”, eu quero dizer, “Origem” está correto, nós podemos contar que não tem nenhum carácter numérico nesse campo.
+
+[04:37] Salvei o meu “forms”. Agora, o que eu tenho que fazer? Observe que aqui na minha “view” eu tenho aqui. Eu verifico se é uma requisição “POST”, pego o formulário dessa requisição, depois pego ele por contexto e passo para a minha consulta.
+
+[04:52] Em nenhum momento nós estamos verificando se o formulário é válido, e para provar isso olhe só: eu tenho aqui o meu formulário, se eu der aqui um “OK”, eu vou para a página de “minha_consulta”, onde os dados já estariam validados, e não é isso o que quero. Eu quero dar um “OK” e continuar nessa página, exibindo a mensagem de erro. Então, o que eu preciso fazer?
+
+[05:12] Eu preciso verificar, eu peguei o formulário da requisição e já estou enviando ele por contexto. Não! Antes de enviar por contexto, eu quero verificar se esse formulário é válido. E como eu faço isso?
+
+[05:23] Vamos perguntar se o “if form.is_valid”. Se ele for válido, se for um formulário válido, eu quero pegá-lo por contexto e mandá-lo aqui para a página de “minha_consulta”. Caso não seja, caso esse formulário não seja válido, eu quero fazer alguma coisa.
+
+[05:46] Eu vou exibir aqui um print, por exemplo, só para visualizarmos no nosso terminal, “print(‘Form inválido’)”. Eu vou fazer o seguinte: eu vou pegar o conteúdo de contexto desse nosso formulário e vou retornar para a página, não mais de “minha_consulta”, mas para a página de “index”.
+
+[06:08] Então, o que vai acontecer? Se o meu formulário for válido, eu vou para a página de “minha_consulta”. Se ele não for válido, eu vou pegar todo conteúdo que está neste formulário, passando ele por contexto, e vou mandá-lo de novo para a minha página de “index”. Então eu não vou conseguir visualizar a página de “minha_consulta” caso o meu formulário não seja válido.
+
+[06:32] Estou aqui com “São Paul0” com “0” e vou dar um “OK”. Continuamos aqui em “São Paul0”, vamos ver no nosso terminal. Abrindo o nosso terminal, temos aqui um “Form inválido”.
+
+[06:41] Legal, conseguimos um resultado que queríamos! Só que se eu colocar aqui, se eu tirar esse “0” e colocar o “o”, “São Paulo”; eu vou para o “Rio de Janeiro”. Dou um “OK”. Vamos visualizar a página de “minha_consulta”. Isso ficou legal, só que faltou um ponto: não conseguimos visualizar a mensagem de erro que criamos. É isso o que vamos fazer no próximo vídeo!
+
 #### Exibindo mensagem de erro
+
+Para exibir as mensagens de erro de validação de formulários devemos:
+
+1. No index.html:
+
+        <form>
+            ...
+            {{ field.errors }}
+        </form>
+
+    ou
+
+        <form> #validando e formatando o html
+            ...
+            {% for error in field.errors %}
+            <section class="alert alert-danger" role="alert">
+                {{ field.errors }}
+            </section>
+
+        </form>
+
+---
+
+[00:00] Um trabalho muito comum quando utilizamos formulário, é validar os campos. O que acontece aqui?
+
+[00:05] Observe que eu preenchi todos os campos aqui, aparentemente eles estão corretos, porém na hora de escrever “São Paulo” eu esbarrei na letra “0”, ao invés de colocar a letra “o”. Quando eu submeto este formulário, eu dou aqui um “OK”, aparece aqui o “São Paul0” com o “0”, e não a letra “o”.
+
+[00:21] O que eu queria fazer? Eu queria validar esse campo, eu queria não permitir que dígitos numéricos fossem permitidos aqui no campo “Origem” e que ele exibisse uma mensagem de erro para facilitar a pessoa que está mexendo no sistema. Então ele fala: “olhe, não inclua dígitos nesse campo”, por exemplo. Vamos fazer isso?
+
+[00:39] O Django fornece duas maneiras de validarmos os campos, neste vídeo eu quero mostrar uma delas. A primeira coisa que vamos fazer vai ser acessar o nosso arquivo “forms.py”. Nesse nosso arquivo, observe que eu tenho aqui a minha classe “PassagemForms”.
+
+[00:55] Ainda nesta classe, eu vou clicar aqui, vou apertar a tecla “Enter”. Eu ainda estou nessa classe. Perceba que eu tenho aqui um “tab”, ou quatro espaços. Eu vou criar um método para validar, para saber se eu tenho caracteres numéricos no campo de origem.
+
+[01:10] Então eu vou criar aqui uma função “def”, essa função eu preciso nomeá-la de “clean”, “clean_” e o nome do campo que eu quero validar. Eu quero validar o campo “Origem”, então eu vou colocar aqui “clean_origem”. Como argumento, sempre quando acessamos um formulário, nós estamos instanciando essa classe “PassagemForms”.
+
+[01:36] Então, o que eu vou fazer? Sempre quando eu quiser validar esse “Origem”, eu quero passar a instância que estiver sendo exibida lá, então eu vou passar aqui a palavra “self”. O que nós precisamos fazer agora é buscarmos o valor que está no campo de “Origem” para sabermos, para conseguirmos validar.
+
+[01:53] Então eu vou armazenar essa informação dentro dessa variável “Origem”. Como eu consigo recuperar para validar esse campo de “Origem”? O Django fornece duas formas de conseguirmos recuperar esse valor. A primeira eu vou utilizar a instancia que eu estou, “self”, e temos uma propriedade chamada “clean data”.
+
+[02:15] Se eu usar apenas o “clean data” e retornar o campo de “Origem” utilizando “[ ]” aqui, o que vai acontecer? Caso esse meu campo esteja vazio, esteja em branco, o Django vai retornar um “key error” para mim, e não é isso o que eu quero. Se o campo estiver em branco, eu quero receber como retorno um “none”, por exemplo, um campo vazio.
+
+[02:38] Então, o que vamos fazer? No lugar de usar o “[ ]”, vamos utilizar o “( )” e vamos utilizar aqui na frente “cleaned_data.get”. Está bom, qual é a diferença desse aqui para o primeiro que eu tinha mostrado? A diferença é que esse, caso o campo dele esteja em branco, ele vai nos retornar um “none”, e é o que queremos. Então vamos utilizar o “cleaned_data.get”, e vamos utilizar “( )” o nome do campo que queremos validar.
+
+[03:12] Criei aqui o meu campo. O que eu quero fazer agora é validar, eu quero de fato saber se esse campo tem ou não algum carácter numérico. Então vamos fazer isso!
+
+[03:23] Vou criar aqui um “if”. Se algum carácter for numérico, eu vou colocar aqui “any”. Aqui eu vou buscar “char.isdigit()”. Se alguns desses dígitos for numérico, para cada letra dentro de “Origem” se algum deles for numérico eu quero exibir uma mensagem de erro. Então eu vou colocar aqui um “raise forms.ValidationError()” e aqui eu vou passar a minha mensagem de erro, eu vou passar “Origem inválida: Não inclua números”, algo desse tipo.
+
+[04:14] Passei aqui a mensagem de erro. Caso não tenha nenhum dígito numérico, o que eu quero fazer? Eu vou colocar aqui um “else”, eu quero retornar, “return origem”, eu quero dizer, “Origem” está correto, nós podemos contar que não tem nenhum carácter numérico nesse campo.
+
+[04:37] Salvei o meu “forms”. Agora, o que eu tenho que fazer? Observe que aqui na minha “view” eu tenho aqui. Eu verifico se é uma requisição “POST”, pego o formulário dessa requisição, depois pego ele por contexto e passo para a minha consulta.
+
+[04:52] Em nenhum momento nós estamos verificando se o formulário é válido, e para provar isso olhe só: eu tenho aqui o meu formulário, se eu der aqui um “OK”, eu vou para a página de “minha_consulta”, onde os dados já estariam validados, e não é isso o que quero. Eu quero dar um “OK” e continuar nessa página, exibindo a mensagem de erro. Então, o que eu preciso fazer?
+
+[05:12] Eu preciso verificar, eu peguei o formulário da requisição e já estou enviando ele por contexto. Não! Antes de enviar por contexto, eu quero verificar se esse formulário é válido. E como eu faço isso?
+
+[05:23] Vamos perguntar se o “if form.is_valid”. Se ele for válido, se for um formulário válido, eu quero pegá-lo por contexto e mandá-lo aqui para a página de “minha_consulta”. Caso não seja, caso esse formulário não seja válido, eu quero fazer alguma coisa.
+
+[05:46] Eu vou exibir aqui um print, por exemplo, só para visualizarmos no nosso terminal, “print(‘Form inválido’)”. Eu vou fazer o seguinte: eu vou pegar o conteúdo de contexto desse nosso formulário e vou retornar para a página, não mais de “minha_consulta”, mas para a página de “index”.
+
+[06:08] Então, o que vai acontecer? Se o meu formulário for válido, eu vou para a página de “minha_consulta”. Se ele não for válido, eu vou pegar todo conteúdo que está neste formulário, passando ele por contexto, e vou mandá-lo de novo para a minha página de “index”. Então eu não vou conseguir visualizar a página de “minha_consulta” caso o meu formulário não seja válido.
+
+[06:32] Estou aqui com “São Paul0” com “0” e vou dar um “OK”. Continuamos aqui em “São Paul0”, vamos ver no nosso terminal. Abrindo o nosso terminal, temos aqui um “Form inválido”.
+
+[06:41] Legal, conseguimos um resultado que queríamos! Só que se eu colocar aqui, se eu tirar esse “0” e colocar o “o”, “São Paulo”; eu vou para o “Rio de Janeiro”. Dou um “OK”. Vamos visualizar a página de “minha_consulta”. Isso ficou legal, só que faltou um ponto: não conseguimos visualizar a mensagem de erro que criamos. É isso o que vamos fazer no próximo vídeo!
+
 #### Clean
+
+O método clean faz a validação do formulário conforme o tipo de campo. É necessário fazer a seguinte validação:
+
+1. Em forms.py:
+
+            class PassagemForm():
+            ...
+            def clean(self):
+                origem = self.cleaned_data.get('origem')
+                destino = self.cleaned_data.get('destino')
+                if origem == destino:
+                    self.add_error('destino','Origem e destino não podem ser iguais')
+                return self.cleaned_data
+
+    ou
+
+1. Podemos criar um arquivo para validação dos formulários, Criamos o arquivo validation.py e adicionamos as funções:
+
+        def origem_destino_iguais(origem, destino, lista_de_erros):
+            if origem == destino:
+                lista_de_erros['destino'] = 'Origem e destino não podem ser iguais'
+    
+        def campo_texto(valor_campo, nome_campo, lista_de_erros):
+            if any(char.isdigit() for char in valor_campo):
+                lista_de_erros[nome_campo] = 'Não inclua números neste campo'
+        
+1. Em forms.py, devemos utilizar apenas o método clean:
+
+        def clean(self):
+            origem = self.cleaned_data.get('origem')
+            destino = self.cleaned_data.get('destino')
+            lista_de_erros = {}
+            campo_texto(origem, 'origem', lista_de_erros)
+            campo_texto(destino, 'destino', lista_de_erros)
+            origem_destino_iguais(origem, destino, lista_de_erros)
+            if lista_de_erros is not None:
+                for erro in lista_de_erros:
+                    mensagem_erro = lista_de_erros[erro]
+                    self.add_error(erro, mensagem_erro)
+            return self.cleaned_data
+
+---
+
+[00:00] Vimos uma forma de validarmos cada campo do nosso formulário através deste método “clean_” e o nome do campo que queremos validar. Eu vou mostrar agora uma outra forma que podemos validar todos os campos do nosso formulário em apenas um método, que vai ser o método “clean”.
+
+[00:14] Eu vou criá-lo aqui embaixo, “def”. Eu vou criar uma função que vou chamar só de “clean”, não vou mais especificar qual é o nome do campo que eu quero validar. Da mesma forma, nós vamos passar como um argumento a instância que tivermos na nossa página HTML.
+
+[00:32] Para começarmos, nós vamos recuperar os valores tanto de “origem” e “destino” e de todos os outros campos da mesma forma. Então eu vou dar um “Ctrl + C” aqui, trouxe “origem”. Eu vou dar “Ctrl + V”, “Ctrl + C”, e aqui “Ctrl + V”. Trouxe aqui o campo “destino”. O que eu quero fazer agora?
+
+[00:49] Eu quero incluir outras validações como, por exemplo, se “origem” e “destino” são iguais. E como eu vou fazer isso? Por exemplo: eu posso comparar aqui embaixo, se “origem == destino”. Se eles forem iguais, eu quero inserir uma mensagem de erro, eu quero enviar uma mensagem de erro. Como eu posso enviar essa mensagem de erro? Eu posso fazer da seguinte forma.
+
+[01:14] Se esses dois campos forem de fato iguais, eu vou enviar essa mensagem de uma forma diferente. Eu vou fazer assim: “self.add_error”, vou colocá-lo aqui e vou falar qual é o nome do campo que eu quero deixar com uma mensagem de erro. Eu vou deixar no campo “destino” e no segundo parâmetro eu vou passar qual é de fato a mensagem de erro.
+
+[01:44] Então eu vou falar que “origem” e “destino” não podem ser iguais. Vou salvar. Caso não tenhamos um erro, o que eu vou fazer? Eu vou retornar, vou colocar aqui um “return” nos objetos. A instância dessa minha classe “self.cleaned_data”, ou seja, eu vou retornar os valores validados, os valores verificados.
+
+[02:16] Então eu vou voltar para a minha aplicação, vou dar aqui um “OK”. Tem aqui “São Paulo”, “Rio de Janeiro”. Legal! Deixe-me voltar, vou colocar “São Paulo” e “São Paulo”. Quando eu vir aqui e apertar em “OK” aparece “Origem e destino não podem ser iguais”. Ficou legal, só que pare para pensar no seguinte: temos o campo de “clean_origem”, “clean_destino” e o campo “clean”. O que acontece?
+
+[02:46] Quando especificamos o “clean” para um determinado campo, ele sempre é chamado antes desse nosso método “clean”. Por exemplo: se eu colocar aqui no lugar de “São Paul0” um “0”, olhe só o que vai acontecer. Eu vou dar um “OK” e teremos aqui “Origem inválida”. Ele não fez ainda a verificação do “São Paul0” e do “São Paulo”, dos dois destinos iguais.
+
+[03:03] E se eu colocar aqui os dois destinos como “São Paul0” e “São Paul0”, olhe o que vai acontecer. Ele vai duplicar as minhas mensagens de erro. Esse comportamento está um pouco estranho, nós não queremos mensagens de erros duplicadas. Então, o que vamos fazer?
+
+[03:16] Vamos centralizar toda nossa verificação no método “clean”, essa é uma decisão que tomamos para esse projeto. Então, o que eu vou fazer? No lugar de manter cada verificação e cada validação, a lógica da nossa validação aqui, eu vou criar um outro arquivo para manter a lógica da nossa validação em uma outra pasta. Caso novas validações surjam, nós vamos colocando todas elas nesse arquivo de validação.
+
+[03:45] Por exemplo: eu posso criar esse arquivo aqui dentro de “Passagem”, eu vou chamar de “validation.py”, dentro desse “validation.py” eu quero verificar se “origem” e “destino” são iguais, por exemplo. Então, como eu vou fazer isso?
+
+[04:00] Aqui no “validation.py” eu vou criar uma função “def” e vou chamar de “origem_destino_iguais()”. O que eu vou fazer? Como argumento nós vamos fazer algo diferente. Observe que a medida que novas validações vão surgindo, que vamos inserindo, o que temos que fazer? Temos que colocar “self.add_error” e depois colocar o nome do campo que queremos que seja vinculado o erro e a mensagem do erro.
+
+[04:32] Eu posso criar uma lista de erros, por exemplo. Eu posso fazer assim: “lista_erros”, uma lista de erros. Dentro dessa minha lista de erros eu posso fazer assim, “lista_erros = {}”. O que vai acontecer? Nós vamos inserir cada erro que tivermos nessa lista de erro, depois nós varreremos essa lista de erro para exibir as mensagens de erro.
+
+[04:58] Então, o que eu vou fazer? Eu vou remover, esse “origem” e “destino” não podem ser iguais, vou apertar as teclas “Command + X”, vou vir aqui no meu “validation”, e essa nossa função de origem e destinos iguais. Nós vamos receber como parâmetro o campo de “origem”, e o campo de “destino”.
+
+[05:11] Então eu vou colocar aqui “origem”, “destino”. Vou receber também a “lista_de_erros”. Então se “origem” e “destino” são iguais, eu vou atribuir na lista de erros. Vou pegar aqui “lista_de_erros” e vou atribuir nessa minha lista de erros essa mensagem aqui de “destino”, o campo “Origem e destino não podem ser iguais”.
+
+[05:55] O que eu vou fazer? Lembra que eu preciso indicar qual é o campo que está recebendo a mensagem de erro? Para isso, eu vou colocar aqui na frente da nossa lista de erro via “[ ]”. O campo que eu tenho, eu vou colocar no campo “ 'destino' “. Olhe só que legal vai ficar! Então temos uma lista de erro onde especificamos o campo que vamos receber o erro e depois colocamos esse erro lá dentro. Legal!
+
+[06:19] Uma outra validação que podemos colocar aqui também é para saber se temos algum carácter numérico. Então eu vou pegar esse aqui, vou passar aqui para o lado e vou criar uma outra função. Já que todas as nossas validações ficaram nesse campo, eu vou criar uma função que vou chamar aqui de “campo_tem_algum_numero”. E o que eu vou receber como parâmetro?
+
+[06:53] Observe que verificamos se o campo “destino” e o campo “origem” tinham algum valor, então eu posso receber outros campos, então eu vou passar algumas informações. Por exemplo: o valor do campo que eu quero verificar qual o conteúdo desse campo. Eu vou passar o nome do campo “nome_campo” que eu quero verificar e vou passar também a “lista_de_erros”. O que eu vou fazer aqui? Eu vou verificar se tivermos algum carácter, algum dígito numérico no valor do campo.
+
+[07:29] No lugar desse “raise forms”, o que eu vou fazer? Aqui eu vou colocar uma validação, vou colocar na nossa lista de erros. Qual vai ser o nome do campo aqui? Qual é o campo que eu vou utilizar? Depende, eu vou passá-lo por parâmetro, nome do campo via “string” e posso falar, por exemplo, “Não inclua números neste campo”. Vou salvar.
+
+[08:06] Aqui eu fiz duas validações. Voltando aqui no nosso “forms”, o que eu vou fazer? Temos o campo “origem”, temos o campo “destino” e fizemos outra validação que é “origem” e “destino =”, nós pegamos para esses dois.
+
+[08:19] Eu vou remover esses dois “clean” porque nós vamos centralizar a nossa verificação apenas no método “clean”, então temos “origem”, “destino” e temos a “lista_de_erros”. O que eu preciso fazer agora são alguns passos.
+
+[08:29] Eu preciso verificar como eu invoco os erros que estão lá no meu “validation.py”. A primeira coisa que eu preciso fazer é trazer esses métodos que eu criei no “validation.py” aqui para dentro, então eu vou fazer assim: “from passagens.validation import”. Eu quero importar todos os métodos de validação que eu tenho lá, então eu vou colocar aqui um “*”. Dessa forma eu trago esses dois métodos de validação.
+
+[09:00] O que eu vou fazer? Aqui vai ser algo muito legal, muito interessante, para eu conseguir validar se tem algum número no campo de “origem”, por exemplo. Eu posso trazer aqui “campo_tem_algum_numero”, ele já me trouxe. Entre parênteses eu vou passar qual é o campo que quero validar.
+
+[09:15] Eu quero validar o campo “origem”. Ele dá qual é o nome do campo que eu estou usando, eu estou usando o campo “origem”. Para finalizar, eu vou passar a “lista_de_erro”, eu vou colocar “lista_de_erros” e vou alterar aqui também para ficar mais fácil, “lista_de_erros”. Legal!
+
+[09:40] Fiz isso para saber se tem algum número no “origem”. Eu vou fazer agora para ver se tem algum número também no “destino”. Observe que antes eu tinha a função inteira, o método inteiro duplicado. Agora não, eu tenho uma linha para ter o mesmo resultado. Vou colocar aqui, o nome do campo é “ 'destino' ” e vou passar também a “lista_de_erro”.
+
+[10:00] E outra coisa: eu quero saber também se a origem e o destino são iguais, então eu vou passar assim “origem_destino_iguais” e vou passar como parâmetro aqui o “origem”, vai ser “origem” mesmo. “, destino, lista_de_erros”. Outra coisa que eu posso fazer para deixar a nossa função ainda mais clara e muito melhor de entender é colocar “docstrings” nas nossas funções.
+
+[10:25] Por exemplo essa função, o que estamos fazendo? Eu vou colocar aspas e vou fazer assim: “ “““Verifica se origem e destino são iguais””” ”. Que interessante! Quando eu passo o mouse em cima, ele já me fala aqui embaixo se “origem” e “destino” são iguais. “ ””“Verifica se origem e destino são iguais””” ”.
+
+[10:54] O que eu estou fazendo nessa função aqui? Nesse método que criamos de validação, eu estou vendo se “ “““Verifica se possui algum dígito numérico”““ “, na nossa função quando passamos o mouse em cima, “ “““Verifique se possui algum dígito numérico”““ “, e aqui “ “““Verifique se origem e destino são iguais”““ “. Legal!
+
+[11:26] Fiz as três verificações, tanto do “origem” como do “destino”, para ver se tem campos numéricos ou se tem dígitos numéricos, ou se o “origem” e o “destino” são iguais.
+
+[11:37] O que eu quero fazer agora é verificar se eu tenho erro. Então eu vou perguntar se a minha “lista_de_erros” não for vazia, ou seja, se ela tiver algum erro, então eu vou colocar “is not None:”. Se ela não for vazia, significa que eu tenho erros.
+
+[11:54] Então, o que eu preciso fazer? Para cada erro dentro da minha “lista_de_erros”, eu quero pegar a mensagem que eu tenho de cada erro. Então eu vou fazer assim: “mensagem”, eu vou criar uma variável, por exemplo: “mensagem_erro = “ e eu vou pegar a lista de mensagens que eu tenho, o conteúdo que eu tenho dos erros dessa mensagem.
+
+[12:20] Então, “lista_de_erros” e vou pegar aqui o “(erro)” e além disso, eu vou atribuir o erro em cada um desses campos. Então, “self.add.error”. Da mesma forma que tínhamos feito anteriormente, eu vou passar aqui o “erro”, que vai ser o nome do campo, a mensagem de erro, que vai ser a mensagem de erro que criamos ali. Dessa forma conseguimos validar os nossos campos. Vamos verificar?
+
+[12:51] Então, o que nós fizemos? Vimos se essa lista que temos é vazia. Se ela não for vazia, nós vamos pegar para cada erro dentro dessa lista de erros que criamos aqui no nosso “validation”, aqui tem a “lista_de_erros”, aqui ela não está vazia.
+
+[13:02] Então caso esses erros aconteçam de fato, eu vou pegar a mensagem de erro de cada lista e vou adicionar pegando o erro, porque eu peguei cada um dessa lista de erro, então tem um erro em “destino”. Ele vai pegar o “destino” e vai exibir a mensagem de erro. Legal!
+
+[13:19] Salvei. Voltando na nossa aplicação, eu vou colocar “São Paul0” e “Rio de Janeiro”, e fazemos o teste dessas validações, dei um “OK”. “Não inclua números neste campo”. Legal! Eu vou incluir número neste campo, “Rio de Janeir0”, vou colocar um “0” também. Dei um “OK”.
+
+[13:37] “Não inclua número neste campo” e “Não inclua número neste campo”. Vou deixar “São Paulo” e aqui embaixo também “São Paulo”. Assim também, os dois iguais. Quando eu dou um “OK”, observe que a nossa mensagem não está mais duplicada. Ele fala: “Não inclua número neste campo”, “Origem e destino são iguais”. Opa! Então eu vou tirar.
+
+[13:54] Eu vou colocar aqui São Paulo, Rio de Janeiro, só que em cima eu também vou colocar Rio de Janeiro, vamos ver o que vai acontecer, tirei o número, “origem” e “destino” não podem ser iguais”. Se eu coloco “São Paulo” e dou um “OK”, nós conseguimos passar. Submeteu o formulário certo.
+
 #### Validando datas
+
+[00:00] Conseguimos submeter o nosso formulário aqui, por exemplo: “São Paulo” e “Rio de Janeiro”. Se eu dou um “OK”, temos aqui o nosso formulário certo. “Sua origem é: São Paulo”, “Seu destino é: Rio de Janeiro”. Vamos fazer agora algumas validações em relação à data.
+
+[00:12] Observe aqui que, por exemplo, não faz muito sentido eu colocar aqui a minha data de ida dia 10, e minha data de volta dia 5, não faz sentido. Como eu vou viajar no dia 10/03 e voltar no dia 05/03/2020? Vou voltar no tempo, entrar no avião e voltar no tempo. Não existe isso, precisamos validar isso também. É o que nós vamos fazer!
+
+[00:32] O que nós vamos verificar? Se a data de ida for maior do que a data de volta, nós vamos falar uma mensagem: “Data de ida não pode ser maior do que data de volta”. Vamos fazer isso?
+
+[00:42] Lá no nosso arquivo de validação “.py” eu vou criar uma função. Essa função eu vou chamar de “data_ida_maior_que_data_volta” e vou receber como argumento a “data_ida, data_volta, lista_de_erros”. Recebi esses três como parâmetro. Coloco aqui a minha “docstring” para ficar legal, “ ““Verifica se data de ida é maior que data de volta”““ “. Vamos criar agora essa nossa função.
+
+[01:34] Então eu vou perguntar se “data_ida > data_volta”. O que eu quero fazer? Eu quero incluir uma mensagem de erro na nossa lista de erro, então na “lista_de_erros” eu vou ter uma mensagem que eu vou colocar esse “data_ida”, vou colocar ele aqui na data de ida. Na data de ida? É, pode ser na data de ida, só que essa data de ida aqui precisa ser uma “string”.
+
+[02:09] Então eu vou colocar aqui a “string”, porque estamos falando do nome do campo que queremos inserir o erro. Aqui, colocando “ = “ eu vou colocar a mensagem de erro, eu vou colocar “Data de ida não pode ser maior que data de volta”. Essa data de ida e data de volta, na verdade como estamos falando “A Data de volta está maior”, eu vou alterar aqui.
+
+[02:40] Eu vou colocar aqui “data_volta”, melhor. Salvei. Observe que interessante: eu criei uma função, criei essa função aqui. O que eu preciso fazer? Aqui no meu “forms” eu só vou chamar essa função. Então, duas coisas que eu tenho que fazer, trouxemos aqui o “origem” e o “destino”. Eu preciso também trazer a “data_ida” e a “data_volta”.
+
+[03:07] Então eu vou trazer aqui “data_ida” e nós vamos buscar nosso formulário que se chama “data_ida”. Aqui embaixo, “data_volta”, “data_volta”, os mesmos nomes que demos aqui criando o nosso “forms”, “data_ida” e “data_volta”.
+
+[03:29] O que eu tenho que fazer agora que eu tenho a data de ida e tenho a data de volta? É chamar aqui essa nossa verificação, “data_ida_maior_que_data_ volta”. Então quando colocamos aqui, repare que legal.
+
+[03:46] Para auxiliarmos, precisamos passar a data de ida como argumento, “data_ida”. Precisamos passar a “data_volta” e precisamos passar também “lista_de_erros”. E temos aqui, “Verifique se data de ida é maior que data de volta”. Salvei, validation.py e salvei também.
+
+[04:03] Voltando aqui, “São Paulo” e “Rio de Janeiro”. Não temos erros nessas verificações, só que minha data de ida é maior do que a data de volta. Vou dar um “OK” e nós temos aqui na data de volta: “Data ida não pode ser maior que data de volta”, ou, “Data de volta não pode ser menor”, podemos deixar assim também.
+
+[04:21] Então, “Data de volta não pode ser menor que data de ida”. Vou dar um “OK” de novo só para vermos a mensagem. “Data de volta não pode ser maior que data de ida”.
+
+[04:40] Outra coisa que podemos fazer em relação da data é, por exemplo: hoje é dia 04, eu não vou colocar erro nessa, eu vou voltar no dia 10. Legal! Estou indo no dia 04 e volto no dia 10, só que, se eu colocar que eu quero viajar no dia 03 (ontem), eu quero comprar uma passagem de ontem para voltar no dia 10. Nós temos algo muito interessante aqui agora.
+
+[05:00] Nós temos no nosso formulário, quando fizemos essa pesquisa, a data pesquisa, então podemos verificar se a data de ida for menor do que a data da pesquisa. Se for menor, podemos falar: “Não é possível comprar passagens nessa data” ou “ A data de ida não pode ser menor que a data de hoje”, porque aqui na data da pesquisa nós sempre pegamos a data de hoje.
+
+[05:21] Então vamos criar essa validação também para a nossa data. Nós vamos fazer algo muito parecido. Apareceu uma função que eu vou verificar se “data_ida_menor_data_de_hoje”, e como argumento nós vamos passar a “data_ida”. Nós vamos passar a “data_pesquisa”, que é a nossa data de hoje, porque já sabemos que foi garantida a nossa data de hoje. Vou passar aqui a “lista_de_erros”. Legal!
+
+[06:06] Como argumento, eu vou colocar aqui nossa “docstring”, eu vou fazer assim: “ “““Verifica se data de ida é menos que data de hoje”““ “ e nós vamos verificar: “if data_ida < data_pesquisa:”, se for menor do que a data da pesquisa, o que eu quero fazer?
+
+[06:39] Eu quero criar aqui a nossa lista de erros, eu quero adicionar na lista de erros no campo “data_ida” o seguinte erro: “Data de ida não pode ser menor que data de hoje”. Menor que hoje, será que dá? Acho que menor que hoje está legal.
+
+[07:13] O que eu vou fazer aqui? Tenho o data de ida, tenho o data de volta e vou buscar também o data da pesquisa, “data_pesquisa”. Então eu apertei aqui as teclas “Ctrl + V” e vou chamar aqui “data_pesquisa = self.cleaned.data.get ('data_pesquisa')”. Nós vamos ver se está certo, “data_pesquisa”, e “data_pesquisa”. Legal!
+
+[07:51] Eu trouxe aqui o “data_pesquisa” e o que eu tenho que fazer agora é chamar essa função, “data_ida_menor_data_hoje”. Então, vamos lá! Eu vou passar a “data_ida”, que já temos porque já buscamos. É uma das vantagens de utilizar o nosso método “cleaned”. Agora podemos comparar os campos e conseguimos todas as informações do nosso formulário, para validarmos.
+
+[08:16] Passei a “data_ida”, vou passar o “data_pesquisa” e vou passar também a “lista_de_erros”. Salvei. Voltando na nossa aplicação, o que vamos fazer aqui? Eu quero viajar ontem para voltar no dia 10, não faz sentido. Eu vou colocar um “OK”. Deu um pequeno problema aqui, deixe-me ver.
+
+[08:42] Acho que eu escrevi algo errado, vou abrir aqui o meu terminal, linha 28. Opa! Aqui eu fiz errado mesmo, eu esqueci de passar a propriedade “data_pesquisa”, mas eu tenho a “data_pesquisa” ali. Deixe-me voltar aqui. Então vamos ver, “origem” e “destino”, “data_ida”, “data_volta” e “data_pesquisa”. É verdade, tinha um campo a mais ali.
+
+[09:20] Voltando aqui na nossa aplicação, vou dar um “OK”. Agora sim, “Data ida não pode ser menor que hoje”. Então estamos tentando comprar uma passagem, visualizar as passagens em conta, de ontem para voltar no dia 10, e não faz sentido. Então, dessa forma conseguimos validar também os nossos campos.
+
+[09:39] Observe que de verificação ficou simples criarmos. Nós temos um local só onde criamos todas as nossas lógicas da validação e no nosso “forms” recuperamos os valores e só falamos ao campo que tem algum numero passar os argumentos que precisam para aquela função. Depois varre uma lista de erro exibindo essas mensagens de erro.
+
+[10:02] Então essa é uma forma de conseguirmos validar os nossos campos, exibindo as mensagens de erro de forma legal aqui também com essa afirmação. Observe que se eu colocar, “São Paulo”, “São Paulo” também aqui, vamos ter todas essas mensagens de erro.
+
+[10:17] Olhe: “Não inclua números nesse campo”, ou deixar a data da volta menor, eu quero comprar uma viagem para ontem, para voltar antes de ontem, então ele já nos mostra todas essas validações.
+
+[10:27] E caso coloquemos os valores corretos, submeta o nosso formulário de forma correta, “Rio de Janeiro”, quero viajar hoje para voltar dia 10, todas as informações certas, e dou um “OK”; conseguimos submeter o nosso formulário.
+
 #### Faça como eu fiz na aula
+
+Chegou a hora de você seguir todos os passos realizados por mim durante esta aula. Caso já tenha feito, excelente. Se ainda não, é importante que você implemente o que foi visto no vídeo para poder continuar com a próxima aula, que tem como pré-requisito todo o código aqui escrito.
+
 #### Clean e Clean_
+
+Como vimos nesta aula, o Django fornece duas maneiras de adicionar regras de validação personalizadas a um formulário: criando um método chamado clean ou o método clean_<nome_do_campo>.
+
+Sabendo disso, analise as informações abaixo e selecione as verdadeiras:
+
+a) **Alternativa correta:** É possível validar utilizando o métodoclean_<nome_do_campo> e o clean no mesmo formulário.
+- _Certo! É possível validar alguns campos de forma individual e validar todos os campos em seguida._
+
+b) **Alternativa correta:** O método clean permite acessar e validar todos os campos no formulário.
+- _Certo! Quando queremos comparar 2 campos de um formulário por exemplo, utilizando o método clean._
+
+c) O método clean_<nome_do_campo> pode validar até 3 campos do formulário.
+
+d) **Alternativa correta:** O método clean_<nome_do_campo> sempre é executado antes do método clean.
+- _Certo! O método clean_<nome_do_campo> sempre será executado antes do método clean._
+
 #### O que aprendemos?
+
+##### Nesta aula:
+- Iniciamos a aplicação criando o app de passagens;
+- Criamos um formulário utilizando o Django forms;
+- Melhoramos o visual do formulário exibindo incluindo o bootstrap.
+
+##### Na próxima aula
+Vamos aprender como recuperar e exibir os dados do formulário em outra página e incluir um calendário nas datas de ida e volta!
+
 ### 5. Modelos e formulários
 #### Preparando o ambiente
 #### Criando modelos
