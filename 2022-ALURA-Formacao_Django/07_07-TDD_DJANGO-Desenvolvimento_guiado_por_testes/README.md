@@ -544,14 +544,173 @@ c) O método setUp() é executado quando os métodos de testes são concluídos.
 **Na próxima aula:** Vamos criar nosso primeiro template e dar continuidade no teste funcional, verificando se alguns elementos HTML estão presentes em nossa index!
 
 ## 04. Template e cenário de teste
-### Projeto da aula anterior
 ### Template
+
+1. Em test_urls.py:
+
+
+        from django import TestCase, RequestFactory
+        from django.urls import reverse
+        from animais.views import index
+
+        class AnimaisURLSTestCase(TestCase):
+            def setUP(self):
+                self.factory = RequestFactory()
+
+            def test_rota_url_utiliza_vies_index(self):
+                request = self.factory.get('/')
+                with self.assertTemplateUsed('index.html')
+                    response = index(request)
+                    self.assertEqual(reesponse.status_cod)
+
+---
+
+[00:00] Nosso teste de unidade passou, mas ainda não avançamos no nosso teste funcional, precisamos de um template.
+
+[00:07] Vamos configurar o nosso teste de unidade lá no nosso test_urls para verificar se a nossa resposta da view usa um template e para isso, nós vamos aprender a utilizar um gerenciador de contexto, que é a cláusula with, junto com um método chamado assertTemplateUsed para verificar se, com base naquele contexto, estamos utilizando um determinado template. Existem várias afirmações e testes que são utilizados desta forma que vamos ver agora.
+
+[00:42] Então, para começar, o que vamos fazer? Nós vamos testar se o template é chamado na nossa função view index. Então, o que eu vou fazer? Nós pegamos a requisição e eu já vou colocar aqui embaixo a cláusula with, o que vai acontecer? Quando utilizamos o with nós vamos verificar um contexto.
+
+[01:04] Então, eu vou passar aqui self.assertTemplateUsed e vamos utilizar o nome do template que gostaríamos de verificar se está usando, vou passar aqui index.html, dou os dois pontos, passo as respostas anteriores para cá. Selecionei as linhas 14 e 15, “Command + ]” e ele arrasta para o lado.
+
+[01:33] Olha só, o que fizemos? Nós passamos um contexto, criamos um contexto para o nosso teste perguntando: estamos utilizando este template index? E colocou ali a resposta. Vamos executar o nosso teste para o que acontece? python manage.py test. Falhou, já vamos verificar. E recebemos dois erros.
+
+[01:58] Um erro informando que teste se a home utiliza a função index da view e nós temos uma mensagem, index.html não foi renderizada. Não tem este template, este template não foi renderizado. E nós já sabíamos disso. Nós não temos a página ainda, o nosso template criado.
+
+[02:18] Então, o que vamos fazer? Antes de criar o template, vamos deixar a nossa view preparada para renderizar um template.
+
+[02:25] Então, lá na minha view, minimizando o meu terminal, eu não vou mais utilizar o django.http response só para ele jogar uma resposta, eu vou utilizar lá do django.shortcuts import render e vou falar um retorno que conhecemos muito bem: return render, e vamos renderizar quem? Devolvendo a request, podemos visualizar o primeiro parâmetro, request, segundo parâmentro, a nossa página index.html.
+
+[02:59] Vou executar mais uma vez. Você já imagina o que vai acontecer. Executei. Vai ter um erro e vamos visualizar o que diz este erro, o que este erro está querendo nos dizer. Bom, temos aqui um erro do CSS que não foi encontrado, lá do nosso teste funcional, e nós temos outro erro.
+
+[03:22] django.template.exception. Template não existe: index.html. Agora, vamos botar a mão na massa, vamos criar o template e vamos criar o nosso arquivo index.html. Vou criar dentro da minha pasta, do meu escopo de animais mesmo, new folder, vou chamar de templates, dentro de templates eu vou criar um novo arquivo chamado index.html.
+
+[03:53] Vou alterar aqui a minha página para colocar HTML e vou colocar html. Então alterei aqui embaixo no meu VS Code, só para ele gerar um HTML, vou colocar html: 5 e ele vai gerar para nós um documento.
+
+[04:09] O título vai ser Busca Animal, agora, aqui no <body> eu vou colocar o navbar que estamos querendo tanto querendo encontrar. Então, o navbar eu vou passar aqui, nós não temos nenhum href por enquanto, só uma classe.
+
+[04:25] Então, a classe que eu vou chamar de navbar, e o conteúdo deste navbar vai ser Busca Animal. O que vamos fazer agora? Vamos testar. Abrindo aqui o meu terminal. python manage.py test, o primeiro teste passou e o segundo teste passou. Olha que interessante: os nossos dois testes, dois pontos ali indicando que os nossos testes passaram.
+
+[04:55] Vamos só relembrar o que fizemos aqui: nós criamos um arquivo para verificar se uma rota, se a rota principal da nossa aplicação chama uma determinada página html utilizando a cláusula with para gerar este nosso contexto. Depois, lá nas views nós renderizamos esta página index, devolvendo a requisição e a página e criamos o nosso template com a nossa página Busca Animal e colocou o navbar com o conteúdo Busca Animal.
+
+[05:28] Isto ficou bem legal. O que acontece? Nós passamos um teste funcional, depois este teste funcional, por algum motivo falhou e fomos criando este teste em alguns testes de unidade. Então, nós verificamos se as nossas URLs estavam certas, com base nos erros das URLs nós fomos arrumando aqui, configurando a nossa aplicação e isto ficou bem legal.
+
 ### Testando campo de busca
+
+[00:00] Vamos dar continuidade agora para os nossos testes funcionais. Acessando tests.py lá do meu setup, o que acontece? Nós temos uma próxima propriedade, um próximo requisito da nossa aplicação, ele vê um campo para pesquisar animais pelo nome.
+
+[00:15] Vamos criar um teste para garantir que o campo estará lá e para garantir também que é possível identificar este campo, que seja fácil do usuário só olhar aquele input, aquela caixa para digitar, ele sabe que é para pesquisar animais pelo nome. Por exemplo, nós podemos criar um placeholder para este botão.
+
+[00:36] O que eu vou fazer? Vou criar aqui o buscar_animal_input = self.borwser.find_element_by_css_selector (), e dentro do parêntesis eu vou colocar o botão que eu quero criar. Eu quero criar um input no html e vou dar um nome para ele, uma identificação que eu vou chamar de buscar-animal.
+
+[01:12] Além disto, eu quero criar também um placeholder para este meu botão. Então, vamos criar um placeholder para este botão. vou colocar aqui self.assertEqual, e aqui eu vou pegar o meu botão buscar_animal_input.get_attribute(), qual atributo que eu quero pegar? O placeholder. Então, entre aspas, ’placeholder’.
+
+[01:43] E qual o conteúdo deste placeholder? Ou seja, tem um botão. Quando eu olhar para este botão vai ter um texto escrito, qual o texto que quero colocar nele? Eu vou colocar, por exemplo, entre aspas, ’Exemplo: leão’. Criamos duas propriedades. Vamos rodar um teste para vermos.
+
+[02:06] Antes de rodar o teste, eu esqueci de tirar o pass depois da história do usuário, eu vou tirar. Não precisamos mais dele no nosso código. Voltando para o terminal, vou rodar o teste. Passou no primeiro, executou e falhou o outro. Ele não encontrou um determinado elemento, input#buscar-animal, então nós temos aqui uma mensagem: elemento não foi encontrado. Vamos criar este elemento, então.
+
+[02:31] Venho aqui na minha index.html, tenho aqui o meu navbar escrito Busca Animal, e eu vou criar o meu campo input, então eu vou digitar aqui input, observe que só de eu digitar input ele já está identificando que é uma página HTML, isto acontece aqui embaixo. Se tivermos django template, é só digitar “html” na formatação de linguagem e ele já vai formatar as nossas tags.
+
+[02:56] Então, é do tipo texto e eu quero que tenha uma identificação, este meu input, que seja ”buscar-animal”. Salvei. Executando o nosso teste de novo. Falhou, e aconteceu um erro interessante aqui. Nós temos um erro de assertação, que ele falou assim: nada não é igual a ‘Exemplo: leão’ e faz muito sentido. Por quê? Lá no nosso teste nós criamos uma verificação para falar: olha, o placeholder deste botão é Exemplo: leão. Vamos criar, nós não criamos.
+
+[03:32] Então do lado de input type = “text” id=”busca-animal” vou colocar placeholder= “Exemplo: leão”. Vou rodar aqui. Passamos no teste. Quero mostrar uma coisa interessante para vocês. Olha só como esta parte do teste é muito legal. Vamos supor que eu mude o placeholder do meu teste. Exemplo: leão, urso... algo assim.
+
+[04:03] Quando eu rodar o meu teste de novo, olha a mensagem de erro que vai ser exibida. Olha só que legal. Um erro de assertação, conforme nós vimos, e ele falou assim: ‘Exemplo: leão’ não é igual a Exemplo: leão, urso.... E aqui ele colocou assim: o que eu tenho, o código que eu tenho e o que está a mais, então, ele marcou: a vírgula é um conteúdo a mais, uma string a mais, e colocou todos os conteúdos.
+
+[04:30] Observe que a medida que nós vamos ganhando experiência com o TDD, as nossas mensagens de erros, apesar de ser este negócio maluco que explode na tela, vai nos auxiliar. Então, eu vou mudar, eu vou colocar o placeholder igual ao que eu coloquei aqui no meu teste. Então, volto lá na minha index.html, leão, urso.... Deixa eu ver se eu escrevi certo mesmo.
+
+[04:55] Vamos rodar o teste. Se eu não escrevi nós arrumamos isto, mas passou. Então, o que acontece? Nós temos um campo e um placeholder, que é um texto dentro daquele botão. Quando a pessoa clicar neste botão, aquele texto desaparece, esta é a função do * placeholder*.
+
+[05:14] Nós garantimos então: ele consegue ver um campo, e está lá um exemplo: leão, urso, maravilha. Vamos passar para os nossos próximos testes agora.
+
 ### Send keys
+
+        buscar_animal_input.send_keys('leâo')
+        self.browser.find_element_by_css_selector('form button')
+
+---
+
+[00:00] Vamos partir para a próxima parte da história do usuário? Para começar, ele diz assim: Ele pesquisa por Leão e clica no botão pesquisar. Duas ações. Então, nós precisamos testar, criar o cenário de teste onde a pessoa digita algo e clica em um botão. Então, vamos lá.
+
+[00:17] Primeira coisa que vamos fazer vai ser pegar este botão, que é o buscar_animal_input para enviarmos uma entrada em um determinado campo, nós vamos usar o send_keys e aqui passamos o conteúdo que queremos digitar neste campo. Bom, o conteúdo que eu quero digitar, nós colocamos pesquisa por leão, vou colocar leão mesmo, com a letra minúscula, ele pesquisa por leão.
+
+[00:45] Então, alguma coisa precisa acontecer e nós precisamos clicar, então self.browser.find_element_by_css_selector(‘form button’).click, este form tem um botão que eu vou clicar. Então: self.browser.find_element_by_css_selector(‘form button’).click, maravilha!
+
+[01:16] Vou testar aqui o nosso código, e temos uma mensagem de erro. Nenhum elemento foi encontrado, foi localizado neste form button, e por que isto acontece? Nós sabemos que para tentarmos enviar um dado de entrada para um determinado elemento, nós vamos precisar vincular este elemento a um formulário e nós não fizemos isto ainda, por isso que não conseguimos enviar. Vamos, incluir, então, um form e adicionar o nosso botão para a pessoa clicar?
+
+[01:50] Lá na nossa página index.html, eu vou colocar aqui o form, não vou ter uma action por enquanto, vou colocar </form> lá para baixo do input e vamos identar o input, além do nosso form e do nosso input para digitar, nós vamos ter agora também um botão. Vou escrever aqui button, e o nosso botão vai ser do tipo submit, type = submit e neste botão eu vou colocar o conteúdo, por exemplo, Pesquisar.
+
+[02:50] Salvando. Abrindo o nosso terminal e executando mais uma vez, vamos ver: maravilha! Tudo passou no nosso teste. O que eu quero fazer agora com vocês é uma coisa que ainda não fizemos neste curso.
+
+[03:03] Se você não foi muito curioso, provavelmente você não passou por isto, mas se você for muito curioso eu tenho certeza que você já rodou python manage.py runserver para nós visualizarmos de fato como esta aplicação está ficando. Vamos ver.
+
+[03:20] Então, ele falou que tem as migrações ali, o que eu vou fazer aqui? Vou abrir uma nova aba anônima acessando: http://localhost:8000/, e temos aqui Busca Animal, tem o texto, o campo que vamos digitar o animal que queremos pesquisar, e aqui nós temos um botão de pesquisar. Olha só, nós estamos garantindo que esta funcionalidade passe na nossa aplicação.
+
+[03:42] “Só que, Guilherme, eu não consegui ver o texto sendo digitado, as coisas acontecendo”. Vou parar aqui o meu servidor. Vamos voltar para os nossos testes. Eu não consegui ver esse texto acontecendo. O que podemos fazer é o seguinte: eu vou importar o time e nós vamos colocar um sleep na hora que digita o texto e clica no botão pesquisar para passarmos para a próxima ação.
+
+[04:04] Então, eu vou colocar abaixo de busca_animal_input.send_keys (‘leão’) um time.sleep(2) de dois segundos para visualizarmos. Então, eu vou chegar aqui e ele vai parar. Vou rodar o nosso teste de novo. python manage.py test, então rodou o teste, vai subir o servidor, digitou o leão, clicou no pesquisar e nosso teste passou. Mais uma funcionalidade, mais uma história do usuário que conseguimos alcançar.
+
+[04:35] Vou tirar este time.sleep, isto foi só para visualizarmos mesmo a coisa acontecendo, o nosso cenário de teste acontecendo. Na sequência nós damos continuidade na história do usuário.
+
 ### AssertGreater
+
+        caracteristicas = self.browser.find_elements_by_css_selector('.result-description)
+        self.assertGreate(len(caracteristicas),3)
+
+---
+
+[00:00] Vamos dar continuidade a nossa história do usuário, e o nosso próximo passo é o seguinte: o site exibe quatro características do animal pesquisado. Então, o Vini fez a pesquisa do leão, clicou no botão pesquisar e agora vamos encontrar alguns resultados desta pesquisa, quatro características.
+
+[00:17] Então, vou colocar aqui, características = self.browser, vamos pegar estas características, e aqui tem um ponto interessante. Para conseguirmos buscar estas características, nós vamos utilizar um find_elements no plural, por quê? Porque vamos precisar contar quantas características nós temos, nós precisamos exibir mais de três características, para dar quatro características.
+
+[00:53] Então, aqui eu vou usar o find_elements no plural, não no singular. find_elements_by_css_selector. O nome do css que eu vou atribuir vai ser o result-description.
+
+[01:13] Salvei. Embaixo, eu vou fazer a minha assertação. Então, self.assertGreater, ou seja, se ele for maior que a quantidade que eu tenho de resultados, as minhas características, então len(características) ele vai contar quantas características que tenho. É maior que três? Se ele for maior que três nós estamos aprovados neste teste.
+
+[01:39] “Command + J”, executando aqui mais uma vez, e falhou. Zero não é maior que três. Óbvio. Nós não colocamos na nossa página index.html esta nossa div. Vamos colocar.
+
+[01:53] Então vou colocar uma div só, e vou colocar uma classe para ela. class=“result-description”. Coloquei uma. Vou executar o teste de novo, só para vermos se estamos no caminho certo. Um não é maior que três. Então vamos copiar a linha
+
+`. Então, “Shift + Option” para baixo e vamos copiar três vezes, ou “Ctrl + Shift” para baixo nós copiamos. Portanto, nós temos quatro aqui.
+[02:30] Executando mais uma vez. Maravilha. Ficou legal, nós passamos neste nosso teste funcional, só que se observarmos, nós passamos este resultado sem nada, nós não atribuímos nenhum valor para estes resultados e seria importante se conseguíssemos exibir, de fato, qual é o resultado deste nosso teste, quais são as características deste animal que foi pesquisado, e é isso que vamos começar a ver na sequência.
+
+[03:01] Se pararmos para pensar nas características, é necessário que a nossa view busque de algum modelo estes dados, e a nossa view renderize estes dados pesquisados, passe estes dados por contextos para um determinado template e é isso que vamos fazer na sequência.
+
 ### Buscando por id
-### Faça como eu fiz
+
+Uma pessoa escreveu o seguinte teste:
+
+        # Ele vê um campo para pesquisar animais pelo nome.
+        
+        buscar_animal_input = self.browser.find_element_by_id('buscar-animal')
+        self.assertEqual(buscar_animal_input.get_attribute('placeholder'), 'Exemplo: leão, urso...')
+
+Observando o teste acima, podemos ver que a busca do input não está vinculada ao find_element_by_css_selector e sim pelo find_element_by_id.
+
+Sabendo disso, podemos afirmar que:
+
+a) O input não será encontrado, já que o código certo deveria ser:
+
+        self.browser.find_element_by_id('input#buscar-animal')
+
+- _O input será encontrado com o código self.browser.find_element_by_id('buscar-animal'), pois ao realizar a busca através do find_element_by_id, devemos informar apenas o ID do elemento buscado._
+
+b) Um erro será exibido informando que o input não foi encontrado, mesmo que no template exista um input com esse ID.
+- _Caso o template tenha esse input com esse ID, ao executar o teste o input será encontrado._
+
+c) **Alternativa correta:** Buscar pelo ID é mais segura, já que a classe do css pode mudar.
+- _Alternativa correta! Certo! Ao realizar a busca pelo ID, temos a liberdade de alterar as classes do CSS sem impactar nosso código._
+
 ### O que aprendemos?
+
+**Nesta aula:**
+- Criamos uma pasta e o template chamado index.html;
+- Testamos se o campo de busca estava presente na index;
+- Vimos como simular a digitação de um usuário do sistema em um cenário de teste.
+
+**Na próxima aula:**
+Vamos aprender como testar a view, o model e garantir que nossa busca possua um comportamento esperado!
+
 ## 05. Teste de unidade na view e model
 ### Projeto da aula anterior
 ### View teste
