@@ -712,15 +712,183 @@ c) **Alternativa correta:** Buscar pelo ID é mais segura, já que a classe do c
 Vamos aprender como testar a view, o model e garantir que nossa busca possua um comportamento esperado!
 
 ## 05. Teste de unidade na view e model
-### Projeto da aula anterior
 ### View teste
+
+1. Em test_views.py:
+
+        from django.test import TestCase, RequestFactory
+        from django.db.models.query import QuerySet
+
+        class IndexViewTestCase(TestCase):
+            def setUp(self):
+                self.factory = RequestFactory()
+            
+            def test_index_view_retorna_retorna_caracteristicas_animal(self):
+                response = self.client.get('/',
+                    {'caracteristicas':'resultado'}
+                )
+                self.assertIs(type(response.context['caracteristicas']),QuerySet)
+
+---
+
+[00:00] A forma que passamos o último teste não ficou tão legal. Nós colocamos as quatro características sem nada aqui, e o que queremos fazer? Nós queremos, de fato, pegar estas características que estão no banco de dados, renderizar, colocar isto em um contexto e renderizar isto em uma página, para vermos, de fato, estas características.
+
+[00:20] E é isso que nós vamos fazer agora. Só que para realizar isto, precisamos garantir que a nossa view seja configurada corretamente, que o nosso modelo esteja correto e que nossa página seja renderizada de forma correta também.
+
+[00:35] Para garantirmos cada etapa, vamos criar testes de unidades para cada uma delas. Para começar, vamos criar um teste para a nossa view. O que a nossa view precisa fazer? Ela precisa pegar o contexto da resposta e colocar este contexto na resposta também, este nosso QuerySet, quais são as características deste animal? Então pega as características e exibe para nós. É isso que vamos fazer agora.
+
+[00:59] Vou fechar a minha index.html e o meu tests.py e vamos começar agora um teste relacionado para validar a nossa view. Então, nós temos o teste de URL, e vou criar mais um arquivo que vou chamar de test_views.py. Neste teste, nós vamos utilizar do django.test as duas classes que já estamos acostumados que é o nosso TestCase para o nosso teste de unidade e o RequestFactory.
+
+[01:37] Deixa eu fechar ali do lado só para ficar mais fácil de vermos. Nós vamos precisar também de um QuerySet para verificarmos se, de fato, estas informações estão vindo lá do ORM do Django. Então vou colocar aqui from django.db.models.query import QuerySet .
+
+[02:07] O que vamos fazer? Vamos criar uma classe para testarmos a nossa index. class IndexViewTestCase(TestCase), e vamos aqui começar a escrever a nossa classe. Primeira coisa, nós temos um método setUp para começar este nosso teste de unidade. Vamos passar a instância como argumento e pegar a instância do RequestFacotry aqui. Então: self.factory = RequestFactory, a instância dele.
+
+[02:53] Bom, nós já temos a instância do RequestFactory, o que nós vamos precisar fazer agora é o seguinte: eu preciso criar um teste que verifique se a minha view, se a minha IndexView está retornando as características do animal. Vou criar aqui um método que eu vou chamar de test_index_view_retorna_caracteristicas_do_animal. Como parâmetro nós vamos passar a instância, e agora vamos começar a escrever o nosso teste.
+
+[03:44] Então, colocando a docstring só para mantermos o nosso código organizado. Então é um ““teste que verifica se a index retorna as características do animal pesquisado””. Temos aqui o nosso teste, temos aqui a documentação do nosso teste.
+
+[04:17] Primeira coisa que vamos fazer: temos que entender que quando enviamos uma solicitação e esperamos algo por contexto nesta nossa resposta, nós vamos utilizar outra propriedade no lugar do RequestFactory, que vai ser o SelfClient, ele é um tipo de navegador fictício que enviamos as solicitações para a URL e temos acesso ao response content desta nossa requisição, para nós termos certeza que a nossa view está construindo a resposta correta.
+
+[04:48] Então, eu vou criar aqui o response = self.client.get e o nosso path vai ser o path na raiz da nossa aplicação. Então, entre aspas simples eu coloquei a barra, e agora vamos precisar devolver um determinado contexto para esta nossa requisição.
+
+[05:18] Então vamos dar dois “Enter” só para ficar certo e vou colocar aqui. Ele vai devolver em um dicionário, eu vou colocar o nome que vai ser ‘características’: e eu vou passar o resultado destas características, então eu vou colocar aqui ’resultado’.
+
+[05:48] Além disto, eu vou precisar criar um teste para verificar se o tipo deste nosso resultado é uma QuerySet, então self.assertIs(type(response.context[‘características’]), QuerySet). Antes de fechar, queremos ver se isto é um QuerySet.
+
+[06:49] Executando este nosso teste, vamos ver. Limpei aqui. Executando um teste, deu um erro no teste de unidade, já vamos encontrar. O teste verifica se a index retorna as características do animal pesquisado. Vamos ver o nosso teste então. Deu uma mensagem KeyError, observe, erro na chave, já que não existe este contexto de características.
+
+[07:25] Nós temos aqui um KeyError nas características. Não existe este contexto ainda, é necessário criar isto. Então, vamos criar. O que eu vou fazer? Eu vou criar do jeito mais simples possível para o nosso teste ser aprovado até chegarmos na nossa próxima etapa.
+
+[07:40] Então, eu vou abrir lá da minha “animais > view.py”, preciso passar um contexto, então vou colocar aqui: context = vou passar aqui os animais que queremos, as características, em string, ’caracteristicas’: None . E, para finalizar, nós já temos aqui, estamos renderizando esta página index, nós vamos passar também o context.
+
+[08:25] Salvando. Executando mais uma vez, vamos ver. Tivemos um erro agora muito interessante. Ele disse assim: a classe ‘NoneType’ não é QuerySet, é isto que este erro está dizendo. Onde nós caímos neste erro? Observa: ele dá até a linha. Linha 14 lá do nosso test_views.py. A linha 14 do nosso test_views.py diz assim: isto aqui vai estar certo se estas características elas forem do tipo QuerySet e elas não são.
+
+[09:00] O que isto significa? Significa que nós precisamos definir o que é um animal, e quais são estas características do animal. Vamos fazer isto no próximo vídeo?
+
 ### Model teste
+
+1. Em test_models.py:
+
+        from django.test import TestCase, RequestFactory
+        from animais.models import Animal
+
+        class AnimalModelTestCase(TestCase):
+            def setUp(self):
+                self.animal = Animal.objects.create(
+                    nome_animal = 'Leão',
+                    predador = 'Sim',
+                    venenoso = 'Não',
+                    domestico = 'Não'
+                )
+            def test_animal_cadastrado_com_caracteristicas(self):
+                self.assertEqual(self.animal.nome_animal,'Leão')
+
+---
+
+[00:00] Assim que executamos o nosso teste, observe que nós temos uma coisa interessante. NoneType não é um tipo QuerySet, vamos torná-lo um. Como? Vou colocar um código mais simples possível, vou dizer, por exemplo, que Animal.objects.all, que é a classe que nós vamos criar, nosso modelo que vamos criar.
+
+[00:24] Executamos aqui. Nós temos algum erro, vamos ver. Ele não achou o css. Ele falou que Animal não está definido. Bom, vamos definir. De onde vai vir Animal? Do nosso modelo. Então from animais.model import Animal. Vou executar mais uma vez e já temos um erro. Nem executou o nosso código e ele falou assim: eu não posso importar Animal de animais.model, porque nós não criamos lá no nosso modelo este Animal, e é o que vamos precisar fazer agora.
+
+[01:01] Então, para solucionar este problema, eu vou vir aqui no meu app de animais, vou vir aqui em models.py e vou criar do jeito mais básico vou dizer assim: Animal = None. Salvei. Revisando tudo. Executando mais uma vez, vamos ver. O erro do css aqui, um pouco mais para cima: NoneType não possui o atributo objects, e faz sentido. Nós queremos que o nosso animal tenha os atributos, e quer que ele seja um objeto. Então, vamos precisar criar o nosso modelo.
+
+[01:51] Então, eu vou criar um modelo no lugar deste Animal = None, vou criar uma classe que eu vou chamar de Animal(models.Model): e a minha classe simplesmente não faz nada ainda. Só estou importando. Vamos executar mais uma vez para visualizarmos o que acontece?
+
+[02:14] Executei o meu teste e temos um erro operacional agora. Ele fala assim: “no such table animais_animal”. O que o Django está tentando nos dizer com este erro? Ele está tentando dizer que no nosso banco de dados não existe nenhuma tabela de animal, porque nós ainda não fizemos a migração do nosso modelo de animal.
+
+[02:36] E você deve ter percebido que, em nenhum momento do nosso desenvolvimento, nós executamos manage.py migrate ou até mesmo o runserver. Nós executamos uma vez para ver, mas não executamos o migrate, e quando executamos o runserver aquela vez, nós vimos que existiam migrações pendentes da estrutura do Django.
+
+[02:56] Então, o que acontece? Nós podemos pedir para o Django gerar para nós a migração, mas, para realizar estes testes não é necessário nem que eu realize o migrate por enquanto. Então, o que eu vou fazer? Vou realizar apenas o makemigrations e com base nele, o Django vai utilizar para realizar os nossos testes, quando ele cria o nosso banco de dados.
+
+[03:20] Então, python manage.py makemigrations, dou um “Enter” e ele gerou a nossa migração, criou o nosso modelo de Animal. Executando o teste mais uma vez, vamos ver, dois testes passaram, os três testes passaram. Está OK. Nós passamos no nosso teste, então lá no view.py ele viu que o Animal.objects.all é um QuerySet, só que, quem garante mesmo que nós estamos recebendo os dados do nosso modelo ou que as nossas características estão vindo de lá?
+
+[03:59] Precisamos criar um teste para garantir que as características do animal pesquisado é esta: o animal ele tem um nome, ele é um tipo predador? Sim ou não. Ele é do tipo venenoso? Ele é doméstico? E, para isso, podemos criar um teste para o nosso modelo. Então, é o que vamos fazer agora.
+
+[04:18] Vou fechar estas abas aqui, e vou criar lá em “animais > tests”, vou criar “test_models.py”. Neste teste, nós vamos ter, vou até copiar de “test_views.py”, vamos roubar um pouco. Vamos ter do django.test o nosso TestCase e o RequestFactory.
+
+[04:45] Além destes dois, para testarmos o nosso modelo é importante que se tenha quem? O próprio modelo, então eu vou trazer também o nosso modelo: from animais.model import Animal. Agora vamos criar a nossa classe para testar o nosso modelo.
+
+[05:05] class AnimalModelTestCase, por exemplo, e vou passar o TestCase. Quando nós iniciamos o nosso teste de modelo, sabe o que podemos fazer? Nós podemos criar uma instância deste animal, como os atributos que esperamos para esta nossa classe.
+
+[05:34] Então, vou criar aqui uma função que eu vou chamar de setUp, vamos passa a instância que estivermos utilizando, o self, e abaixo eu vou fazer assim: self.animal = Animal.objects.create(), e nos parêntesis eu vou passar as características deste animal que eu quero criar.
+
+[06:07] Mas, Guilherme, este animal que você está criando neste teste não vai para o seu banco de dados em produção? Não. Observa que em nenhum momento nós fizemos a migração para o nosso banco de dados, nós realizamos o makemigration e através deste makemigration, quando nós subimos os nossos testes, ele vai utilizar apenas estes dados para realizar o nosso teste, criando o cenário ideal para realizar o nosso teste.
+
+[06:36] O animal vai ter um nome, vou chamar de nome_animal = ‘Leão’, além do nome do animal, outra característica, eu esqueci da vírgula após leão. O animal, depois queremos saber se ele é um predador, então predador = ‘Sim’, o leão é um predador. Vou deixar como string, não vou passar isto para booleano para ficar mais simples ainda a nossa explicação. Além disso, queremos saber se ele é venenoso, venenoso =’Não’, o leão não é um animal venenoso, então vou colocar aqui Não. Eu acho, pelo menos, depois podemos dar uma pesquisada nisso aí. E, para finalizar, se ele é um animal doméstico. domestico = ‘Não’. Não é também. Uma pena, mas não é.
+
+[07:35] Temos a nossa instância de animal e agora nós temos características para este animal, que são as características que queremos exibir lá nosso teste. O que eu vou fazer? Vou criar outro teste, outra função para testar se, de fato, este animal existe.
+
+[07:55] Então vou colocar assim: test_animal_cadastrado_com_caracteristicas e vou passar como parâmetros, self, e dentro, para deixar bem bonito, colocar aqui a nossa docstring então: “““Teste que verifica se o animal está cadastrado com suas respectivas características”””.
+
+[08:48] Vou tirar este pass, nós não precisamos dele. Vamos lá, o que eu vou fazer? Vou usar um assertEqual, então self.assertEqual e vou pegar quem? A instância que tivermos, que estamos utilizando: self.animal.nome, por exemplo. Vou colocar uma vírgula. Peguei o nome do animal que eu tenho a instância e vou falar se o nome dele, de fato, é ’Leão’, que é o animal que geramos ali em cima.
+
+[09:29] Vou realizar este teste, abrindo aqui o nosso terminal, realizando o teste do modelo. E um teste de unidade quebrou. Vamos ver. Olha lá, que interessante. Isto é muito bacana. Ele disse assim: Animal está com um keyword não esperado, que é o keyword nome_animal. O que isto significa? Significa que, no nosso modelo, nós temos uma palavra-chave que não estamos esperando, que é o nome do animal. Por quê?
+
+[10:02] Se observarmos o nosso modelo, vou abrir aqui o “models.py”. O nosso modelo não tem nenhuma característica, nenhum atributo, melhor dizendo. Então, o que vamos fazer? Vamos criar os atributos deste modelo. Vou criar aqui o Animal, ele vai ter o nome, eu vou chamar de nome_do_animal, acho que vai ficar mais claro também.
+
+[10:20] Deixa eu mudar no nosso teste que vai ficar melhor também. Vou deixar só nome_animal mesmo. Nós temos outra característica que é o predador, nós temos outra característica que é se ele é venenoso e, para finalizar, deixa eu só lembrar qual a outra, domestico.
+
+[10:47] Nós temos estas características, então vamos lá: de models.CharField eu quero que o Animal tenha no máximo, max_lenght=20, acho que não vai ter um nome de animal. Animal não é o nome científico, é só o nome dele normal. Então, vou colar aqui nas outras características, só que no predador e estes outros nomes eu vou usar 5 de espaço, nem isso. Não vou usar por enquanto booleano para deixar mais rápido o nosso curso, para conseguirmos ir mais longe.
+
+[11:28] Coloquei estas características. Preciso dizer também qual é a forma que eu vou representar este animal, qual a forma que eu vou mostrar este animal via texto. Então eu vou criar aqui uma função, __str__(self), e aqui dentro eu vou colocar um return self.nome_animal.
+
+[11:58] Criamos. Aqui, os atributos do animal. O que eu preciso fazer para que estes atributos entrem no meu teste de modelo? Eu preciso rodar mais um vez o makemigrations é isto que eu vou fazer.
+
+[12:14] Rodando o makemigrations mais uma vez ele perguntou: se você tiver algum animal e você quer colocar alguma característica, ou prover um dado default para ele. Vou colocar que sim, opção 1, e vou colocar de dado default um n/a. Então, se caso nós tivéssemos dado, já vou colocar isto como propriedade default. Dou “Enter”.
+
+[12:34] Ele vai perguntar a mesma coisa, vou selecionar a opção 1, vou colocar entre string, n/a e vou fazer isto para os outros campos também. Seleciono a opção 1, e para finalizar, a opção 1 também para ver se ele é um animal doméstico. Se não tiver nada, nós vamos definir n/a.
+
+[12:58] Nós provemos as características deste nosso animal. Vamos rodar o teste mais uma vez? Então, “Command + J”, python manage.py test e um teste nosso quebrou, vamos ver o que aconteceu. E ele falou o seguinte: Animal não tem o atributo nome, porque eu passei aqui o nome errado. Não é atributo nome é nome_animal, agora sim.
+
+[13:29] Vamos rodar mais uma vez. Sucesso. O que isto significa? Significa que é possível hoje, com a estrutura que estamos, criar um modelo de animal com estas características. Isto ficou bem legal.
+
 ### Testando a busca
+
+[00:00] Se nós observarmos o nosso teste que faz a pesquisa para ver as características do animal, nós fizemos aqui uma trapaça, na verdade. Nós colocamos aqui quatro div com a classe ”result-description” para sermos aprovados naquele teste. Só que vamos deixar a nossa funcionalidade principal da nossa aplicação que é a busca, vamos criar um teste para garantir que ela vai ter o comportamento que esperamos.
+
+[00:28] Então, o que eu vou fazer? Lá no nosso teste de unidade, lá no nosso tests_view.py, nós temos um teste que verifica se a index retorna as características do animal pesquisado, e nós não demos continuidade neste nosso teste. Então, o que vamos fazer? Eu vou colocar aqui, eu vou criar um teste, para nós, de fato, verificarmos se um determinado animal pesquisado é exibido as características: nome, se ele é predador, venenoso e assim por diante.
+
+[00:56] A primeira coisa que eu vou fazer vai ser criar uma instância de um animal. Para isto, eu preciso trazer aqui, lá do meu animais.models import Animal. E eu vou criar lá onde fazemos a instância do RequestFactory, vou criar mais uma instância, que eu vou chamar de self.animal, colocar a nossa classe Animal.objects.create, e criar o nosso animal.
+
+[01:31] Então o animal tem um nome, nome_animal, eu vou criar um animal, vocês podem escolher o animal que vocês querem. Eu vou criar o animal calopsita, por exemplo. Eu vou colocar se ele é um predador = ’Não’, se ele é um animal venenoso, venenoso = ‘Não’ também.
+
+[01:57] Não é um animal venenoso também, coitado, tão bonito. E domestico = ‘Sim’. Na casa dos meus pais tem uma calopsita que anda pela casa mesmo, parece um cachorro. Anda, voa, se chama ele vem, é muito legal. Então, ele é um animal doméstico.
+
+[02:16] O que eu vou fazer agora? Vamos mudar as nossas características do animal pesquisado. Então, observa que temos aqui um ’caracteristicas’:’resultado’. Não é o que queremos. O que eu quero é que, de alguma forma, aquele nosso input da nossa index, eu consiga pegar o conteúdo que está nele. Para isto, eu vou dar um nome para ele.
+
+[02:35] Então, name = ‘buscar’. Daí, o que eu vou fazer? Lá no meu teste da view eu vou falar assim: se ’buscar’ tiver o conteúdo ’calopsita’, eu quero, de alguma forma, visualizar este meu conteúdo.
+
+[02:51] Então, o que fizemos? Nós tínhamos aqui um self.assertIs, se o tipo deste context característico for um QuerySet, este é nosso primeiro teste, se ele for um QuerySet ele está aprovado. Eu posso colocar mais uma característica. E, para garantir que este nosso teste vai trabalhar somente com esta instância, eu vou pegar este animal pesquisado então, por exemplo, vou fazer assim: característica_animal_pesquisado = response, porque eu quero pegar o conteúdo desta resposta .context [‘caracteristicas’].
+
+[03:44] E olha só que interessante. Eu peguei o contexto de características, deste animal que foi pesquisado. O que eu posso fazer agora, é verificar, por exemplo, se o nome deste animal é calopsita. Então, self.assertEqual(característica_animal_pesquisado[0].nome_animal), quero verificar se isso, se de fato, o animal que eu pesquisei, se ele é, entre aspas, ‘calopsita’.
+
+[04:32] Então, desta forma, nós criamos uma instância do animal, conseguimos pegar este nome ’calopsita’ lá do nosso input de busca, e aqui nós vamos verificar se, de fato, esta característica de animal pesquisado no índice zero, que é o nome do animal, se for calopsita nosso teste vai ser aprovado.
+
+[04:50] Executando aqui o nosso teste. Nosso teste foi aprovado, o que precisamos fazer agora é alterar, configurar a nossa view para que ele, de fato, mande este nosso animal, as características do animal que qualquer pessoa pesquisar, digitar, ele seja exibido na tela. Isto que vamos fazer na sequência.
+
 ### Teste de unidade e funcional
-### Faça como eu fiz
+
+Durante o curso, somos guiados por uma série de testes para desenvolver nossa aplicação. Dentre eles, os testes de unidade e funcional.
+
+Sabendo disso, podemos afirmar que:
+
+a) Um teste funcional geralmente é pequeno, executado em microsegundos e focado nas preocupações do desenvolvedor.
+
+b) **Alternativa correta:** Tanto os testes funcionais como os testes de unidade, são importantes para uma aplicação ou software.
+- _Alternativa correta! Certo! Ambos tem o seu valor, seja para garantir as necessidades do desenvolvedor ou desenvolvedora, ou, garantir que a soma total dos dados e a lógica do aplicativo corresponde a funcionalidade prometida ao usuário._
+
+c) **Alternativa correta:** Um teste de unidade geralmente é pequeno, executado em microsegundos e focado nas preocupações do desenvolvedor.
+- _Alternativa correta! Certo! Os testes de unidade geralmente validam uma única parte do sistema._
+
 ### O que aprendemos?
+
+**Nesta aula:**
+- Entendemos como testar a view e o model de um app;
+- Criamos um cenário para testar a busca de um determinado animal.
+
+**Na próxima aula:**
+Vamos alterar a view para realizar a busca, carregar alguns animais em nossa base de dados e alterar o frontend da aplicação!
+
 ## 06. Finalizando o projeto
-### Projeto da aula anterior
 ### Alterando a view
 ### Preparando o ambiente
 ### Realizando buscas
