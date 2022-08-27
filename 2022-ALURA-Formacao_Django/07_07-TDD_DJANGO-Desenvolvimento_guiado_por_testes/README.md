@@ -347,13 +347,202 @@ Vamos aprender o que é história do usuário, criar nosso app e testar as urls 
 
 ## 03. RequestFactory e templates
 ### História do usuário
+
+[00:00] Nós vimos como funciona um teste que é aprovado e um teste que falha, e como, com o tempo, desenvolver habilidades para conseguir ler estas linhas de testes que falharam.
+
+[00:15] Vamos começar uma nova etapa no nosso desenvolvimento, nossa experiência com o TDD. Nós sabemos que vamos criar um teste para verificar, ou um trecho pequeno de código, que chamamos de teste de unidade, ou um teste muito maior, que é um teste funcional, e vai, de fato, simular um cenário, um usuário clicando em alguma parte do nosso site, da nossa aplicação.
+
+[00:42] Para começar, vamos utilizar, para este curso, o foco da busca de um determinado animal. Então, vamos criar a seguinte história para o nosso projeto, a história de um usuário, que é assim: Vini deseja encontrar um novo animal para adotar. Ele encontra o “Busca Animal” e decide usar o site, porque vê no menu do site escrito “Busca Animal”. Já que ele quer adotar um animal.
+
+[01:11] Ele vê um campo para pesquisar animais pelo nome, então vai digitar ali, em algum lugar vai ter um campo onde ele vai digitar o nome do animal que vai exibir, algo vai acontecer. Ele digita, ele pesquisar, leão, e clica no botão pesquisar. Observa que cada desta vai ser um teste que vamos realizar. O site exibe quatro características do animal pesquisado. Ele desiste de adotar um leão.
+
+[01:37] Vamos copiar esta história do usuário. Eu vou deixar este link lá na atividade anterior a este vídeo, e vou colar este código, este link aqui. Vini deseja encontrar um novo animal que ele quer adotar, ele encontra o site, e tem a história completa aqui. O que este teste faz? Este teste vai verificar se, de fato, um usuário consegue buscar um animal, é isto que este teste faz.
+
+[02:10] Então, o que eu vou fazer? Eu vou criar um novo teste, vou digitar test_, uma nova função que eu vou digitar test_buscando_um_novo_animal. Como parâmetro eu vou utilizar a instância que vamos utilizar, e temos aqui um pass. Eu vou colocar todo este código da história para lá. Selecionei tudo, “Command + ]”, ele vem para dentro de test_buscando_um_novo_animal. Vou pegar este pass e vou jogar lá para baixo de tudo. Para não ter erro, nossa função não ter nenhum erro.
+
+[02:54] Nós vimos a importância do docstring para quando vamos executar um novo teste. Então, vamos colocar também, para manter o nosso padrão, uma docstring aqui explicando para que serve este teste. Uma coisa importante, nós não precisamos ter medo de ser prolixo aqui. O nosso teste, apesar de ter o nome test_buscando_um_novo_animal, nós podemos descrever um pouco melhor aqui na nossa docstring
+
+[03:18] Então vou escrever aqui, por exemplo, Teste se um usuário encontra um animal na pesquisa, por exemplo. Então, temos aqui uma definição um pouco melhor. test_buscando_novo_animal, Teste se um usuário encontra um novo animal pesquisando, acho que fica mais legal.
+
+[03:58] E aqui, nós temos o nosso cenário com as histórias do usuário, com os requisitos do nosso sistema. Então, ele quer encontrar um novo animal, nós temos um contexto, existe um cenário. Lembra quando criamos o TDD da idade, que passamos os valores 1991 e 2050, que eram o cenário de teste? Vamos ter o mesmo aqui. Nós já temos o cenário de teste. O que vamos fazer agora? Vamos começar a atacar para que cada etapa deste cenário de teste, desta história do usuário seja atendido.
+
+[04:32] Então, vamos lá. Ele encontra o Busca Animal e decide usar o site, porque ele vê no menu do site escrito Busca Animal, e é isso que vamos fazer nos próximos vídeos.
+
 ### ATUALIZAÇÃO
+
+Na próxima atividade, será mostrado uma funcionalidade de código na qual ocorreu uma atualização. O código exibido na aula pelo instrutor será:
+
+        find_element_by.css_selector('exemplo')
+
+**Porém esse código não funciona mais dessa forma.** A forma correta será:
+
+        find_element(By.CSS_SELECTOR, 'exemplo')
+
+Por gentileza, considerar apenas o exemplo acima para alcançar o mesmo resultado!
+
+Mais informações estão disponíveis na documentação do [selenium.webdriver.common.by]('https://selenium-python.readthedocs.io/api.html')
+
 ### Criando o app
+
+[00:00] Ao observarmos a história do usuário, notaremos que é mencionado que ele encontra o site, decide usar o site, encontra o “Busca Animal”, e vê no menu do site escrito "Busca Animal". Duas etapas aqui. Primeira: precisamos criar um teste para verificar se o nosso site, de fato, está no ar. Se a nossa home page está no ar. Vamos fazer isto, então?
+
+[00:22] Bom, para começar, vou criar a nossa home page aqui, vou dar um “Enter” aqui embaixo desta história, eu vou criar home_page, e vou criar, subir a nossa home page. Só que aqui, tem algo interessante. Observa que a nossa home page é justamente o código que testa se abre uma janela. Então, vai lá no browser e pega a URL no nosso servidor. Vou dar um “Command + X” em self.browser.get(self.live_server_url) e vou remover.
+
+[00:48] Estes dois testes nós utilizamos como exemplo: o test_abre_janela_do_chrome e o test_deu_ruim nós não vamos utilizar, então vamos remover eles daqui para ficar bem limpo este nosso código, e vou passar aquele conteúdo self.browser.get(self.live_server_url) para baixo da história, nós subimos o nosso servidor.
+
+[01:02] Aqui tem um ponto interessante: para deixar a nossa sintaxe, o nosso código mais semântico, o que acontece? Quando subimos o servidor com o runserver, por exemplo, localhost:8000 barra algo, então, só para deixar aqui bem semântico, vou colocar também o mais concatenando com a nossa barra para dizer que a página principal, home da nossa aplicação.
+
+[01:27] Subi aqui a nossa home page, vou salvar. Se eu executar aqui o nosso teste, vamos ver, manage.py test, ele foi lá e tudo certo, nossa página, nossa home page subiu. Ele vê no site , no menu do site escrito Busca Animal. Como que vamos fazer isto?
+
+[01:46] Para conseguirmos verificar um determinado elemento na página, nós podemos usar o Selenium. Existe uma propriedade no Selenium chamada find_element_by_css_selector, que é a que vamos utilizar agora. O nome é maluco, mas fica tranquilo que é tranquilo. Fica tranquilo que vamos conseguir entender.
+
+[02:06] brand_element, que é o elemento que queremos buscar na tela, e vou falar assim, vai lá no self.browser, lá na página, e vamos dar aqui um .find_element_by_css_selector, e aqui dentro, nós vamos passar o nome do elemento css, como string. Então, vou colocar aqui ’.navbar’. Então, eu falei: vai lá na nossa página e pega um elemento chamado navbar, e ele vai pegar este brand_element.
+
+[02:46] Outra coisa importante também, ele vê no menu do site escrito Busca Animal, então vamos precisar garantir que este elemento, o texto deste elemento é Busca Animal. Então, vamos fazer isso.
+
+[03:00] Vamos colocar aqui na próxima linha, self.assertEqual, no singular o Equal, aqui como que vamos fazer? O primeiro parâmetro vai ser o que queremos escrito neste elemento. Então, queremos escrito ’Busca Animal’, o segundo parâmetro é o nosso brand_element, porém o conteúdo dele, o texto dele. Vamos pegar brand_element.text
+
+[03:43] Abrindo o nosso terminal de novo, executando o nosso teste, olha só o que vai acontecer. Ele vai abrir a nossa página home e um erro aconteceu. Nós já esperávamos este erro. Nós temos uma série de informações na tela para entender agora. Parece que explodiu aqui um monte de coisa.
+
+[04:03] Se nós pararmos para observar, para analisar esta mensagem. Ele fala aqui: nenhum elemento foi capaz de identificar este navbar, este selector. Nós não identificamos este css selector com este conteúdo do navbar.
+
+[04:20] O que acontece? Olha só que bizarro, nós realizamos um teste agora, mas nós não temos nem o app, nenhuma rota cadastrada, nenhuma página, nem um template. Nós não temos simplesmente nada. Para solucionar este problema, o que precisamos fazer? Nós precisamos criar o nosso app de animais e, nele, escrever alguns testes para garantir que este nosso teste funcional vai passar.
+
+[04:41] Então, o que vou fazer? Vou minimizar o terminal. Não vou minimizar, desculpe. Aqui no nosso terminal, vou criar o app de animais. Então, vamos lá: python manage.py start app animais e dou um “Enter”, e ele vai criar o nosso app de animais que podemos visualizar aqui no menu ao lado que agora nós temos setup, as configurações da nossa aplicação, e o nosso app de animais.
+
+[05:10] O que precisamos fazer é garantir que este app de animais faça parte do nosso projeto. Lá em settings.py, nos apps instalados, eu vou colocar também o ’animais’,.
+
+[05:26] Agora, como toda aplicação web, o que vamos precisar fazer é aceitar solicitações http em certas URLs, e esse é o ponto inicial da nossa aplicação. Porém, o que vamos precisar fazer? Nós não queremos criar as URLs direto, nós queremos garantir que estas URLs, com estes determinados endereços sejam corretos, sejam aceitos na nossa aplicação.
+
+[05:54] Então, precisamos testar isto também. Então, o que vamos fazer na sequência? Nós vamos criar um arquivo de teste para as nossas rotas URLs.
+
 ### Testando URLs
+
+[TestCase]('https://docs.djangoproject.com/en/2.2/_modules/django/test/testcases/')
+[Test]('https://docs.djangoproject.com/en/4.1/topics/testing/overview/')
+
+1. Criamos um arquivo chamado test_urls.py:
+
+        from django import TestCase
+        from django.urls import reverse
+        from animais.views import index
+
+        class AnimaisURLSTestCase(TestCase):
+            def test_rota_url_utiliza_vies_index(self):
+                root = reverse('/')
+                self.assertEqual(root.func, index)
+
+---
+
+[00:00] Nós criamos um teste funcional, onde é necessário que exista um navbar com determinado texto escrito. Para isso, nós criamos o nosso app de animais e agora vamos começar a testar para chegar neste teste funcional aprovado.
+
+[00:17] Para começar, para exibirmos uma página com determinada URL, com uma view renderizando a página correta, com um template escrito aquilo, observe que são várias etapas. Vamos começar agora os nossos testes de unidade.
+
+[00:32] O que vamos fazer? Quando criamos um app aqui no Django nós temos este arquivo “tests.py”. Eu vou deletar este arquivo, vou deletar porque eu vou criar vários testes de unidade. Um teste para URL, um teste para o modelo, um teste para a nossa view. Então, eu vou criar, dentro de animais, um new folder, uma nova pasta, que eu vou chamar de “tests”. Dentro desta pasta, nós vamos executar os conteúdos, os testes que nós temos aqui dentro.
+
+[00:59] Então eu vou colocar “init.py” para ele executar estes testes e vamos começar com o nosso teste de URL. “tests_urls.py”. O que eu quero que a minha URL faça? Qual o objetivo deste meu teste de unidade? Eu quero ver se determinada requisição é atendida por uma view específica, então vamos lá.
+
+[01:27] A primeira coisa, eu vou precisar importar lá do “django.test” um cara chamado TestCase, então vou colocar aqui from Django.test import testCase. Vamos ler um pouco sobre este TestCase? Clicando com o botão direito, vou abrir uma nova aba e vou digitar no Google “TestCase Django”. Aqui tem uma pequena explicação sobre o que são estes nossos testes e qual a ideia destes nossos testes de unidade.
+
+[02:12] Então, quando clicamos nesta página nós temos uma pequena explicação. A classe mais comum para escrevermos testes em Django. É o que queremos, é o suficiente. Tem uma explicação quando não formos usar um banco de dados, nós podemos usar o SimpleTestCase também, mas fica aí o desafio para você ler este trecho desta documentação, está bem tranquilo para entender.
+
+[02:32] Importamos o TestCase, agora nós queremos testar URLs, nós precisamos de alguma forma verificar as URLs que nós vamos testar na nossa aplicação. Então, eu vou fazer assim: from django .urls eu quero importar, import, um reverse. Ele vai ser responsável por identificar qual a URL que estamos utilizando.
+
+[02:56] E para finalizar, para que se chegue em uma URL, precisamos de um método na view, fazendo a mediação. Então, vou colocar aqui from animais.views, eu quero importar o index, já que queremos testar a nossa classe, o nosso método raiz da nossa aplicação, nossa URL raiz.
+
+[03:28] Então, eu vou colocar class AnimaisURLSTestCase, por exemplo, acho que faz sentido, e nós vamos utilizar como argumento o TestCase.
+
+[03:41] Então, o primeiro método que eu quero testar é o seguinte: eu quero verificar se nós estamos utilizando a index da view, então test_rota_url_utiliza_view_index. Como argumento, eu vou passar a instância que nós temos, e aqui abaixo nós vamos começar o nosso teste.
+
+[04:17] Então eu vou fazer assim: o root principal da nossa aplicação é o localhost:8000/, o barra vai ser o nosso endereço principal. Então vou colocar aqui um reverse(‘/’). Fora isto, vou criar aqui uma assertação, uma afirmação, assertEqual, e vai ser o seguinte: eu quero verificar se a função que eu estou utilizando no meu root.
+
+[04:51] Então: root.func, vai ser atendido pela minha index. Salvei isto aqui para deixarmos o nosso código ainda mais prolixo, vamos colocar docstring, vou colocar aqui, por exemplo. ”””Teste se a home da aplicação utiliza a função index da view”””, por exemplo.
+
+[05:20] Salvei. Vamos executar este teste? “Command + J”, vem aqui no terminal python manage.py test. Ele começa a fazer, verificar. Maravilha! Nós temos dois erros. Primeiro erro: test_buscando_novo_animal que ele não achou o css, faz sentido.
+
+[05:38] E depois, o animais.tests.test_urls que é este arquivo que escrevemos e ele falou: o nome index não pode ser importado do animais.views index, e faz sentido. Nós não criamos a nossa view, então vamos criar a nossa view.
+
+[05:53] Então vamos vir aqui, em “views.py” e vamos criar uma função chamada index que eu não vou passar nenhum argumento, vou deixar ela assim. Vamos executar mais uma vez. Executando. O nosso teste falhou, ele executou outro teste, vamos dar uma lida, testando test_buscando_novo_animal, que é o nosso teste funcional, e aqui o nosso test_rota_url_utilizar_view_index, testa se a home da aplicação utiliza a função index da view.
+
+[06:29] Nós temos uma mensagem aqui: reverse (‘/’) not found, significa que não conseguimos encontrar este endereço na nossa aplicação. Então, o que precisamos fazer? É importante que, quando criamos uma URL, nós registremos esta URL lá no setup, nas URLs do nosso projeto. Vamos fazer isto também.
+
+[06:57] O que é comum, lá em “setup > urls.py”, e aqui todas as URLs do nosso código, eu vou importar lá de animais.views import index, e aqui nós vamos dizer assim: existe um path para o endereço raiz da aplicação que vai ser atendido pela index.
+
+[07:24] Vou executar de novo. Um erro, que é o primeiro erro do nosso teste. O segundo, se scrollarmos um pouco, observe que nós continuamos com este erro. Ele diz que não foi encontrado. Isto tem relação com as requisições e solicitações do http.
+
+[07:43] Mas o que eu preciso fazer agora? Observa, nós precisamos de uma ferramenta capaz de ajustar estas requisições, solicitações http dentro do nosso teste, e existe um cara responsável por isto, que é o RequestFactory que vamos ver no próximo vídeo.
+
 ### RequestFactory
+
+[Advanced Test]('https://docs.djangoproject.com/en/4.1/topics/testing/advanced/')
+
+1. Em test_urls.py:
+
+
+        from django import TestCase, RequestFactory
+        from django.urls import reverse
+        from animais.views import index
+
+        class AnimaisURLSTestCase(TestCase):
+            def setUP(self):
+                self.factory = RequestFactory()
+
+            def test_rota_url_utiliza_vies_index(self):
+                request = self.factory.get('/')
+                response = index(request)
+                self.assertEqual(reesponse.status_cod)
+
+---
+
+[00:00] Então o que precisamos para testar, para finalizar o nosso teste aqui da view é de uma ferramenta capaz de criar e ajustar as solicitações HTTP para que possamos testar as nossas URLs, e a ferramenta que vamos utilizar é o RequestFactory, ele também será um import do nosso django.test.
+
+[00:22] Então, vou colocar aqui: RequestFactory, e nós vamos criar, assim como fizemos no nosso funcional, uma classe responsável por criar o nosso cenário de teste aqui de unidade também.
+
+[00:39] Então, vou criar uma nova função que eu vou chamar de setUp, ou seja, assim que começar este teste eu já quero preparar algumas coisas, passei ali o self e vou falar assim: self.factory = RequestFactory. O que vamos mudar? Nós sabemos que para conseguir uma requisição, em um determinado método, nós vamos utilizar o RequestFactory no lugar do reverse.
+
+[01:23] Então eu vou fazer o seguinte: vou criar uma variável para manter a nossa requisição, vou falar assim: request = self.factory.get e aqui eu vou passar qual endereço que eu quero testar. Eu quero testar, quero armazenar este endereço (‘/’). E a resposta que vamos ter desta requisição, vou colocar aqui um response, ele vai ser igual a index utilizando o request que fizemos.
+
+[02:00] Agora, nós vamos ter que mudar um pouco a nossa forma de verificar isto aqui, já que estamos vinculando a nossa resposta à index. Observe uma coisa importante: para conseguirmos verificar se, de fato, estamos fazendo a requisição para aquela view e aquela view está mandando um resultado correto, nós podemos usar aqui o self.assertEqual(response.status_code, 200). Ou seja, deu certo. Vamos executar este teste para vermos o que vai acontecer?
+
+[02:35] Vou executar. Primeiro não funcionou, ele deu um erro aqui do navbar e ele falou assim, olha só que interessante: a sua index não tem nenhum argumento passado, nenhum argumento é esperado. Você sabe, qual o argumento esperado aqui para a nossa função view da index? A requisição, o request, nós precisamos passar esta nossa requisição também para a index. Então, eu vou passar def index(request).
+
+[03:07] Vamos executar mais uma vez. Limpei o meu terminal, executando um teste mais uma vez. Deu ruim ali, vamos verificar, aqui é o erro do funcional, e aqui ele disse assim: “‘NoneType’ object has no atribute ‘status_code’”.
+
+[03:23] Vamos ver. Então lá na nossa view, ele chegou aqui na nossa view e ele falou: nós não temos nenhum status_code aqui, nós precisamos de um status_code aqui. E qual a forma mais simples de falarmos: olha, recebemos uma requisição e nós queremos uma resposta http. Nós podemos alterar aqui, por exemplo, vou buscar do django.http, vou importar um módulo chamado HttpResponse. E o que eu vou fazer? Vou retornar ele, return HttpResponse. Só isso.
+
+[03:58] Vamos verificar para ver o que vai acontecer agora? Rodando o nosso teste mais uma vez, um ponto. OIha! Uma coisa boa. Teve o erro lá do CSS que ele não achou, mas nós tivemos um ponto aqui, o que é este ponto? Nós já sabemos, o nosso teste de URL foi aprovado. O que aconteceu? O que fizemos? Nós criamos uma função que testa para ver se esta URL vai ser atendida pela nossa index correta, e isto aconteceu.
+
+[04:28] Nós estamos conseguindo manter o ciclo certo: nós tivemos uma requisição, a requisição foi a index, uma requisição para barra, para o home principal, ela foi para a index, esta index voltou o status_code 200, isto está certo.
+
+[04:43] Qual vai ser o nosso próximo passo agora? Agora, o que falta? Já que nós temos a index voltando o status_code certo, nós podemos ter uma index renderizando uma página com aquele menu, e é isto que vamos fazer na sequência.
+
 ### Análise do código
-### Faça como eu fiz
+
+Uma pessoa durante o curso de TDD com Django desenvolveu o seguinte trecho de código:
+
+        class AnimaisURLSTestCase(TestCase):
+            def setUp(self):
+                self.factory = RequestFactory()
+
+Com base no código acima e analisando as afirmações abaixo, podemos afirmar que:
+
+a) **Alternativa correta:** RequestFactory é uma ferramenta para criar e ajustar solicitações HTTP.
+- _Alternativa correta! Certo! Podemos pensar nele como uma versão simplificada do WebDriver do Selenium._
+
+b) **Alternativa correta:** Qualquer método em uma subclasse TestCase que comece com o prefixo test_ será executado sempre que executarmos o python manage.py test.
+- _Alternativa correta! Certo! Assumindo que não adicionamos um argumento para excluí-lo, o método será executado._
+
+c) O método setUp() é executado quando os métodos de testes são concluídos.
+
 ### O que aprendemos?
+
+**Nesta aula:**
+- Vimos a importância da história do usuário para guiar nossos testes;
+- Criamos o app de Animais;
+- Testamos a url principal da aplicação.
+
+**Na próxima aula:** Vamos criar nosso primeiro template e dar continuidade no teste funcional, verificando se alguns elementos HTML estão presentes em nossa index!
+
 ## 04. Template e cenário de teste
 ### Projeto da aula anterior
 ### Template
