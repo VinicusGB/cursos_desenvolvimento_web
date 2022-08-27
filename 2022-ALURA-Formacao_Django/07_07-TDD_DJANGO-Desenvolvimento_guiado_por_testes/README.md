@@ -890,10 +890,133 @@ Vamos alterar a view para realizar a busca, carregar alguns animais em nossa bas
 
 ## 06. Finalizando o projeto
 ### Alterando a view
+
+[00:00] Pessoal, para nós fecharmos o nosso treinamento de TDD, o que acontece? O site exibe quatro características do animal pesquisado, lá do nosso setup. O que nós fizemos lá na nossa index.html? Nós colocamos quatro div e manteve este conteúdo aqui e não está legal. Por quê? Da forma que está nós não estamos exibindo conteúdo, não tem nada: o nome do animal, se ele é venenoso, se ele é predador, e nós precisamos alterar isto também.
+
+[00:28] O que fizemos no vídeo anterior? Nós criamos um teste para busca do animal e ele funcionou, porém, nós precisamos exibir aqui o ”result-description” com o conteúdo, de fato, do animal pesquisado, com as características do animal pesquisado. Então, para isso, o que vamos fazer? Nós vamos alterar a nossa view.
+
+[00:47] Só que antes, só para deixar legal, nós criamos uma instância de um determinado animal, de um calopsita, para realizar o teste da view. O que eu quero fazer agora é criar uma instância para realizar um teste aqui. Então vou fazer aqui: self.animal =. Preciso importar o animal aqui também. from animais.models import Animal e aqui vai ser self.animal = Animal.objects.create.
+
+[01:25] Aqui nós vamos colocar o nome_animal e vou chamar esse animal de leão, que é o animal que o Vini pesquisou na nossa história do usuário, vou falar que ele é um predador, ’Sim’, ele é um predador, se ele é venenoso, venenoso = ‘Não’, o leão não é um animal venenoso, e infelizmente ele não é um animal doméstico.domestico, vou falar aqui que ’Não’. Já pensou um leão doméstico? Ia ser bizarro.
+
+[01:59] Criei a instância deste meu animal. O que eu vou fazer agora? Lá na minha view eu vou preparar um contexto para este nosso animal pesquisado, então eu vou dizer assim: eu tenho um animal que eu pesquisei, que o Vini fez a pesquisa aqui, que é o leão, e ele vai exibir, de fato, as características deste animal - que vai pegar o conteúdo deste animal.
+
+[02:21] Então, vamos parar de burlar a nossa index utilizando o ”result-description” sem nada, e vamos colocar de fato as características deste animal.
+
+[02:29] Primeira coisa que vamos fazer, olha só, nós passamos por contexto alguma coisa. Se eu não pesquisei nenhum animal, não vai exibir nada por contexto, então eu vou colocar aqui um None.
+
+[02:41] Então, temos aqui um contexto sem nada, com características vazias, e vou verificar: se a minha busca, se o meu buscar, que é o meu input, observe que nós colocamos aqui no nosso input de busca o name = ‘buscar’. Eu vou verificar: se eu tiver alguma coisa dentro deste buscar, então if ‘buscar’ in request.GET: tudo maiúsculo, eu quero de fato realizar a busca de um animal.
+
+[03:10] Então, primeira coisa: vamos fazer bem passo a passo. Eu vou pegar todos os animais. animais = Animal.objects.all. Depois, eu vou querer pegar detalhes do animal pesquisado, então animal_pesquisado =, ele vai ser o animal que está vindo desta requisição, então request.GET[‘buscar’].
+
+[03:39] Então, quando eu tiver um animal para buscar, vai estar buscar igual a alguma coisa, leão, por exemplo. Então, nós queremos pegar aquele leão, o nome que vai ser pesquisado e colocar aqui no animal_pesquisado.
+
+[03:50] Depois, nós precisamos buscar as características deste animal. Então, vou escrever caracteristicas = no plural, então vou colocar aqui todos os animais: animais.filter, que eu quero filtrar os animais através do nome. Então eu vou colocar nome_animal e aqui tem um ponto interessante: nós podemos pesquisar, nós temos, por exemplo, cavalo e cavalo-marinho na nossa base de dados.
+
+[04:21] Eu quero que só o cavalo, só o que a pessoa digitou, eu quero exibir todos os cavalos que temos na aplicação, então vai exibir cavalo-marinho, cavalo e todos os detalhes destes animais e características e eu vou decidir na minha aplicação para exibir todos os animais. Você pode dar uma olhada, eu vou deixar um link depois deste vídeo com um post ensinando como que trabalhamos com os filtros com o ORM do Django.
+
+[04:54] Então, eu vou criar um filtro para exibir tudo que contenha este animal pesquisado. Então se tiver cavalo-marinho e cavalo eu vou exibir os dois. E fazemos isso como? Coloco dois underlines depois do nome_animal e coloco icontains, então se ele contém algo, se ele achar algo na nossa base de dados com o animal_pesquisado ele vai realizar este filtro para nós.
+
+[05:24] Para finalizar, a única coisa que fazemos é passar para o contexto, context, montar um outro contexto, onde eu tenho as caracteristicas, que ela vai ser baseada nas caracteristicas, e estas características que temos aqui do animal que nós já pesquisamos. Para finalizar, na nossa index.html, nós queremos exibir o nosso contexto, quer exibir estas características, pegar as características dos contextos e renderizar ela aqui.
+
+[05:53] E nós vamos criar um for, que podemos ter mais de um animal, {% for característica in caracateristicas %}, o que eu quero fazer? Para deixar só indentado aqui, selecionei todas as quatro div, “Command + [só para arrastar para o lado, e já vou fechar o meuendfor, então{% endfor %}`.
+
+[06:26] Aqui eu vou passar as características do animal abrindo duas chaves, vou fazer assim {{caracterstica.}}, e vou copiar este aqui, só para ganharmos um tempo. “Command +C”, vem aqui nos outros div, “Command +V”, “Command +V”, “Command +V” . Então, a primeira característica que temos é o nome_animal que eu quero exibir, a segunda, se ele é um predador, se ele é venenoso, e se ele é domestico. Salvei.
+
+[07:06] Vamos executar o nosso teste. Maravilha! Executamos o nosso teste e nós passamos neste teste, o que eu vou fazer agora, no próximo vídeo, nós vamos, de fato, subir esta aplicação, realizar o migrate desta aplicação, criar uns animais só de exemplo na nossa base de dados e começar a pesquisar alguns animais para visualizar esta funcionalidade de fato na nossa aplicação.
+
 ### Preparando o ambiente
+
+No próximo vídeo, vamos alterar a visualização do projeto, incluindo um css bem lindão e criar uma lista de animais no banco de dados. Para isso, clique [neste link]('https://github.com/alura-cursos/material_extra_tdd/archive/master.zip') para realizar o download dos materiais necessários para próxima aula.
+
+Após o download realizado, vamos alterar?
+
 ### Realizando buscas
+
+[00:00] Agora que finalizamos os nossos testes, vamos executar a nossa aplicação? Vou rodar aqui um python runserver pra visualizarmos a nossa aplicação rodando. Vou abrir aqui uma nova aba e acessar http://localhost:8000/, e temos aqui o nosso site. Se eu pesquisar, por exemplo, leão e dou aqui um pesquisar, nós temos uma mensagem de erro indicando que nós não temos esta tabela de animais_animal do nosso app de animais, a nossa tabela de animal.
+
+[00:30] Faz muito sentido, porque em nenhum momento nós criamos os nossos dados no banco de dados, nós falamos: tem estes dados para serem criados com o makemigration, mas nós não migramos estes dados para a nossa base. Vamos fazer isto agora?
+
+[00:44] Então, a primeira coisa que eu vou fazer, deixa eu minimizar a barra lateral para nós enxergarmos legal. Vou colocar aqui python manage.py migrate, ou seja, pega todas as migrações que você tem e aplica lá no banco de dados. Se executarmos mais uma vez, agora aquela mensagem indicando que nós tínhamos migrações pendentes não aparece e, quando atualizamos, nós não temos nada.
+
+[01:07] Apareceu aqui: buscar = leão, só que ele não exibe nada. Por quê? Porque nós não temos nenhum animal na nossa base de dados de leão, e nenhum animal cadastrado. Como que nós podemos cadastrar? Nós podemos utilizar, por exemplo, o admin.py do Django, criar um novo registro de modelos aqui para o nosso admin, ou, eu deixei na atividade anterior a esse vídeo, um material extra do curso, e tem aqui um lista_animais.py.
+
+[01:38] O que eu vou fazer? Dentro deste lista_animais.py tem uma lista com uma série de animais, com as características que nós estamos utilizando na nossa aplicação e o que acontece? Com base nestas características nós podemos visualizar, criar vários animais de forma rápida aqui na nossa aplicação.
+
+[01:57] Então, o que eu vou fazer? Vou copiar este lista_animais.py aqui para o nosso projeto, então dei um “Ctrl + C” “Ctrl +V”, ou só arrastei, e observa, aqui nós temos uma lista de animais, então, tem um dicionário, o nome, urso, javali, búfalo, elefante, pato, girafa, ou seja, vários animais.
+
+[02:13] E lá, se nós scrollarmos para o final, nós temos aqui preparando o nosso ambiente para conseguir criar estes animais na nossa base de dados. Fez a importação do modelo e falou: para cada animal que tiver desta lista define estas características, estes atributos e cria um animal e salva o animal na base de dados, e nós geramos estes animais. Vamos fazer isto agora?
+
+[02:36] Então, parei meu servidor. “Ctrl + C”, o que eu vou fazer agora? Agora eu vou fazer o seguinte, eu vou rodar este script, então python lista_animais.py, quando eu dou um “Enter” observe que ele fala animais gerados. Então, vou subir meu servidor mais uma vez, e vamos acessar o nosso projeto.
+
+[02:59] Então, se eu digitar aqui, por exemplo, deixa eu atualizar, deixar sem nada. Quando eu só atualizei, não coloquei nada, ele trouxe todos os animais para mim. Não é o que eu quero. O que eu quero é ver só o leão.
+
+[03:09] Então, quando eu dou aqui um pesquisar, ele traz aqui dois animais: o leão e o leão marinho. Se eu digito aqui, por exemplo, cavalo, vamos ver o que ele fala. Ele traz aqui o cavalo marinho, então ele fala aqui: cavalo marinho e as três características. Só que se nós pararmos para pensar, nosso visual ficou bem feio. Nós testamos várias partes da nossa aplicação para esta funcionalidade passar, ser aprovada, só que o nosso visual está feio.
+
+[03:30] Para nos ajudar nesta tarefa, a Juliana Negreiros, que é desenvolvedora aqui na Alura também, ela criou um front-end bem bonito para nós utilizarmos na nossa aplicação. Então, vamos colocar este front-end para funcionar? Primeira coisa que eu vou fazer: nós poderíamos utilizar o Bootstrap, qualquer outro assim, mas ela preferiu fazer na mão o css bem lindo.
+
+[03:52] Então, dentro do nosso arquivo de setup eu vou criar um folder que eu vou chamar de static. Dentro deste arquivo eu vou copiar este arquivo style.css, vou lá na nossa pasta do nosso projeto, na pasta do nosso “tdd_busca_animal > setup > static” eu vou dar um “Ctrl +V” daquele nosso arquivo style.css, com todos os dados que precisamos.
+
+[04:17] Se vamos utilizar o style.css, precisamos definir no nosso “settings.py” a rota principal deste nosso arquivo e onde está este static file, qual que é o diretório principal dele. Então vamos definir estas duas variáveis de instância aqui.
+
+[04:40] Então, nós temos o STATIC_ROOT. Aqui nós precisamos importar, além do path, ,os para conseguir navegar entre as nossas páginas aqui. Então STATIC_ROOT = os.path.join e nós vamos utilizar do nosso diretório principal do BASE_DIR, vou passar aqui o nome do arquivo onde vai ser encontrado a raiz dos nossos arquivos estáticos, então ’static’.
+
+[05:14] Defini STATIC_ROOT, vou definir agora também o STATICFILES_DIRS, todas as letras maiúsculas, dos diretórios dos nossos arquivos estáticos, e eu vou falar que ele está lá em os.path.join vai ser na base da nossa aplicação mesmo, no BASE_DIR, vou falar qual é o componente que vai ser responsável por manter todos os nossos arquivos estáticos, então é ’setup/static’. Estas duas configurações são as únicas necessárias para a nossa aplicação.
+
+[05:57] Então, nós temos aqui um CSS muito maluco, muito bonito que Ju fez, o que vamos fazer? Agora nós precisamos alterar lá do nosso app de animais o nosso template, nossa index.html, vamos precisar alterar. Então vai precisar carregar o arquivo estático e utilizar esta classe que está usando. Só que para isso, a Ju já deixou um esquema para nós.
+
+[06:18] Então, nós temos um arquivo que eu vou abrir com o VS Code, então eu tenho o meu arquivo do Busca Animal que está assim, e tem o “Busca Animal” que está com as características bem legais aqui do static. O que eu vou fazer? Vou copiar todo este conteúdo e vou colar no index.html, já utilizando as classes e tudo que ele precisa.
+
+[06:39] Só uma alteração que eu vou fazer aqui: observa que o venenoso ficou aqui venenoso, e no final, no doméstico ele está aqui, eu estou usando a característica do venenoso e não é, é caracteristica.domestico. Agora sim está certo.
+
+[06:56] Vamos dar uma olhada neste arquivo. Então, nós temos aqui os static, definimos este load static aqui, está carregando o ’style.css’ através do static e o resto nós estamos utilizando todas as classes lá do css para alterar, para manipular o nosso form.
+
+[07:15] Então, nós temos aqui o nosso form de característica, onde pegamos o nome do animal e exibimos o nome do animal, se ele é predador exibindo se ele é predador, venenoso, venenoso e doméstico, nós alteramos aqui para doméstico.
+
+[07:27] Agora, para eu utilizar os arquivos estáticos que eu incluí lá na minha aplicação, nós precisamos executar o collect static que vimos lá no nosso primeiro curso de Django. Então, vou rodar aqui python manage.py collectstatic. Dou um “Enter”. Agora, sim, e ele já fez a referência para todos os arquivos estáticos que precisamos.
+
+[08:10] Agora, eu vou subir o meu servidor mais uma vez, vou acessar aquele meu site, quando eu atualizar: olha que bonito isto aqui! Ju, ficou muito bacana isto aqui! Os alunos vão agradecer bastante, e eu vou pesquisar. Olha só, nós tínhamos colocado a pesquisa como cavalo e ele mostrou cavalo marinho. É um predador? Não. É venenoso? Não. É doméstico? Não.
+
+[08:30] Eu vou colocar aqui um gato, por exemplo, que todo mundo gosta de gato. Gato é um predador? Sim. Ele é venenoso? Não. Ele é doméstico? Sim. E o urso? Ele é predador? Sim. Ele é venenoso? Não? Ele é doméstico? Também não. E o nosso clássico, nossa pesquisa do leão, do Vini.
+
+[08:46] O leão aparece dois: aparece o leão e o leão marinho, olha que legal. Então, o leão é um predador, ele não é venenoso e ele não é doméstico, uma pena, mas ele não é doméstico o leão. O leão marinho também é um predador, ele não é venenoso e também não é doméstico.
+
+[09:00] Se eu não colocar nada e der um pesquisar ele listar todos os animais que temos na nossa base de dados que podemos exibir. Então tem a girafa e vários outros animais super legais também. O hamster é um animal doméstico. Então, eu espero que vocês tenham gostado e continue aí, antes de finalizar o curso para as próximas atividades.
+
 ### Próximo passo
-### Faça como eu fiz
+
+Testamos e criamos uma aplicação que busca animais em uma base de dados e isso ficou bem legal. Para isso usamos diversas ferramentas e módulos como: LiveServerTestCase, Selenium, webdriver, TestCase, reverse, RequestFactory, entre outras.
+
+Porém, além das ferramentas, devemos ter em mente que:
+
+a) Devemos estudar apenas as ferramentas e módulos de teste.
+
+b) **Alternativa correta:** Existem outros tipos de testes com outros objetivos além do funcional e de unidade.
+- _Alternativa correta! Certo! Existem outros tipos de testes, cada um com um objetivo diferente._
+
+c) **Alternativa correta:** Conhecer o sistema que será desenvolvido através dos testes, entendendo os fluxos e regras, fará grande diferença na criação dos testes.
+- _Alternativa correta! Certo! Entender o objetivo do sistema é essencial para o sucesso dos testes._
+
 ### O que aprendemos?
-### Parabéns!
+
+Nesta aula:
+Alteramos a view para exibir os resultados da busca;
+
+Incluímos um css, executamos o collectstatic e alteramos o arquivo index.html para deixar o visual da aplicação bem lindão;
+
+Projeto final do curso
+Aqui você pode baixar o zip da aula 06 ou acessar os arquivos no [Github]('https://github.com/alura-cursos/django_tdd/tree/aula_6')!
+
 ### Conclusão
+
+[00:00] Se você chegou até aqui, parabéns! Você está finalizando mais um treinamento da Alura. Neste treinamento, o que fizemos? Nós criamos um projeto em Django e escreveu uma história de usuário, onde um determinado usuário pesquisava por um animal e ele encontrava um animal, encontrava características daquele animal.
+
+[00:18] Com base nesta história, nós desenvolvemos os nossos testes e começamos com o teste funcional, depois passamos para o teste de unidade nos nossos modelos.
+
+[00:29] Deixa eu abrir aqui em animais: testes com nossos modelos, com nossas URLs, com nossa view para garantir que esta funcionalidade de busca seria atendida. Isto ficou muito bacana.
+
+[00:39] No final, nós ficamos com essa aplicação, onde nós conseguimos pesquisar um determinado animal e exibir as quatro características sobre ele. Isto ficou muito legal. Só que, um ponto que eu quero deixar aqui para vocês é assim: não é apenas a base de testes deste curso que vai te fazer um grande tester, uma grande QA ou algo deste tipo, não. Continue estudando testes, continue buscando conteúdos a respeito de testes.
+
+[01:05] Nós pensamos em criar este conteúdo de forma mais lúdica e mais legal possível, mas isto é muito importante: a sua prática de teste vai fazer você escrever cada vez mais testes melhores e, cada vez mais, garantir que o seu software entregue aquilo que ele precisa entregar, tenha o comportamento que precisa.
+
+[01:24] Então, quero deixar meu forte abraço, continue estudando teste, continue escrevendo linhas de código a respeito de testes, abre o GitHub, digita lá TDD com Python e começa a copiar vários códigos, escrever bastante para deixar esta parte motora bem legal e você entender outras funcionalidades relacionadas a testes com Django ou com outras linguagens também. Forte abraço e nos vemos no próximo curso.
