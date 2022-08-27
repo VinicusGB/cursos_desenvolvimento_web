@@ -133,11 +133,28 @@ O teste funcional é focado na _experiência do usuário_ e podem ser grandes e 
 
 Para maiores informações, clique [neste link]('https://www.atlassian.com/continuous-delivery/software-testing/types-of-software-testing') e descubra outros tipos de testes(texto em inglês).
 
-
-
 ### Definindo o TDD
-### Faça como eu fiz
+
+Nesta aula, criamos uma função utilizando o TDD de forma prática e entendemos as vantagens de utilizar essa metodologia para desenvolver um software.
+
+Sabendo disso, podemos afirmar que:
+
+a) No TDD, a primeira etapa sempre é escrever o código de produção e em seguida, escrever o teste para garantir o resultado ou comportamento esperado.
+
+b) **Alternativa correta:** O menor ciclo do TDD envolve 3 etapas (escrever o teste, escrever o código para ser aprovado e refatorar).
+- _Alternativa correta! Certo! Essas etapas são: escrever o teste que vai falhar(red), escrever o código para ser aprovado(green) e refatorar o código aprovado(refactor)._
+
+c) Um software criado com TDD, jamais apresentará algum tipo de erro, bug ou comportamento estranho.
+
 ### O que aprendemos?
+
+**Nesta aula:**
+- Aplicamos a metodologia do TDD para desenvolver uma função que descobre a idade;
+- Entendemos que o menor ciclo do TDD possui 3 etapas: escrever o teste que falha, escrever o código necessário para ser aprovado e refatorar o código.
+
+**Na próxima aula:**
+Vamos aplicar essa técnica num projeto Django e descobrir como podemos desenvolver uma aplicação sendo guiado por testes!
+
 ## 02. Requisitos, testes funcionais e unitários
 ### Projeto da aula anterior
 ### LiveServerTest e Selenium
