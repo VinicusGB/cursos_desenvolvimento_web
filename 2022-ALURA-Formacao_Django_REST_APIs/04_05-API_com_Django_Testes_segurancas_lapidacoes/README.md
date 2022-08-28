@@ -211,14 +211,248 @@ c) **Alternativa correta:** Tanto o upload de imagens como de PDF vão funcionar
 Vamos entender o que é caching e como armazenar seu conteúdo num banco chave valor como Redis!
 
 ## 02. Caching
-### Projeto da aula anterior
-### Caching
+### [Caching]('https://www.django-rest-framework.org/api-guide/caching/')
+
+NOTE: The cache_page decorator only caches the GET and HEAD responses with status 200.
+
+Podemos colocar que nossa aplicação salve em cache alguns conteúdo e assim não precisa solicitar a todo momento para o servidor.
+
+1. Em views.py:
+
+                ...
+                from django.utils.decorators import method_decorator
+                from django.views.decorators.cache import cache_page
+
+                class MatriculaViewSet(viewsets.ModelViewSet):
+                        ...
+                        @method_decorator(cache_page(20))
+                        def dispatch(self, *args, **kwargs):
+                                return super(MatriculaViewSet, self).dispatch(*args, **kwargs)
+
+---
+
+[00:00] Nessa aula vamos deixar a nossa API ainda mais performática. Como vamos fazer isso? Vamos utilizar um recurso conhecido como cache ou cachê. O que é o cache? O cache é uma forma que temos para resolver problemas de encadeamento de serviços.
+
+[00:15] Então o cache pode ser entendido como uma cópia da fonte dos dados, por exemplo. Então podemos ter um cache de uma página Web, o cache de um XML, o cache de um disco rígido ou dos recursos que estamos disponibilizando na API.
+
+[00:30] Podemos colocar praticamente vários conteúdos diferentes e armazenarmos no cache. Então o cache HTTP é um mecanismo de armazenamento que gerencia a adição, recuperação e remoção de respostas do servidor de origem para o cache. O cache vai tentar lidar com as solicitações que usam métodos armazenável em cache. O que isso significa?
+
+[00:54] Significa que determinado recurso, pode ser “aluno”, “cursos” ou “matrícula” - eu vou falar “quero armazenar isso em cache”. No lugar de ficar pedindo para o servidor, o servidor pede para o URM, o URM espera uma resposta do banco de dados, devolve e traz todo esse meio de campo. Vamos armazenar isso no cache.
+
+[01:17] Mas quem toma conta do cache? Todos os tipos de cache, os dados de objetos que são colocados nessa memória, são gerenciados também pelo servidor. Então as próximas solicitações, as informações que queremos recuperar virão do cache e não da fonte, virão do cache dos recursos que permitimos.
+
+[01:39] Então se o item de um cache expira - seja por questão de tempo ou por alguma dependência que colocamos, alguma lógica que colocamos na nossa aplicação - o cache vai ser invalidado e a próxima solicitação vai recuperar o conteúdo e vai armazenar aquela informação no cache.
+
+[01:59] Então isso é o cache, essa é uma forma que temos de deixar a API mais performática! Se acessarmos o Django Rest Framework e digitarmos Caching, vamos ver que uma pequena explicação sobre como o Caching funciona e como podemos usar os decorators para indicarmos que queremos armazenar em cache determinado recurso.
+
+[aula2_video1_imagem1]
+
+[02:25] Então antes de começarmos, tem uma nota muito importante: aqui embaixo no final temos uma nota que diz que esse cache page decorator armazena apenas requisições get e head com status 200.
+
+[aula2_video1_imagem2]
+
+[02:45] Então não queremos armazenar um “Page not found 404” ou alguma coisa assim no nosso cache. Não faz sentido. Então, o que armazenamos em cache? Requisições get e head com o status 200. Como coloco o cache na nossa aplicação? O local do cache onde vamos colocar vai variar de sistema para sistema e de aplicação para aplicação. Vai depender bastante do cenário.
+
+[03:13] No nosso caso, eu vou deixar os alunos e cursos da forma como estamos trabalhando. Porém as matrículas quero armazená-las no cache. Não preciso atualizar todas as vezes as informações, os recursos disponibilizados por matrícula reais. Vou chamar de “reais”.
+
+[03:32] Então vou pedir: “tenho essas matrículas e de tempo em tempo...” No mundo real poderíamos atualizar as matrículas de hora em hora, a cada duas horas ou dependendo da aplicação - mas eu vou colocar 30 segundos por conta no nosso tempo.
+
+[03:57] Então, o que vou fazer? Vou acessar o usuário “admin” do Django, vou criar uma matrícula e vou pedir para essa matrícula ser armazenada em cache. Quando atualizarmos a página, lembrem que eu pedi para ela armazenar aquela informação, ele vai guardar no cache. Quando eu atualizar de novo, vou ver aquela informação lá.
+
+[04:16] Vou criar uma outra matrícula ainda nesse tempo do escopo do cache, o tempo que o cache vai durar, e vou criar uma segunda matrícula. Quando eu atualizar a página não vou conseguir ver porque só tenho as matrículas que estão armazenadas no cache. Não estou indo no servidor toda hora buscar as matrículas. Dessa forma, vamos deixar a API mais performática.
+
+[04:36] Então, vamos fazer isso? Para começarmos, vamos fazer a configuração para indicarmos que queremos que as nossas matrículas sejam armazenadas no cache. Então não é difícil, é supersimples! Vamos precisar de dois módulos. O primeiro é o Django Utils Decorators, então em “views.py” vou digitar from.django.utils.decorators, no plural.
+
+[aula2_video1_imagem3]
+
+[05:07] Vou importar o method_decorator. O segundo que vamos importar vai ser do Django Views Decorators Cache. Então vou importar, from.django.views.decorators.cache. Vou importar o cache_page. Trouxe os dois imports. Não estamos usando, por isso eles estão em cinza.
+
+[aula2_video1_imagem4]
+
+[05:39] Tenho o aluno, cursos e matriculas. Esse é o que quero visualizar, esse é o recurso que eu quero disponibilizar para ser armazenado no cache. Como indicamos que temos informações para serem armazenadas? A primeira coisa é armazenar o método - e esse é o método que vou indicar que quero enviar esses dados para o cache. Vou chamá-lo de dispatch, de “despachar”.
+
+[06:09] Então, dispatch. Método def dispatch(self, args, kwargs):. Você pode me perguntar: “Guilherme, o que são esses métodos args e kwargs? Na Alura nós temos um vídeo no Alura + explicando passo a passo do que é o args e kwargs. Vou deixar ele no link da próxima atividade. Então na atividade “Para Saber Mais Args e Kwargs” vou indicar esse vídeo, que temos uma explicação bem legal para ganharmos tempo.
+
+[06:50] Segundo! Vai ficar return super(MatriculaViewSet, self).dispatch(*args, kwags);. Salvei. Abrindo o servidor parece que está tudo OK. O que vou fazer agora? Vamos criar um super usuário para essa aplicação que não criamos ainda. Se você já tem um super usuário você já pode criar. Abri um segundo terminal.
+
+[07:47] Então tem o primeiro rodando no servidor. O segundo vou criar um super usuário, digitando python manage.py createsuperuser. Apertei a tecla “Enter”. Vou criar um usuário chamado gui, sem endereço de e-mail. A senha é aquela que você já sabe. Nem preciso falar, é a senha curta, tem menos de 8 caracteres e é só numérica. Criei o super usuário!
+
+[08:09] Vou fechar essa parte do meu servidor. Estou com meu servidor rolando no terminal 1. Acho que estou, se não fechei. Não, não fechei meu servidor. Vou subir, python manage.py runserver. Maravilha!
+
+[08:26] Voltando na nossa aplicação no navegador e atualizando. Beleza, tudo funcionando! Vou acessar com o super usuário, “gui” com aquela senha supersegura.
+
+[08:36] Em “Matrículas” eu vou criar uma nova matrícula, então vou em “ADICIONAR MATRÍCULA +”. Deixe-me minimizar aqui do lado. A matrícula vai ser para a Isabel Martins, para o curso de “Python intermediário” no horário matutino. Vou clicar em “SALVAR”. A matrícula foi criada! Volto e acesso a matrícula. Temos a nossa matrícula!
+
+[08:57] Você pode me perguntar: “mas, Guilherme, onde controlamos o tempo para conseguirmos armazenar essas informações no cache?” É isso o que precisamos fazer também! Então, além do método dispatch para indicarmos os dados que queremos colocar o MatriculaViewSet para despacharmos no cache, vamos utilizar o method@decorators(cache_page(20)). Acho que consigo em 20 segundos mostrar.
+
+[09:32] Abrindo o servidor está tudo OK. Olhe o que eu vou fazer. Vou atualizar. Nós temos essas informações.
+
+[09:37] Vou criar mais uma matrícula em “ADICIONAR MATRÍCULA +”. Então a matrícula vai ser do Renan Melo para o curso de “Python intermediário” também no período matutino. Salvei. Temos duas matrículas. Quando vou lá e atualizo as matrículas, só tenho uma matrícula exibida.
+
+[09:53] Por quê? Porque não estou indo no servidor. Estou buscando as informações que estão armazenadas no cache. Quanto tempo essas informações serão expiradas? Serão expiradas em 20 segundos, que foi o tempo que coloquei.
+
+[10:08] Porém se eu ficar atualizando, em um determinado momento nós teremos a segunda matrícula sendo exibida. Essa é uma maneira de deixarmos a nossa API mais performática.
+
 ### Para saber mais: args e kwargs
+
+Como havia comentado, segue um link sobre [args e kwargs - multiplos parâmentros no Python]('https://cursos.alura.com.br/args-e-kwargs-multiplos-argumentos-em-python-c253').
+
+**A solução mais prática: a variável args**
+- O uso de args _possibilita múltiplos argumentos_ a serem recebidos _em uma fuunção_
+- Não precisamos mais montar a lista de antemâo: os argumentos adicionais dentro args são _armazenados_ automaticamente _em uma tupla dentro da função_
+
+**A solução mais dinâmica: a variiável kwargs**
+- O uso de kwargs _possibilita múltiplos argumentos chaves_ a serem recebidos _em uma função_
+- Esses argumentos são adaptados _como chaves de um dicionário_. Podemos interpretar essas chaves _independente da ordem em que foram chamadas_
+
 ### Instalando o Redis
+
+Redis é um banco de dados de chave/valor servidor de cache. Disponível em: https://redis.io/download
+
+1. No terminal na pasta do arquivo de downloads:
+
+                make
+
+2. No terminal para subir o servidor devemos:
+
+                src/redis-server
+
+---
+
+[00:00] Incluímos na memória em cache as informações de matrículas, alguns recursos de matrículas. Isso ficou muito legal. Só que em um cenário real, em um projeto do mundo real, o que acontece? Geralmente, a memória em cache é armazenada em algum lugar - e um dos lugares utilizados no mundo real, nos projetos grandes é o Redis. Um possível lugar. Existem outros.
+
+[00:25] Mas o que é o Redis? O Redis é um banco de dados de chave e valor onde nós podemos utilizar como banco de dados ou armazenar o cache. O que podemos fazer? Podemos instalar o Redis na nossa máquina, configurar, subir o servidor do Redis, configuração o Django para conversar com o Redis e armazenar as informações do cache no Redis.
+
+[00:49] Continuamos utilizando banco de dados em que estamos, mas o cache vai ser armazenado no Redis. Vamos fazer isso? Para começarmos, vamos precisar fazer o download do Redis. Então na página do Redis eu vou vir em “Download”.
+
+[01:02] Temos várias versões, mas eu recomendo utilizar essa versão estável. Nesse momento do curso é a versão 6.0. Então faça o download do 6.0.9. Eu já fiz o download para economizarmos tempo. Então quando estiver fazendo download, se você quiser, pode dar um pause no vídeo. Depois continuaremos.
+
+[01:21] Então já fiz o download do Redis. O que vou fazer? Para eu instalar o Redis na minha máquina, vou abrir um terminal e vou acessar a pasta do Redis. Então vou digitar “cd” com o diretório de onde está essa pasta.
+
+[01:38] No meu caso é Users/guilhermelima/Downloads/deis-06.0.9, mas no seu caso você indicar o caminho dessa pasta. Aperto a tecla “Enter”. Se eu digito ls, nós podemos ver que estou nessa pasta. Para eu conseguir instalar o Redis, vou digitar make e apertar a tecla “Enter”. Ele vai começar a instalar uma série de dependências.
+
+[01:56] Dois pontos importantes enquanto está instalando: na Alura nós temos um treinamento de Redis. Então você que quer aprofundar seus conhecimentos nesse banco de dados chave e valor, tem um treinamento na Alura. Você pode aprofundar seus conhecimentos também no Redis e entender como esse banco trabalha e pode utilizar esse banco para armazenar outras informações também. O curso é superlegal. Eu super recomendo também!
+
+[02:20] Fiz a instalação do Redis, executei o make e depois ele dá até uma boa ideia, que é rodar o make test. Se você quiser executar o make test, você pode executar para ver se houve algum erro. Enquanto está instalando você pode dar uma olhada no curso de Redis, bater uma flexão ou tomar um suco de laranja. Fique tranquilo!
+
+[02:44] Executei o make, executei o make test e vi que está tudo OK. Vamos subir o servidor do Redis. Para isso vou digitar src/redis-server. Quando aperto a tecla “Enter”, olhe lá o servidor do Redis já no ar!
+
+[03:00] Está funcionando o meu Redis! Ainda não configuramos ele para conversar com o Django, mas só para fazermos um teste para entendermos como o Redis funciona, a primeira coisa que vou fazer é abrir uma outra aba do terminal.
+
+[03:22] Utilizei as teclas “Command + T” para abrir outra aba, vou acessar a pasta do Redis. e o que vou fazer agora vai ser acessar essa pasta “src”, então vou digitar cd src. Aqui temos uma série de comandos do Redis.
+
+[03:43] Esses comandos estão listados na página da documentação dele. Então temos esse “Commands”, que tem uma série de comandos e série de coisas que podemos fazer com o Redis.
+
+[03:552] Vou fazer a coisa mais simples e possível, que é abrir a linha de comando dele. Vou colocar um ./redis-cli no terminal. Apareceu aqui 127.0.0.1:6379, que é porta onde ele está sendo utilizado. Então, o que quero armazenar?
+
+[04:11] Quero armazenar um determinado valor. Vou colocar set “valor” 5. Beleza, ele deu um “OK”. Se eu digitar get valor, ele me devolverá o 5!
+
+[04:31] E o Redis funciona dessa forma. Muito simples!
+
+[04:33] O que vamos fazer no próximo vídeo? Vamos configurar o Django para conversar com o Redis, para conectar o Django e o Redis e falar: “o que for memória cache eu quero armazenar no Redis”.
+
 ### Integrando Django e Redis
-### Faça como eu fiz
+
+[DJANGO-REDIS]('https://pypi.org/project/django-redis/')
+
+1. Para instalar, no terminal:
+
+                pip install django-redis
+
+1. Em settings.py, devemos:
+
+                ...
+                CACHES = {
+                        "default": {
+                                "BACKEND":"django_redis.cache.RedisCache",
+                                "LOCATION":"redis://127.0.0.1:6379/1",
+                                "OPTIONS":{
+                                        "CLENT_CLASS":"django_redis.client.DefaultClient",
+                                }
+                        }
+                }
+
+
+                #Para que não haja uma interferência do REDIS no ADMIN do DJANTO
+
+                SESSION_ENGINE = 'django.contrib.sessions.backends.cache'
+                SESSION_CACHE_ALIAS = "default"
+
+---
+
+[00:00] Subimos o nosso servidor no Redis, temos a aplicação Django rodando. Como fazemos para conectarmos uma com a outra? Em primeiro lugar, existe um módulo que nos auxilia nessa comunicação do Djago com o Redis. Quero mostrar ele para você. Se eu digitar django-redis no campo de pesquisa do Google, observe que vai aparecer no “django-redis PyPl”.
+
+[00:24] É uma biblioteca que vai nos auxiliar nessa comunicação entre o Django, a API com o Redis. Vamos ver! Cliquei para copiar e instalar essa dependência com as teclas “Command + J”. Vou parar nosso servidor, vou apertar as teclas “Command + V”.
+
+[00:44] Então digito pip install django-redis no Sulbime, aperto a tecla “Enter” e ele instala. Só para mantermos nosso projeto organizado, vou digitar pip freeze > requirements.txt e apertar a tecla “Enter”. Maravilha”
+
+[00:59] O que preciso fazer agora? Instalamos o Django Redis. Agora precisamos fazer uma configuração para de fato conectarmos o Django com o Redis em relação ao cache, porque queremos guardar o cache lá. Vou abrir o “setup > settings.py” e escrever um pouco para fazer essa configuração.
+
+[01:18] Em primeiro lugar, como queremos alterar o cache da nossa aplicação, vamos criar uma variável chamada CACHES =. Vou dizer algumas configurações. Em primeiro lugar, vou passar uma configuração default. Então vou criar default: { e vou passar as nossas configurações.
+
+[01:44] Em primeiro lugar, o que vamos precisar especificar? Vamos precisar dizer qual é o nosso back-end no Redis e quem vai ser responsável por realizar esse back-end no Redis. Então vou escrever “BACKEND”:. Agora vou especificar essa biblioteca que estamos utilizando, que é o django_redis.cache.RedisCache.
+
+[02:22] Então informei que nosso BACKEND vai ser django_redis. Deixe-me tirar aqui do lado só para não nos confundirmos, cache.RedisCache. Vou passar uma vírgula aqui e passar mais uma configuração, qual é a porta, qual é o caminho para o Redis. Então vou escrever ”LOCATION”: e vou passar o caminho do Redis.
+
+[02:48] Então vou passar entre aspas também, “redis://” e o endereço. Podemos ver esse endereço quando fizemos aquele teste. Então vou digitar 127.0.0.1: 6379. Aqui vou passar uma configuração que eu quero que seja especificado essa porta no Redis.
+
+[03:15] Então vou utilizar aqui um /1 para especificar que é essa porta que vamos ter como principal nesse LOCATION. Vou passar por último uma configuração para a nossa classe de cliente. Então vou colocar entre aspas um “OPTIONS”: e vou passar entre chaves o “CLIENT”.
+
+[03:47] “CLIENT_CLASS”: e vou passar entre aspas também “django_redis.client.DefaultClient” com a letra de “d” maiúscula. Vou passar uma vírgula também. Salvei e vamos rodar o servidor para vermos se está tudo certo.
+
+[04:23] Parece que está tudo OK. Então essa é a configuração que precisamos fazer no lado do Redis em relação aos nossos caches.
+
+[04:31] Uma outra coisa importante é que precisamos especificar o mecanismo de seção nas nossas configurações. É importante fazermos isso para o Redis não interferir no painel de administração do Django e na seção atual. Por exemplo: queremos que o Redis guarde os nossos caches de seção, mas no admin do Django queremos que o Redis não interfira nas seções do nossa admin.
+
+[04:57] Então, para isso, vamos criar uma variável chamada SESSION_ENGINE =django.contrib.sessions.backends.cache. O que isso significa? Significa que não queremos que o Redis interfira no nosso painel de administrador do Django. Para finalizar, vou passar uma SESSIONS_CACHE_ALIAS = e vou dizer qual vai ser a nossa seção de cache principal, que vai ser o ”default”.
+
+[05:49] Então vou criar uma SESSIONS_CACHE_ALIAS = “default”, que acabamos de configurar ali. Vamos ver o servidor. Vou parar e rodar mais uma vez só para ficarmos com nossa tela limpa. Maravilha!
+
+[06:23] Essas são as configurações necessárias para conseguirmos conectar o Redis com uma aplicação Django e armazenar o cache lá. Legal, só que precisamos fazer um teste. Se observarmos aqui, vou deixar na porta do servidor, observe que não temos nenhuma informação passando.
+
+[06:40] O que vou fazer? Na nossa aplicação vou clicar em “http://localhost:8000/matriculas”. Quando vamos para o servidor, parece que está tudo OK também. Vou criar aqui também uma nova matrícula. Vai ser no período matutino, o aluno é “Ana Lívia” para o “Python para Data Science”. Vou deixar esse mesmo. Clico em “POST”. Ele criou. Se voltamos nas nossas listas de matrículas, veremos que só temos duas.
+
+[07:04] Por quê? A outra informação está armazenada no Redis. E vai durar quanto tempo? O tempo que especificamos na nossa view command p. Vou acessar as nossas “views.py” para vermos. Olhe só, deixamos 20 segundos.
+
+[07:16] Esse tempo, se você quiser utilizar em outros lugares também, poderia criar no “settings.py” uma variável nova chamada CACHE_TTS, por exemplo, e informar o tempo e utilizar essa variável na nossa “views.py”. Se quisermos padronizar o tempo de cache de todos as nossas informações.
+
+[07:37] Então, se eu atualizo e já tinha passado dos 20 segundos, aparecerá a nossa outra informação. Dessa forma, nós conseguimos visualizar todas as informações que passamos para o Redis também. Então estamos utilizando o Redis agora na nossa base de dados. Então, isso ficou bem legal!
+
+[07:55] O último teste que quero fazer com vocês é o seguinte: eu vou derrubar o Redis. Derrubei o Redis. Se voltar na aplicação e atualizo, olhe o que vai acontecer.
+
+[08:07] Tivemos um erro de conexão! Então é importante que quando formos utilizar o Redis, que nos lembremos de subir um servidor. Se estivermos utilizando o Docker, por exemplo, podemos fazer um docker compose e subir todos os servidores, todas as dependências e bancos que precisamos na nossa aplicação. Porém, se o Redis não estiver habilitado não vamos conseguir subir. É uma informação importante para o nosso curso!
+
+[08:33] Temos essa configuração Redis, eu vou deixá-la disponível para vocês. Vou só comentar ela aqui, deixe-me só minimizar. Vou comentar e olhe o que vai acontecer. Quando eu comento essas linhas, salvo e atualizo a minha aplicação, nós voltamos para a página de matrículas. Só que nesse caso, estamos utilizando não mais o Redis, estamos utilizando o cache mesmo do nosso servidor, armazenando as informações no nosso servidor local.
+
+[08:57] Então foi só para manter nosso curso um pouco mais rápido, fica a seu critério. Se você quiser deixar assim, o Redis aberto e utilizando o cache, é só você tirar o comentário dessas linhas no Sublime. Se você não quiser utilizar o Redis, você pode deixar ele assim. Eu só quis mostrar mais ou menos como funciona, como exemplo.
+
 ### Definindo cache
+
+Nesta aula, integramos o Django com o Redis para armazenar o cache da API, e isso ficou muito legal. Agora, analise as sentenças abaixo:
+
+        1 - Um cache é uma cópia de uma fonte de dados.
+        2 - É possível ter um cache de páginas da web.
+        3 - É possível ter um cache de um JSON ou cache de XML.
+
+Após analisar as afirmações abaixo, marque a resposta que indique as verdadeiras.
+
+a) Apenas as afirmações 1 e 3 são verdadeiras.
+
+b) A afirmação 3 não é verdadeira. Apenas as afirmações 1 e a 2.
+
+c) **Alternativa correta:** Todas as afirmações são verdadeiras.
+- _Alternativa correta! Certo! O cache é uma maneira de resolver o problema de velocidade de encadeamento de serviços. Um cache é uma cópia de uma fonte de dados. Você pode ter um cache de páginas da web, um cache de XML ou um cache de um disco rígido. Você pode ter um cache de praticamente qualquer coisa._
+
 ### O que aprendemos?
+
+**Nesta aula:**
+- Aprendemos como melhorar a performance da API utilizando cache;
+- Instalamos e subimos o servidor do Redis;
+- Integramos o Django e o Redis.
+
+**Na próxima aula:**
+Vamos internacionalizar a API e aprender na prática como negociar o tipo de mídia do conteúdo da resposta de uma requisição!
+
 ## 03. Limitando ações no Viewset e Permissões
 ### Projeto da aula anterior
 ### Internacionalização - i18N
