@@ -872,11 +872,119 @@ c) **Alternativa correta:** Qualquer método em uma subclasse TestCase que comec
 Vamos aprender como aumentar a segurança das aplicações Django e incluir um pote de mel!
 
 ## 05. Segurança
-### Projeto da aula anterior
 ### Pensando em segurança
+
+1. Mudar a rotas do /admin:
+- Em urls.py devemos mudar a rota
+2. Desativar o DEBUG:
+- Em settings.py devemos mudar o status do DEBUG = False
+3. Indicar os HOSTS PERMITIDOS:
+- Em settings.py devemos mudar o ALLOWED_HOSTS = ['localhost']
+
+---
+
+[00:00] Sempre quando iniciamos uma nova aplicação em Django, o primeiro comando a ser executado depois de criarmos um ambiente virtual é django-admin startproject e o nome do projeto que queremos criar.
+
+[00:12] Ao executarmos esse comando nós ganhamos do Django um painel de controle que podemos acessar. Então, localhost/admin/ e acesso colocando as credenciais do super usuário que fiz, o administrador do Django. Ali posso ver os modelos e todas as outras informações.
+
+[00:29] Ou seja, toda a aplicação feita em Django com o /admin por default nós vamos para a página de administração do Django. Só que isso é um pouco ruim. Eu me lembro de uma conversa com a Roberta, que trabalha no Stack Overflow, ela disse que uma das principais tentativas de requisições do Stack Overflow era php.admin ou /admin, alguma coisa desse tipo. Por quê?
+
+[00:59] É uma questão sensível da aplicação. Não queremos disponibilizar o admin do Django para qualquer pessoa. Isso não é muito fácil. Nós não queremos que as pessoas acessem a nossa aplicação depois que fizemos o deploy com um /admin e acesse o admin da aplicação.
+
+[01:18] Então vamos pensar: o que eu posso fazer para melhorar o acesso do admin do Django? O que podemos fazer é abrir o “setup > urls.py”. Nós podemos visualizar que para eu conseguir acessar o admin tenho um path escrito admin/ e ele registra todas as urls de admin. Não é isso o que quero.
+
+[01:40] Vou mudar esse nome. Vou colocar, por exemplo, path(controle-geral, admin.site.urls),. Um nome um pouco mais complexo. O servidor está certo. Voltando para a página da aplicação. Se eu coloco localhost:8000/admin, tenho um “Page not found (404)”.
+
+[01:53] Já vamos dar uma olhada nessa página. Mas se eu coloco localhots:8000/controle-geral/, eu vou para a página do admin. Aí coloco o meu nome, a minha senha e consigo acessar a administração do Django, porém com uma outra URL.
+
+[02:08] Então esse é um ponto interessante! Agora vamos pensar no seguinte cenário: se alguém escreve admin, olhe o que acontece.
+
+[02:16] Recebemos um “Page not found (404)”, fala qual é a requisição get, fala qual é a URL da requisição e ele fala que está utilizando o setup.urls nós temos esses paths. O primeiro é controle-geral.
+
+[02:31] Mas não quero exibir essa página. Quero exibir um “404” ou um “Page Not found” sem exibir essas informações. Vamos alterar isso? Vou fechar e vou acessar o “setup > settings.py”. Nós temos duas propriedades: uma propriedade chamada DEBUG e a outra os HOSTS PERMITIDOS.
+
+[02:54] Vou tirar o modo DEGUB e vou deixar como DEBUG = False. Quando abro o terminal, observe que quando altero o DEBUG para False eu tenho que falar quais são os HOSTS permitidos para consumir a API.
+
+[03:13] Vou colocar ALLOWED_HOSTS = [‘localhost’]. Executando o servidor mais uma vez e subindo o servidor... Parece que está tudo OK. Voltando na aplicação. Quando atualizarmos, teremos o “Page Not found (404)” e não exibiremos essas informações.
+
+[03:29] Se acessar localhost:8000, estará lá a API, estará lá os end points, todos funcionando. Tudo certo.
+
+[03:38] Então, dessa forma conseguimos proteger um pouco mais a aplicação. O que vamos fazer na sequência? Já que estamos sofrendo um ataque, vamos pensar em um ataque de alguém que está tentando acessar o admin. Que tal registrarmos esses admin? Ou melhor, a pessoa digitar /admin, abriremos a parte de controle geral dessa forma. Abriremos isso, só que isso é uma tela fake. Isso é o que vamos fazer no próximo vídeo!
+
 ### Pote de mel
+
+Tela falsa de login. [DJANGO_ADMIN_HONEYPOT]('https://pypi.org/project/django-admin-honeypot-updated-2021/#:~:text=Project%20description%20django-admin-honeypot%20is%20a%20fake%20Django%20admin,around%20Paul%20McMillan%E2%80%99s%20security%20talk%20at%20DjangoCon%202011.')
+
+1. No terminal:
+
+                pip install django-admin-honeypot
+
+2. Em urls.py:
+
+        ...
+        path('admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),
+        ...
+
+3. Em settings.py:
+
+        ...
+        INSTALLED_APPS = [
+                ...
+                'django-admin-honeypot'
+        ]
+
+---
+
+[00:00] Alteramos o acesso ao admin. Então se coloco /admin tenho o “Page Not found”. Para eu conseguir acessar o meu admin no meu caso vou utilizar o controle-geral, que eu consigo fazer o acesso no admin. Isso ficou bem legal. Só que existe uma forma de nós conseguirmos registrar as tentativas de acesso não autorizado ao admin do Django.
+
+[00:22] Ou seja, tem uma lib que cria uma falsa tela de login. Essa tela de login. Vou mostrar para vocês. Então é uma tela falsa que vai registrar e notificar os administradores sobre tentativas de acesso não autorizado. Qual é o nome dessa lib? É django admin honeypot. Procurei por ela no Google.
+
+[00:45] Esse primeiro link tem uma explicação da documentação. Como nós fazemos para utilizar? Muito simples! Então em primeiro lugar, ele fala que é uma falsa tela do Django admin. A primeira coisa que vamos fazer é instalar a lib no projeto. Eu vou fechar e abrir o servidor.
+
+[01:04] Vou parar e rodar. Apertei as teclas Ctrl + C e Ctrl + V e digitei pip instal django-admin-honeypot. Apertei a tecla “Enter” e ele vai instalar... Já instalou. Vamos ver na documentação o que eu preciso fazer agora. Agora tenho uma URL para acessar esse falso admin para registrarmos essas rotas.
+
+[01:31] Vou copiar essa URL toda que aparece na página e mudar no nosso código. Ali ele está usando a URL e nós vamos utilizar o padrão novo do Django que é o path. Vou minimizar tudo para conseguirmos ver. Temos esse caminho. Não vai ser URL, vai ser um path, que não vamos precisar de expressão regular. Vou deixar com o nome admin e ele vai incluir o honeypot com esse namespace certo. Salvei.
+
+[02:02] Vou subir meu servidor mais uma vez.... Deu um erro! Ele disse que eu preciso instalar esse módulo nos meus apps instalados. O que vou fazer? Vou abrir e em “settings.py” eu tenho os meus apps instalados. Aqui ele fala também isso, para não me esquecer de colocar a administração do honeypot nos apps instalados.
+
+[02:31] Vou pegar admin_honeypot, apertar as teclas Command + C, vou voltar lá e apertar as teclas Command + V. Aqui é uma string. Vou acrescentar uma vírgula no final. Vamos abrir no servidor. Tudo está certo t temos duas migrações pendentes agora. Essas migrações são relacionadas à essa lib que acabamos de instalar. Então, o que vou fazer?
+
+[02:54] Vou digitar python manage.py migrate. Quando aperto a tecla “Enter”, ele aplica essas duas migrações para essa lib que temos. Vou rodar o meu servidor mais uma vez. Parece que está tudo OK. Olhe que legal o que vai acontecer agora. Estou no localhost:8000 no meu navegador ou no end point da API, está tudo funcionando. Clico em https://localhost:8000/matriculas/.
+
+[03:20] Quero acessar o admin. Vou colocar http://localhost:800/admin/ e quando apertar a tecla “Enter”, aparecerá Administração do Django.
+
+[03:29] Lembre-se que essa é a tela falsa. Por quê? O verdadeiro admin se chama controle-geral e eu vou fazer uma tentativa. Vou escrever hacker01, só para deixarmos bem claro. Vou colocar uma senha 123456, por exemplo. Vou tentar acessar e ele deu uma mensagem informando que está incorreto. Certo...
+
+[03:49] Onde vejo essas informações e essas tentativas? No admin verdadeiro. Então vou tirar todas essas informações porque já sabemos que o admin verdadeiro se chama controle-geral. Vou colocar gui, 123 e quando apertar as teclas “Enter”. Olhe que interessante!
+
+[04:01] Tenho as relações dos meus módulos, dos meus recursos, o grupo de usuários e tenho ADMIN_HONEYPOT. Quando clico aqui, olhe as informações que tenho.
+
+[04:14] Tenho o IP da tentativa hacker01. Tenho a seção que ele usou, o horário que foi utilizado e a URL que ele tentou também. Dessa forma, nós conseguimos armazenar essas tentativas de acesso ao admin e por algum motivo, podemos depois aperfeiçoar um pouco mais a segurança ou não permitir determinados IPs, algumas tentativas que vemos que vai dar algum problema para nós.
+
 ### Acesso não autorizado
-### Faça como eu fiz
+
+Nesta aula, alteramos o path de acesso ao admin do Django e adicionamos uma falsa tela de login no lugar para registrar e notificar tentativas de acesso não autorizado, como ilustra o código abaixo:
+
+                urlpatterns = [
+                    path('controle-geral/', admin.site.urls),
+                    path('admin/', include('admin_honeypot.urls', namespace='admin_honeypot')),
+                ]
+
+Com base nas informações acima, analise cada afirmação abaixo e marque as verdadeiras.
+
+a) **Alternativa correta:** O Django possui algumas abordagens e políticas de segurança contra alguns tipos de ataques.
+- _Alternativa correta! Certo! Neste link da documentação, existe uma visão geral dos recursos de segurança do Django._
+
+b) Alterar o caminho de acesso ao Admin do Django não melhora a segurança.
+
+c) **Alternativa correta:** Alterar o caminho de acesso ao Admin do Django melhora a segurança.
+- _Alternativa correta! Certo! Isso dificulta as chances de ataques ou tentativas de acesso não autorizado no Admin do Django._
+
 ### O que aprendemos?
-### Parabéns
-### Conclusão
+
+**Nesta aula:**
+- Entendemos a importância de alterar o path para acessar o área de Admin do Django;
+- Incluímos uma falsa tela de login de administrador do Django para registrar e notificar os administradores sobre tentativas de acesso não autorizado.
+
+**Projeto final do curso**
+- Aqui você pode baixar o zip da aula 05 ou acessar os arquivos no [Github]('https://github.com/alura-cursos/drf_lapidacoes/tree/aula_5')!
