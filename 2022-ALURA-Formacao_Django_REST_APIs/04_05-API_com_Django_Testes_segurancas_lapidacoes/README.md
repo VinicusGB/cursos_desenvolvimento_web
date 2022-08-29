@@ -623,13 +623,254 @@ c) Na estrutura do Django Rest, os tipos de mídia aceitos são JSON e YAML.
 Vamos aprender como escrever testes automatizados das requisições GET, POST, PUT e DELETE de um determinado recurso!
 
 ## 04. Testes
-### Projeto da aula anterior
 ### Cenário de Teste
+
+1. Em tests_cursos.py:
+
+                from rest_framework.test import APITestCase
+                from escola.models import Curso
+                from django.urls import reverse
+
+                class CursosTestCase(APITesteCase):
+                        def setUp(self):
+                                self.list_url = reverse('Cursos-list')
+                                self.curso_1 = Curso.objects.create(
+                                        codigo_curso='CTT1', descricao='Curso teste 1', nivel='B'
+                                )
+                                self.curso_2 = Curso.objects.create(
+                                        codigo_curso='CTT2', descricao='Curso teste 2', nivel='A'
+                                )
+                        
+                        def test_falhador(self):
+                                self.fail('Teste falhou de propósito.')
+
+2. No terminal:
+
+                python manage.py test
+
+---
+
+[00:00] A API tem um comportamento que esperamos. Porém, em nenhum momento escrevemos algum teste. Um teste é um assunto muito denso, daria mais de um curso fácil na Alura. Porém, para termos uma base do que se trata e como realizamos os nossos primeiros testes, eu sugiro que nós façamos um teste relacionado às requisições que fizemos na API.
+
+[00:23] Então se eu acessar a pesquisa do Google e digitar django rest teste, por exemplo, observe que nesse primeiro link tem uma explicação vasta de como utilizamos o teste utilizando esse APIRequestFactory.
+
+[00:37] Eu quero mostrar uma forma um pouco mais simples de realizar os testes seguindo essa mesma ideia. Realizar um teste de algum recurso da nossa API, por exemplo, de um curso. Quero realizar o teste das principais requisições. Por exemplo: o GET, o PUT, o DELETE e o POST.
+
+[01:01] Temos a documentação ensinando como utilizamos a APIRequestFactory. Só que quero mostrar uma forma um pouco mais simples. A primeira coisa, o que vamos fazer?
+
+[01:15] O teste que vamos aprender a realizar pode ser aplicado nos nossos outros recursos também. Tanto para alunos, como para matrículas ou para outros módulos e outros recursos que você está desenvolvendo. A primeira coisa: sempre temos uma pasta de “tests.py”. Não vamos utilizar esse arquivo. Por quê?
+
+[01:36] Quero criar um teste relacionado ao curso e quero deixar o desafio para você os outros testes de alunos e matrículas. Então, no lugar de escrever todo o teste aqui, eu vou criar uma pasta que vou chamar de “tests”. Como vamos ter mais de um arquivo, vou criar um arquivo “initpy”, para nós conseguirmos executar.
+
+[02:06] Vou criar um arquivo chamado “tests_cursos.py” e aqui vamos criar os nossos testes de curso. Você pode me falar: “vou criar o teste para testar as requisições de alunos”. Aí você cria um outro arquivo e nós mantemos o nosso código organizado. Então, vamos lá! A primeira coisa que vamos fazer é importar as bibliotecas necessárias para realizarmos o teste.
+
+[02:33] O primeiro módulo que vamos importar vai ser do rest_framework. Temos um módulo de teste chamado APITestCase. Então, from rest_framework.test import APITestCase.
+
+[02:50] Outra coisa - vamos testar o quê? Vamos testar as principais requisições de curso. Então vou precisar do módulo de curso. Então vou trazer também o módulo de curso, from escola.models import Curso. Vamos escrever a nossa classe de teste.
+
+[03:12] Essa classe vou chamar de class CursosTestCase(): e aqui dentro vou passar a propriedade que importamos, a APITestCase. Agora acontece o quê? Não quero utilizar para os meus testes os dados da API, os dados que no caso estão em local, mas já estão em produção. Não quero utilizar esses dados. Eu quero que outros dados sejam gerados para teste, quero um cenário de teste.
+
+[03:39] Então, para isso, nós vamos criar uma função chamada setUp. O que acontece? Cuidado com a forma que você vai escrever esse def setUp():. Vou passar a instância que vamos estar trabalhando com o self. Então a primeira coisa que vamos precisar fazer é falar assim: “quais são as URLs que vamos trabalhar? Qual a lista de URLs que vamos trabalhar?”
+
+[04:08] Então se apetarmos as teclas “Command + P” e digitarmos URLs, nós registraremos uma rota de cursos onde demos esse basename Cursos - e é esse basename que vamos precisar passar para essa nossa lista de URLs. Por que estou falando isso? Observe que quando estamos em Cursos eu posso testar um GET, posso testar um POST, eu posso testar um GET com detalhes de um determinado curso.
+
+[04:38] Então nessa lista não vou precisar ficar passando manualmente, localhost//8000/cursos/1, por exemplo. Não! Eu quero que esse próprio cenário de teste entenda quais são as principais URLs desse recurso. Então vou passar list_url. Então vou passar esse basename que criamos de cursos.
+
+[05:05] Porém, é importante que utilizamos um outro módulo para conseguirmos fazer essa manipulação das URLs de curso. Lá do django.urls existe um módulo chamado reverse. Então lá do django.urls import reverse. Aqui dentro vou falar para o reverse que quero toda a lista de URLs relacionada a cursos. Só que aqui tem uma coisa interessante.
+
+[05:33] Vou passar um -list e ele vai trazer para mim e vai conseguir manipular todas as listas dos cursos que temos. Tenho as URLs principais que vou trabalhar na minha aplicação, armazenadas nesse list_url. O que preciso fazer também? Preciso criar um curso para essa instância!
+
+[05:52] Lembra que eu falei que nós não vamos utilizar os cursos que temos na base de dados. Então vou criar um self.curso_1 e vou dizer que esse curso vai ser um Curso do nosso modelo .objects.create e vou passar as propriedades do curso que quero criar.
+
+[06:10] Eu vou abrir o model só para termos certeza das informações que estamos passando. O curso tem um código. O curso tem uma descrição e tem também um nível, que eu já vi lá. O código do curso, como estamos em um cenário de teste vou falar “curso de teste, teste 1”, por exemplo, a descrição desse curso vai ser Curso teste 1. O nível passamos uma das três letras. O básico para o B, intermediário e avançado. Vou dizer que esse vai ser o básico.
+
+[06:48] Legal, criei o curso 1 e vou criar o curso 2. Apertei a tecla “Enter” e criei o curso 2. O curso 2 vai ser o CTT2, o Curso de teste 2 e aqui do básico vai passar para o A, por exemplo. Salvei.
+
+[07:04] Se abro o terminal, como executo o teste? Vou parar o servidor e vou executar o comando python manage.py test. Quando aperto a tecla “Enter” recebo uma mensagem de erro. Isso porque escrevi errado. Deixe-me ver se escrevi mesmo. Deixei a pasta “tests” no plural e ela deve estar no singular. Então temos uma pasta com “test” e dentro dessa pasta temos o teste de curso e assim por diante.
+
+[07:32] Então vou executar mais uma vez e limpar a tela. Desculpe-me, pessoal. Vamos ver. Beleza, rodamos e ele falou que checou tudo e que está tudo OK. Então, uma coisa interessante que podemos ver é que ele não encontrou nenhum erro. Tanto que faz sentido porque não executamos um teste em si, nós criamos um cenário de teste. Vou criar um cenário de teste para falhar, para nós visualizarmos como vai ser um teste que vai dar errado.
+
+[08:01] Então vou criar um método. Nesse método preciso chamar de test_, o nome desse teste vou chamar de falhador e aqui vou passar a instância que estivermos utilizando, self. Para esse teste falhar vou falar test.fail e passar a mensagem do teste. Então vou passar, por exemplo: Teste falhou de propósito, não se preocupe.
+
+[08:35] Salvei. Estou abrindo o terminal mais uma vez. Vou rodar o python manage.py test e o olhe que interessante! Agora recebemos algumas informações que são relevantes.
+
+[08:46] Ele disse que criou um banco de dados de testes com o apelido de default. Então ele não utiliza o nosso banco de dados. Ele deu um F. Deu F, deu ruim, falhou. Ele fala qual é o teste que falhou. Então falhou o test_falhador. Onde está esse teste? Lá em escola.test.tests_cursos.CursosTestCase. Passou toda a identificação do caminho. Ele falou o motivo da falha, “O teste falhou de propósito, não se preocupe”.
+
+[09:16] Criamos o cenário de teste e criamos um teste para falhar. No próximo vídeo vamos criar os testes para as nossas requisições.
+
 ### Testando GET e POST
+
+1. Em tests_cursos.py:
+
+        ...
+                def test_requisicao_get_para_listar_cursos(self):
+                        response = self.client.get(self.list_url)
+                        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+                def test_requisicao_post_para_criar_curso(self):
+                        data = {
+                                'codigo_curso':'CTT3',
+                                'descricao':'Curso teste 3',
+                                'nivel':'A'
+                        }
+                        response = self.client.post(self.list_url, data = data)
+                        self.assertEquals(response.status_code, status.HTTP_201_CREATED)
+
+---
+
+[00:00] Preparamos o nosso cenário de teste e o que eu quero fazer agora é verificar se a requisição get para listar todos os cursos vai funcionar, ou se já está funcionando na aplicação. Quero garantir que esse comportamento aqui esteja certo. Para isso, eu vou criar um novo teste. Esse teste que falha vou deixar comentado. Não vamos precisar dele porque já vimos que está certo e funcionando.
+
+[00:23] Então vou criar um teste, uma função para verificar se a requisição get para listar os cursos está funcionando. Seguindo os padrões preciso usar a palavra test_requisicao_get_para_listar_cursos. Vou passar a instância que estamos utilizando, o self. Vou passar uma docstring para deixar nosso teste certo e bem documentado.
+
+[01:00] Então, Teste para verificar se a requisição GET está... não. Teste para verificar a requisição GET para listar os cursos. Algo desse tipo. Então demos um nome que faz sentido para nosso teste e falamos que queremos que queremos fazer o teste com essa docstring. Vou mostrar a importância disso também.
+
+[01:33] A primeira coisa é pedir para um determinado cliente fazer uma requisição para essa URL que verifica os cursos. Eu tenho uma resposta e preciso armazenar essa resposta. Vou colocar, response = self..
+
+[01:53] Lembra do que eu disse? Alguém vai fazer essa requisição. Então vou colocar Client.get, que é o verbo que a pessoa vai utilizar. Para eu passar a URL, vou utilizar self.list_url que criamos aqui em cima no “setup” quando preparamos os testes.
+
+[02:14] Fiz a requisição e vou fazer a verificação. Então, self.assertEqual. Como vou verificar agora para saber se essa resposta está correta ou não? Posso utilizar o status_code. Então vou falar, por exemplo: se response.status_code, se nesse response eu fiz a requisição e recebi uma resposta, qual é a resposta que recebemos?
+
+[02:48] Quando fizemos uma requisição e veio a página certa e veio tudo certo. OK, é o status200. Para garantirmos que vamos trabalhar com o status certo, vou importar também o módulo que cuida desses status, lá do rest_framework.
+
+[03:03] Então, from rest_framework import status. Aqui vou utilizar, tenho o status da resposta da requisição que o cliente fez, do get. Agora vou utilizar status. – lembra que fizemos a requisição, deu tudo certo e voltou? Então foi um 200. Vou dar um 200_OK. Maravilha!
+
+[03:29] Salvei. Teclas “Command + J”. Vamos executar esse teste? Digitei python manage.py test e executei o teste.
+
+[03:34] E observe que ele executou no mesmo esquema, criou a base de dados default, executou o teste e deu um ponto. Deu tudo certo. Se esse teste tivesse falhado, por exemplo, olhe só. No lugar do status_code 200 vou dar, por exemplo, um HTTP_404_NOT_FOUND na linha 23. Olhe o que vai acontecer! Só para visualizarmos essas mensagens de erro.
+
+[03:58] Então ele falou assim, Falhou um teste. Teste para verificar a requisiçãoGETpara listar os cursos. Então olhe só, nós recebemos como resposta, o response.status_code foi 200. Deixe-me colocar aqui em cima. Deu OK, só que 200 não é igual a 404. Então quando recebemos um status_code diferente do que esperamos, recebemos uma mensagem, uma indicação dessa falha.
+
+[04:26] Fez a requisição e deu certo, mas voltou o 200? Executamos o nosso teste, voltei para 200 e está OK. Garantimos que a requisição get para listar os cursos está funcionando. Preciso fazer agora um método para verificar se a nossa requisição post vai funcionar. Vou criar uma função, que vou chamar de def test_requisicao_post_para_criar_curso():.
+
+[04:57] Sempre com o underline entre as palavras. Vou criar uma mensagem também. Vou copiar essa e alterar só o que precisamos. Vou incluir a docstring também. Deixe-me ver se está lá em cima. Deixa, depois mostro para vocês. Observe que essa docstring que nós digitamos aparece na mensagem de teste também.
+
+[05:21] Então, Teste para verificar a requisição POST para criar um curso. Então, vamos lá! O que preciso para criar um curso? Em primeiro lugar, das informações do curso que quero criar. Vou criar os dados desse curso. Então data, abre chaves e vou dizer, por exemplo, o código do curso, vou falar que o codigo_curso:.
+
+[05:51] Criamos o curso CTT1 e CTT2 e vou criar o CCT3, “curso teste, teste 3”, por exemplo. Vou colocar uma vírgula. Temos também uma descricao : Curso teste 3. Para finalizarmos, temos o nivel: 'A'. Vai ser o nível avançado.
+
+[06:22] Criei os dados que quero enviar uma requisição POST. O que preciso fazer agora? Vou ter um response, que é o que quero avaliar o status_code dessa resposta. Então response vai ser o cliente que estamos utilizando, o Self.client.post, que é o que queremos fazer.
+
+[06:43] Preciso passar a URL certa do curso e o localhost, não preciso? Então, o que vou passar? O Self.list e list_url e vírgula. Vou dizer que a data, os dados que quero passar são esses dados que temos e passei as informações. Vamos fazer agora a verificação, self.assertEquals, no plural.
+
+[07:17] Vou deixar o de cima também no plural, Self.assertEquals. O que quero fazer? Quero verificar se essa resposta que tive aqui, o response.status_code, é igual status. de criação. Olhe só, temos um 201. É isso aí! Salvei, apertei as teclas “Command + J” e agora estou limpando o terminal e executando o teste... Esse teste falhou!
+
+[07:48] Ele deu 201, não é igual a 100. Deixei como 100, não é o 100_CONTINUE. É o 201_CREATED. Deixe-me tirar aqui porque ficou dois status. É status_HTTP_200_OK. O teste deu errado por causa do código que escrevi. Executei agora e deu certo. Deixe-me minimizar um pouco para baixo só para verificarmos.
+
+[08:15] Então, o que fizemos para verificar o teste do POST? Criamos uma requisição, os dados e falamos que um determinado cliente vai fazer uma requisição POST para a lista de cursos que temos, para o end point de cursos.
+
+[08:29] Esses são os dados. Quero verificar se a resposta desse método POST que esse cliente fez é igual a 201 - e quando executamos deu certo.
+
 ### Testando PUT e DELETE
-### Faça como eu fiz
+
+1. Em tests_cursos.py:
+
+                ...
+                def test_requisicao_delete_para_deletar_curso(self):
+                        response = self.client.delete('/cursos/1/')
+                        self.assertEquals(response.status_code, status.HTTP_405_METHOT_NOT_ALLOWED)
+
+                def test_requisicao_put_para_atualizar_curso(self):
+                        data = {
+                                'codigo_curso':'CTT1',
+                                'descricao':'Curso teste 1 atualizado',
+                                'nivel':'I'
+                        }
+                        response = self.client.put('/cursos/1/', data = data)
+                        self.assertEquals(response.status_code, status.HTTP_200_OK)
+
+---
+
+[00:00] Temos dois testes. Um para verificar a requisição GET e outro para verificar uma requisição POST, para listarmos um curso e para criarmos um curso. O que quero fazer agora é testar uma requisição, um DELETE, por exemplo. Só que quero fazer algo diferente.
+
+[00:15] Observe que estou com a minha API rodando. Subi o servidor. Quando entro, por exemplo, em /alunos e coloco um determinado aluno - por exemplo, localhost:8000/alunos/1/ - tenho a opção de deletar esse recurso. O mesmo acontece com os cursos. Se eu acesso localhost:8000/cursos/1/, tenho essa opção de DELETE.
+
+[00:36] Vamos supor que por uma regra de negócio nós não vamos permitir mais requisições DELETE para removermos um curso da nossa base de dados. Então, o que vou fazer? No Sublime eu vou colocar http_method_names. Http_method_names = [‘get’, ‘post’, ‘put’, ‘path’].
+
+[01:08] Isso significa que vou conseguir listar um curso, criar um curso e atualizar um curso. Mas não vou ser capaz de deletar um curso. Salvei e o servidor subiu. Na página da aplicação, quando atualizar o DELETE, não aparece mais. Até aí tudo bem.
+
+[01:23] O que eu quero fazer agora é criar um teste que garanta que esse comportamento vai se manter, ou seja, que quando eu for testar, eu fale assim: “vou tentar deletar um produto”. Vou precisar receber um status que indique que não tenho permissão de deletar esse produto.
+
+[01:43] Vamos começar escrevendo o teste. A primeira coisa vai ser def test_. Vou colocar, por exemplo, o nome desse teste como requisicao_delete_para_deletar_curso. Alguma coisa assim nesse sentido. Vou passar a instância self e vou começar a escrever o teste. Para deixar nosso teste semântico e bem documentado, eu vou colocar a docstring indicando Teste para verificar a requisição DELETE não permitida para deletar um curso.
+
+[02:35] Vou colocar na minha “View > Toggle Word Wrap”, só para nós conseguirmos visualizar em uma tela só. Criei a docstring. Ele está documentado. Então, Teste para verificar a requisição DELETE não permitida para deletar um curso.
+
+[02:52] O que preciso fazer? Preciso ter um cliente tentando deletar um determinado curso, então vou colocar self.client.delete. Então um cliente vai tentar fazer uma requisição DELETE para um determinado curso. Nessa função de setup nós queremos o curso 1 e o 2. Observe que quando fui tentar deletar o curso 1 eu passei localhost:8000/cursos/1/.
+
+[03:20] Vou precisar passar esse mesmo caminho. Vamos supor que já tenho o curso 1 feito, então vou querer deletar o localhost:8000/cursos/1/. Fechei. Quero tentar deletar esse curso. Preciso armazenar essa requisição em algum lugar, então quero armazenar a resposta. Vou colocar response = self.client.delete(/cursos/1/).
+
+[03:46] Para finalizarmos, vamos fazer uma assertação, self.assertEquals. O que quero fazer? Quero verificar o status dessa resposta. Então vou passar response.status_code. O que vou fazer agora? Preciso garantir qual é o status_code que quando quero tentar deletar um determinado recurso e não tenho permissão? Podemos colocar o status 405.
+
+[04:23] Então vou colocar status. e vai aparecer uma lista de status. Vou descer, descer e descer. Poderia pensar em colocar o “não autorizado” mas vou colocar o 405. Então HTTP_405_METHOD_NOT_ALLOWED.
+
+[04:42] Salvei. Abrindo o terminal, vou parar o servidor e rodar o manage.py test. Quando aperto a tecla “Enter”, olhe o que acontece.
+
+[04:53] Ele executou e passou. O nosso teste deu certo. Para garantirmos que nosso teste realmente deu certo, o que vamos fazer? Lá em “views” nós falamos: olhe, os métodos permitidos para cursos são esses. Vou alterar, vou colocar o delete no final da linha 22. Ou seja, quando eu deletar vou receber um outro status_code e vamos ver se isso vai refletir no nosso teste.
+
+[05:13] Quando executamos, nós recebemos um status_code 204 e falamos que 204 não é igual a 205 e temos “Teste para verificar a requisição DELETE não permitida para deletar um curso”.
+
+[05:27] O que acontece? Através desse teste nós conseguimos garantir um comportamento para a API. Vou remover esse delete. Foi só para garantirmos mesmo que nosso teste está sendo executado de forma tranquila.
+
+[05:37] Para finalizar, eu quero criar um teste que vai garantir uma atualização de um curso. Se observarmos no nosso método setUp temos o curso_1 e o cursp_2. Eu quero atualizar o curso_1 em duas partes. Quero mudar a descrição. Quero colocar Curso teste 1 atualizado e mudar o nível dele de básico para intermediário.
+
+[05:59] Vamos fazer isso? A primeira coisa que vamos fazer vai ser criarmos o nome desse teste. Então, test_requisicao_put_para_atualizar_curso(self): e nós vamos começar com a docstring mantendo nosso código documentado. Então, Teste para verificar requisição PUT para atualizar um curso.
+
+[06:42] Colocamos lá! A primeira coisa que vou fazer vai ser pensar no dado que quero atualizar, no dado de teste. Então vou criar um chamado data = {}. Então um curso tem um código, codigo_curso:. Qual é o código do curso?
+
+[07:05] É o CTT1 - que é esse curso que quero atualizar. Então coloquei o curso CTT1. Quero também modificar a descrição, descricao:. Na verdade, esse não modifiquei, eu mantive o mesmo. Quero modificar agora a descrição. Então a descrição que temos aqui em cima é essa, Curso teste 1. Vou pegar esse Curso teste 1 e vou colocar ele aqui. Curso teste 1 atualizado.
+
+[07:36] Coloco a vírgula e para finalizar, nós temos o nível, nivel:. Nesse nível quero passar o intermediário (I). Criei os dados que quero atualizar desse curso! Para finalizar preciso ter um cliente fazendo a requisição PUT para atualizar esse curso. Então, self.client.put. Em primeiro lugar, lembra que quando acessamos localhost:8000/cursos/1/ aparece informações do curso e aqui embaixo o PUT para eu, de fato, atualizar esse curso?
+
+[08:08] Então, da mesma forma que queremos deletar, ele pergunta o que eu quero deletar. Eu quero deletar o curso com esse ID. Então quero atualizar o curso com esse ID. Vou fazer o mesmo, vou passar entre aspas o /cursos/1 que é o primeiro curso que quero atualizar que é o curso CTT1. Vou colocar uma vírgula.
+
+[08:28] Observe o segundo parâmetro, o que temos? Os dados. Se quero atualizar, quais são os dados que quero passar? Passamos isso através do parâmetro data. Então vou passar que data é igual a data dos dados atualizados.
+
+[08:43] Para finalizarmos, vamos fazer a assertação Self.assertEquals e vou passar. Em primeiro lugar preciso verificar se a resposta dessa requisição, que não armazenei e preciso dela, response = self.client.put(/curso/1/,data=data).
+
+[09:01] Agora sim! Vou digitar self.assertEquals(response.status_code, status.HTTP_200_OK). Deu tudo certo. Você conseguiu atualizar, aí está um sucesso! Aí conseguimos continuar. Podemos garantir que esse teste foi aprovado.
+
+[09:22] Salvei esse arquivo. Estou carregando o terminal e vou executar mais uma vez, digitando python manage.py test. Ele executou e passou. Deu tudo certo.
+
+[09:32] Vimos nesses testes que escrevemos algo bem simples. Posteriormente vão existir outros cursos, outros treinamentos de Django REST focados em teste. Depois vamos entrar em uma discussão sobre testes de integração, testes de unidade. Mas só para conseguirmos ter uma base e os fundamentos de como conseguimos verificar as principais requisições da API e os principais comportamentos.
+
+[10:01] Por exemplo: tenho um determinado recurso que não posso deletar em hipótese alguma na minha API. Como testo para garantir esse funcionamento? Fizemos o método de DELETE. Eu quero atualizar, quero testar atualizando em um determinado recurso da minha API.
+
+[10:18] Vimos como testar as principais requisições da API: GET, POST, DELETE e PUT.
+
 ### Função setUp
+
+Após desenvolver uma API e testar manualmente as principais requisiçòes, uma pessoa decidiu escrever testes automatizados e começou com o seguinte código:
+
+                from rest_framework.test import APITestCase
+                from escola.models import Animal
+                from django.urls import reverse
+
+                class AnimaisTestCase(APITestCase):
+
+                    def setUp(self):
+                        self.list_url = reverse('Animais-list')
+                        self.animal_1 = Animal.objects.create(
+                            nome='Urso'
+                        )
+
+Com base no código acima e analisando as afirmações abaixo, podemos afirmar que:
+
+a) O método setUp() é executado quando os métodos de testes são concluídos.
+
+b) **Alternativa correta:** Existe um cenário de teste com um animal cadastrado, porém sem nenhum teste.
+- _Alternativa correta! Certo! Através da função setUp() o cenário de teste foi montado com as rotas de animais e o animal_1 foi criado apenas para os testes, sem vincular os dados reais da aplicação e nenhum teste ou afirmação foi desenvolvida._
+
+c) **Alternativa correta:** Qualquer método em uma subclasse TestCase que comece com o prefixo test_ será executado sempre que executarmos o python manage.py test
+- _Alternativa correta! Certo! Assumindo que não adicionamos um argumento para excluí-lo, o método será executado._
+
 ### O que aprendemos?
+
+**Nesta aula:**
+- Aprendemos como criar um cenário de teste, sem utilizar os dados da aplicação;
+- Escrevemos os testes das principais requisições do recurso de cursos.
+
+**Na próxima aula - cereja do curso!**
+Vamos aprender como aumentar a segurança das aplicações Django e incluir um pote de mel!
+
 ## 05. Segurança
 ### Projeto da aula anterior
 ### Pensando em segurança
