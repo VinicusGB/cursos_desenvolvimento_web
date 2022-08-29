@@ -454,13 +454,174 @@ c) **Alternativa correta:** Todas as afirmações são verdadeiras.
 Vamos internacionalizar a API e aprender na prática como negociar o tipo de mídia do conteúdo da resposta de uma requisição!
 
 ## 03. Limitando ações no Viewset e Permissões
-### Projeto da aula anterior
 ### Internacionalização - i18N
+
+Podemos internacionalizar a requisições a nossa API.
+
+[DJANGO-i18n]('https://docs.djangoproject.com/en/3.2/_modules/django/views/i18n/')
+[DJANGO-REST-i18n]('https://www.django-rest-framework.org/topics/internationalization/')
+
+1. Em settings.py:
+
+                MIDDLEWARE = [
+                        ...
+                        'django.middleware.locale.LocaleMiddleware',
+                ]
+
+---
+
+[00:14] Elas aparecem em português por conta do language code da nossa aplicação. Então aqui está português do Brasil. Se coloco, por exemplo, LANGUAGE_CODE = ‘en’. Vamos receber essas mensagens em inglês. Então vou voltar e realizar mais uma requisição post. Temos essas mensagens em inglês.
+
+[00:30] Vou deixar como português do Brasil mesmo, só para conseguirmos visualizar, vou deixar nossa aplicação como estava. O que quero fazer agora é deixar a minha API compatível com todos os idiomas. Então, dependendo da requisição, eu quero exibir essas mensagens em espanhol ou em inglês.
+
+[00:51] E existe uma forma de fazermos isso! Vamos internacionalizar a nossa API. Se digitar i18n django rest na pesquisa do Google, olhe só! Nesse primeiro link que vai aparecer, “Internacionalization – Django REST framework”.
+
+[01:03] Existe uma forma muito fácil e muito simples de internacionalizarmos a nossa API incluindo um Middleware, um LocalMiddleware no MIDDLEWARE_CLASS. Dessa forma, o que vai acontecer? Quando eu incluir esse código, com base na requisição eu vou poder dizer se quero exibir essas mensagens em português, em inglês, espanhol ou em outros idiomas que o Django dá suporte.
+
+[01:25] Então no Sublime vou subir a página, vou no “MIDDLEWARE = [” e vou colocar ele no final, com as teclas “Ctrl + V”, mais a vírgula. Teclas “Command + J” e está tudo certo no servidor.
+
+[01:35] Para executar esse teste eu vou utilizar o post, só para visualizarmos. Então na página no navegador aberto e com o “POST” para alunos vazio. Quando clico em “Send”, aparece que este campo é obrigatório. Se vou no “Headers”, vou colocar mais um atributo. Vou colocar aqui, vou alterar esse último mesmo. Esse não consigo. Vou alterar o debaixo.
+
+[01:59] Então vou colocar Accept-Language e vou poder escolher um idioma. Vou deixar como, por exemplo, en. Quando clico em “Send”, observe que temos agora essa requisição com os campos em inglês.
+
+[02:14] Se eu quiser deixar, por exemplo, o espanhol da Espanha, digito es-es. Quando clico em “Send”, aparece “Este campo es requerido”. Eu não sei falar em espanhol, mas é alguma desse tipo.
+
+[02:26] Olhe que simples! Incluímos o LocalMiddleware. Agora nas requisições, se incluirmos no “Headers” um Accept-Language indicando o idioma que queremos, nós internacionalizamos a API. E se eu não passar esse valor? Se eu não deixar esse valor? Nós receberemos as mensagens padrões por conta do LANGUAGE_CODE do português do Brasil.
+
 ### Alterando mensagens padrões
+
+Podemos padronizar as mensagens de erro do DJANGO:
+
+1. Criar uma pasta na raiz do projeto, path Locale
+
+1. Em settings.py:
+
+                ...
+                LOCALE_PATHS = (
+                        os.path.join(BASE_DIR,'locale/')
+                )
+
+1. No terminal, devemos dar o comando para o DJANGO:
+
+                python manage.py makemessages -l pt_BR
+
+1. O DJANGO vai criar um arquivo com todas as mensagens em inglês, devemos escrever em mgstr a nova mensagem.
+
+1. No terminal devemos compilar para o DJANGO:
+
+                python manage.py compilemesages -l pt_BR
+
+---
+
+[00:00] Vimos como internacionalizarmos a API. Isso ficou bem legal, só que existe um passo a mais que podemos dar. Por exemplo: essas mensagens que vimos tanto no português, no inglês e no espanhol são mensagens padrões. Só que é possível alterar essas mensagens padrões.
+
+[00:21] Por exemplo: no lugar de usar “Este campo é obrigatório”, se eu utilizar o Accept Language com o inglês, por exemplo, posso identificar o conteúdo dessa mensagem e colocar uma outra mensagem - e é isso que vamos ver nesse vídeo, como alterar essas mensagens padrões e personalizar essas mensagens.
+
+[00:41] Então vou utilizar o exemplo só do português. Por questão de tempo não vamos conseguir alterar as mensagens de espanhol e inglês, mas o princípio vai ser o mesmo. Em primeiro lugar, vamos criar uma pasta e indicar no “settings.py” onde ficarão os arquivos com a localização de cada idioma. O que vou fazer? Vou criar uma pasta dentro de “setup”? Não, vou criar aqui fora!
+
+[01:09] Vou chamar essa pasta de “locale”. Criei essa pasta. Agora, aqui dentro do “settings.py” vou indicar o caminho dessa pasta como a localização. Então vou digitar LOCALE_PATHS, no plural, vai ser igual, entre parênteses vou passar as localizações dessa pasta. Então, (os.path.join(BASE_DIR, 'locale/')).
+
+[01:49] O que fizemos? Indicamos que existe uma pasta com a localização das mensagens personalizadas que vamos criar. O que eu vou fazer agora? Vou abrir o terminal. Deixe-me parar. Vou abrir o terminal e pedir para que o “manage.py” do Python crie para mim as mensagens indicando o idioma do português do Brasil.
+
+[02:14] Então vou digitar python manage.py makemessages -l para indicar o idioma e colocar pt_BR. Apero a tecla “Enter” e ele vai processar e criar essa pasta para nós. Legal! Processou e criou uma pasta. Vamos abrir aqui do lado e minimizar só para vermos o que tem nesse arquivo “locale”.
+
+[02:47] Temos um português do Brasil, uma pasta com “LC_MESSAGE” e tem um arquivo chamado “django.po”. O que é esse arquivo? Esse arquivo contém todas as mensagens padrões que temos na nossa aplicação. Vou procurar essa mensagem. Esse campo é requerido e não pode ficar em branco. Vou apertar as teclas “Ctrl + F” e “Ctrl + V”. Achei essa mensagem.
+
+[03:09] Quero alterar essa mensagem. Falar assim: msgstr “Opa, deu ruim. Esse campo não pode ficar em branco”. Salvei. O que vou fazer agora? Alterei esse arquivo. Salvei. Vou subir meu servidor mais uma vez, digitar manage.py runserver. Estou com um erro aqui que é uma lista e não uma tupla. Deixe-me ver o que eu errei. Esqueci da vírgula nesse “locale”! É isso mesmo, esqueci a vírgula.
+
+[03:45] Agora abrindo com as teclas “Command + J”, vou rodar o servidor mais uma vez. Maravilha, está funcionando! O que vou fazer? Vou na página da aplicação e clicar em “Send”. Está com a mensagem Language_Code em português. Vou tirar porque temos o padrão e não apareceu. Continua “Este campo é obrigatório”.
+
+[04:00] E a mensagem que tínhamos programado era “Opa, deu ruim. Esse campo não pode ficar em branco”. Por quê? Sempre quando fazemos uma alteração nessas mensagens padrões, é necessário que compilemos essas mensagens para o Django entender que as mensagens padrões foram alteradas. Como faço essa compilação dessas mensagens?
+
+[04:20] Muito simples! Vou abrir o terminal mais uma vez. Parei e vou digitar python manage.py e pedir para ele compilemessages, no plural também, - l para indicar a mensagem que quero compilar, pt_BR. Vou apertar a tecla “Enter” e ele vai compilar essas mensagens. Pronto, fez a compilação! Vou subir o servidor mais uma vez e quando eu pedir para dar um “POST” em http://localhost:8000/alunos/ com todos os campos vazios, teremos a mensagem personalizada.
+
+[05:03] Então apareceu “Opa, deu ruim”. Qualquer outra mensagem que você quiser achar, observe que naquele arquivo “django.po” temos uma flag, que é msgid, o id da mensagem.
+
+[05:18] Então ele pede um valor numérico, uma data válida. Você pode alterar todas essas mensagens, se caso você queira personalizar e não utilizar a padronização que o Django já traz dos idiomas, a tradução. Isso você pode fazer para qualquer outro idioma.
+
+[05:34] “Eu preciso personalizar as mensagens do inglês, uma coisa específica”. Então você pode criar lá, um makemessages – l com en, por exemplo, do inglês. Vai criar esse arquivo “django.po”. Você faz as alterações que quiser. Quando esse arquivo estiver finalizado nas alterações dessas mensagens você só vai fazer o compilemessages.
+
+[05:57] É importante indicar a flag - l com o nome, porque senão ele vai compilar todas as mensagens em todos os idiomas que ele tem. Quando fazemos assim, fica muito mais rápido. Então essa é uma forma que temos para personalizarmos as mensagens padrões do Django.
+
 ### Content Negotiation
-### Faça como eu fiz
+
+[DJANGO_REST-PARSERS]('https://www.django-rest-framework.org/api-guide/parsers/')
+
+[DJANGO_REST-RENDERS]('https://www.django-rest-framework.org/api-guide/renderers/')
+
+---
+
+[00:00] Sempre que faço uma requisição para um determinado recurso da API, seja ele matrículas, alunos ou curso, eu recebo a resposta da requisição no formato de som. Temos esse visual bonito do Django REST, mas na verdade a informação importante que está sendo passada para essa requisição, a nossa resposta, está no formato de som.
+
+[00:24] Podemos garantir isso abrindo o Postman. Na página vou escolher um “GET” em http://localhost:8000/cursos/. Nós temos o formato JSON. Qual é o formato além do formato JSON que o Django REST fornece como suporte? Existem outros tipos de mídia que podemos responder às requisições? Existe!
+
+[00:44] Vamos acessar a documentação. Vou digitar django rest na barra de pesquisa do Google e clicar no primeiro link. Acessando a página principal do Django REST, vou vir no “API Guide > Parsers”, para darmos uma olhada. Observe que temos uma explicação vasta de como funciona essa questão de parsear as nossas respostas, modificar o tipo da mídia em que estamos trabalhando.
+
+[01:09] Então temos, por exemplo: YAML e existe um módulo para respondermos as requisições do tipo YAML e XML também. O que eu quero fazer? A nossa API funciona bem com o formato JSON. Então, tanto da parte do Postman como a nossa navegação, que é esse cenário que o Django REST proporciona para testarmos as nossas requisições.
+
+[01:33] Quando inserimos um Parser de XML de YAML perdemos os recursos desse layout, desse visual do Django REST. Porém, isso não é tão relevante. Por quê? O mais importante serão as outras aplicações, sistemas ou até outras APIs consumindo nossa API.
+
+[01:51] Então o relevante é o que estamos passando aqui. O que eu quero mostrar? Será que é possível nós alterarmos a nossa API para falarmos assim: “olhe, quero essa resposta JSON ou quero essa resposta em XML” e passarmos os dados com base na nossa requisição, mesmo que não tenhamos mais essa parte visual? É interessante. Vamos mostrar como fazemos isso?
+
+[02:13] Para isso, vou seguir a documentação. Vamos precisar instalar um módulo chamado djangorestframework-xml. Vou copiá-lo. Vou parar o servidor e digitar pip instal djangorestframework-xml. Ele instalou. Só para não perdermos o costume, pip freeze > requeriments.txt. Maravilha!
+
+[02:41] Lá no “requeriments.txt” já temos agora o djangorestframework.xml instalado. O que preciso fazer também? Vamos ver na documentação. Existem duas classes que são importantes modificarmos para conseguir responder as requisições em XML ou em JSON que é lá das configurações do REST_FRAMEWORK, o DEFAULT_PARSER_CLASSES e o DEFAULT_RENDERER_CLASSES. Vou fazer o seguinte.
+
+[03:10] Vou copiar esse link e abrir o Renderers, para já deixarmos no esquema para visualizarmos. Então olhe só, por padrão olhe o que temos. Temos as respostas feitas em JSON. Para garantirmos isso, se dou um “GET” em http://localhost:8000/cursos/. Não apareceu nada porque meu servidor não está de pé. Então vamos subir o servidor, manage.py runserver. Beleza, agora sim.
+
+[03:37] Dou um “GET” e os cursos vão aparecer aqui embaixo. Onde mudo para identificar qual é o tipo de resposta da mídia que vou querer? Existe uma propriedade chamada Accept, um header no cabeçalho. Então no “Accept” vou indicar que quero um application/json e quando clico em “Send”, dá. Quando digito application/xml, por exemplo, olhe o que acontece.
+
+[04:08] “Não foi possível satisfazer a requisição do cabeçalho Accept”. Vamos precisar configurar! Então, o que eu vou fazer? Vou nas configurações. Vou copiar essas duas propriedades. Repare que isso é uma informação importante. O DEFAULT_PARSER e o DEFAULT_RENDERER, essas duas propriedades, essas duas configurações. Vou em “setup > settings.py”. Observe que estou nas configurações do rest_framework, vou colocar uma vírgula e copiar aqueles dois.
+
+[04:37] Salvei a informação. O meu servidor executou mais uma vez. Está tudo OK. Vou para a página da aplicação e clicar mais uma vez em “Send”. Olhe que interessante, agora recebemos a resposta da requisição em XML.
+
+[04:49] Isso ficou legal! Se eu colocar application/json no campo “Accept”, vamos ver o que vai acontecer? Quando clico em “Send” aparece a mensagem “Não foi possível satisfazer a requisição”. Ganhamos o XML, mas perdemos o JSON - e mais: se formos na nossa navegação, olhe como ficou o http://localhost:8000/cursos/.
+
+[05:07] Está um XML aqui, mas não temos condições de mandar requisição post igual tínhamos quando era o json. Então, o que vou fazer? Vamos precisar também, além de habilitar o XML, habilitar o JSON. Então vamos precisar de um Renderer do JSON. Vou copiar do rest_framework.renderers.JSONRenderer e vou passar ele aqui também. Ele vai falar Existe o JSONRenderer e eu vou precisar do Parser do JSON também. Então lá em cima temos o Parser do JON. Vou copiar esse e colar ele aqui também. Salvei.
+
+[05:44] Se volto para a página da aplicação e dou mais uma requisição, temos um JSON. Se volto e coloco XML, temos a resposta em XML. Maravilha! Então conseguimos dizer para o rest_framework que existem duas classes principais para as respostas das nossas requisições. Temos o JSON e o XML e elas serão definidas através desse cabeçalho Accept. Por outro lado, na navegação vamos continuar sempre com esse visual estranho do localhost:8000, um XML não semântico.
+
+[06:26] Uma outra informação interessante é que quando eu digito application/sml no campo “Accept”, observe que o XML que aparece aqui não é o XML mais semântico, mais intuitivo e claro possível. Ele faz uma lista de itens, de cursos.
+
+[06:39] No nosso caso, o que temos não seria nem o nome do curso. Ele faz uma lista de cursos e devolve esse XML não tão semântico, mas funciona e faz sentido. Por outro lado, perdemos aquela navegação da nossa tela principal.
+
+[07:00] Você vai continuar daqui. Você fala: "não vou, Gui". Essa parte da navegação da tela só vou consumir a API agora com outras APIs ou outras aplicações e outros sistemas. Você deixa a sua configuração assim com o JSON e o XML.
+
+[07:19] Não vou utilizar o XML. Mostrei para você, mas não vou utilizar. O que posso fazer? Comento essas linhas 143 e 147 de “setup > settings.py” e salvo. Se eu voltar e atualizar, nós temos uma navegação estranha.
+
+[07:31] Vou derrubar meu servidor e subir mais uma vez. Nós vamos ver que ele vai estar agora com as configurações certas. Olhe só, não deu certo também!
+
+[07:40] Deixe-me atualizar mais uma vez. Para garantir, vou até abrir uma aba anônima só para visualizarmos, no http://localhost:8000/cursos... Nós temos só a resposta em XML. Isso pode estar acontecendo porque ficou armazenado no cache dele que eu quero as respostas no XML. O que posso fazer para tentar recuperar a parte do admin do Django?
+
+[08:09] Vou tirar essas duas classes e falar que não tenho essas propriedades, da linha 141 até a 148 de “setup > settings.py”. Só essas duas, não vou tirar todas as configurações. Salvei. Vamos atualizar e ver. Agora sim, beleza! Então aparecerem os dois.
+
+[08:24] Você pode me falar: “não quero usar essa parte visual do Django”. Não tem problema. Se você não quiser usar essa parte visual, pode deixar com o XML, com o JSON. Por que eu vou deixar? Vou deixar porque nós vamos fazer mais alguns testes e faze sentido executarmos aqui e não precisarmos ir para Postman também.
+
+[08:48] Mas em uma aplicação real, fica a seu critério atender às requisições de XML, de JSON - ou como vimos, os Parserers para YAML, por exemplo e outros tipos.
+
 ### Negociação de conteúdo
+
+Quando criamos uma API com Django Rest Framework, o JSON é o tipo de mídia padrão das respostas. Porém existem outros tipos de mídia como XML ou YAML por exemplo.
+
+Sabendo disso, em relação ao Django Rest, podemos afirmar que:
+
+a) **Alternativa correta:** O tipo de mídia padrão pode ser definido globalmente, ao incluir o DEFAULT_PARSER_CLASSES e o DEFAULT_RENDERER_CLASSES nas configurações do REST_FRAMEWORK do settings.
+- _Alternativa correta! Certo! A estrutura REST inclui várias classes Parser e Renders integradas, que permitem aceitar solicitações com vários tipos de mídia._
+
+b) Na estrutura do Django Rest, o único tipo aceito é o JSON.
+
+c) Na estrutura do Django Rest, os tipos de mídia aceitos são JSON e YAML.
+
 ### O que aprendemos?
+
+**Nesta aula:**
+- Vimos como inclui um middleware de internacionalização;
+- Aprendemos como alterar as mensagens padrões do Django;
+- Incluímos na prática a negociação de conteúdo, seja ele um JSON ou XML com base no cabeçalho Accept.
+
+**Na próxima aula:**
+Vamos aprender como escrever testes automatizados das requisições GET, POST, PUT e DELETE de um determinado recurso!
+
 ## 04. Testes
 ### Projeto da aula anterior
 ### Cenário de Teste
@@ -478,5 +639,3 @@ Vamos internacionalizar a API e aprender na prática como negociar o tipo de mí
 ### O que aprendemos?
 ### Parabéns
 ### Conclusão
-### Logo da alura
-### SOBRE A ALURA
