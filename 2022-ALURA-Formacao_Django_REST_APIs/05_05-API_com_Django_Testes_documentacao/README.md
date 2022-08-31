@@ -123,11 +123,226 @@ Em caso de dúvidas durante o curso ou carregamento do projeto, conte sempre com
 [06:33] Nas próximas aulas vamos aprofundar mais ainda nesse conhecimento dos testes, a importância dele e como testamos diferentes partes da nossa API.
 
 ### Tipos de testes
+
+"O código sem testes será quebrado conforme projetado." Jacob Moss
+
+ #### Tipos de testes
+- **Teste manual _[Uma pessoa]_**
+- **Teste automatizado _[Máquina]_**
+  - **Teste de unidade:** Testar métodos e funções individuais
+  - **Teste de integração:** Testar diferentes módulos ou serviços usados para um aplicativo
+  - **Teste funcional:** Testar os requisitos do negócio
+
+Outros para pesquisar:
+- **Testes funcionais:**
+  - _unidade / integração / aceitação_
+- **Testes não funcionais:**
+  - _performance / carga / estresse_
+
+---
+
+[02:26] Lembra, no nosso curso anterior em que realizamos o teste para verificarmos a requisição get, a requisição post e a requisição init? Aquele teste poderia ser feito por uma pessoa. Eu poderia contratar uma pessoa, um amigo meu e falar: “teste, faça uma requisição get e me fale o que acontece. Anote o que acontece” e a pessoa iria anotando.
+
+[02:45] Nos testes automatizados, o que garantimos? Garantimos que a máquina vai cumprir as etapas do script que passamos e garantimos os determinados resultados esperados. Caso um resultado não dê certo, aquele teste falhe e podemos identificar o porquê da falha.
+
+[03:01] Então dentro deste mundo de testes automatizados, existe um teste chamado “teste de unidade”. Qual o objetivo dele? É testar métodos e funções individuais.
+
+[03:11] Se observarmos na nossa aplicação, nós temos um modelo, um serializer, nossa view; então eu quero testar o modelo. Por exemplo: no nosso modelo, observe que temos os campos titulo e tipo, porém entre esses campos existem alguns valores default. Então caso eu não passe nenhum valor de like ou dislike, o valor default deles será 0.
+
+[03:33] Então eu poderia criar um teste para verificar se de fato esse valor default está sendo executado. Isso seria um teste de unidade, em que eu queira testar apenas o modelo – ou que eu queira testar agora se o serializer está serializando os campos corretos. Então eu poderia realizar um teste só no meu serializer.
+
+[03:55] Não estou pegando a minha API e fazendo uma requisição get para testar todos os campos, estou testando uma parte única da minha aplicação. Quando falamos em parte única, eu vou testar funções e métodos individuais. Chamamos esse teste de “teste de unidade”.
+
+[04:12] Existe um segundo teste, que é o “teste de integração”. O que é o teste de integração? Ele visa testar diferentes módulos ou serviços usados em uma aplicação. Então se pararmos para pensar, em nossa aplicação Django Rest, nossa API, nós temos a API e o banco de dados. Esse banco de dados pode ser SQLite, MySQL ou PostgreSQL, não importa, ele é uma outra aplicação que interage com a aplicação do Django Rest.
+
+[04:39] Então se eu quero testar, por exemplo, se eu consigo ter acesso ao banco de dados ou se eu consigo salvar no banco de dados alguma coisa, ou recuperar uma determinada informação do banco de dados - nós chamamos esse teste de “teste de integração”.
+
+[04:54] Eu tenho a minha aplicação, o módulo principal, só que esse módulo interage com outros módulos - como, por exemplo, o banco de dados. Então se eu faço um acesso a um banco de dados, se eu quero fazer uma verificação de alguma informação no meu projeto e, para isso, eu vou precisar acessar o banco de dados, nós vamos chamar esse teste de “teste de integração”.
+
+[05:17] Existe um outro teste também, chamado de “teste funcional”. Qual é o objetivo do teste funcional? É testar o requisito do negócio, então ele vai se concentrar em verificar a saída de uma ação, verificar se eu consigo ter acesso a algumas informações ou ao fluxo que um cliente vai ter dentro da nossa aplicação.
+
+[05:42] Esse teste funcional pode gerar uma certa confusão com o teste de integração, então vou exemplificar de uma forma bem simples. Podemos pensar que o teste de integração, que vimos anteriormente, visa consultar o banco de dados. Então eu tenho a minha aplicação e quero consultar o banco de dados.
+
+[06:01] Já o teste funcional, eu quero fazer um teste para verificar se eu consigo obter um valor especifico do banco de dados, conforme definido no nosso teste. Então esse seria um teste funcional, diferente de um teste de integração.
+
+[06:17] Dentre esses testes, eu deixo um desafio para você pesquisar outros tipos de testes. Além do teste de unidade que falamos, existe o teste de integração, teste de aceitação - e todos esses são conhecidos como testes funcionais.
+
+[06:31] Existem outros tipos de testes também, chamados de “testes não funcionais”. Qual é o objetivo desses outros testes? É realizar outros tipos de testes não relacionados a como o nosso sistema foi feito, mas a ambientes diferentes para o nosso sistema - cenários diferentes e externos à nossa aplicação. Como por exemplo, um teste de estresse - qual o objetivo? É submeter o nosso software às situações extremas.
+
+[07:03] Então eu vou testar os limites da minha aplicação e avaliar como ela se comporta, ou vou um teste de carga. Eu quero verificar o limite de dados processados pela minha aplicação e tentar enxergar até quando a minha aplicação suporta.
+
+[07:22] Ou um teste de desempenho/performance, onde eu quero verificar, por exemplo, como o sistema se comporta em diferentes cargas. Ou qual é o comportamento do nosso software em diferentes cenários externos a ele. Então esses são conhecidos como testes não funcionais.
+
+[07:42] O que eu vou fazer? Nas próximas atividades eu vou deixar um link com algumas leituras extras em relação a esse mundo de testes e nas próximas aulas nós vamos começar a botar a mão na massa e vamos aprender como testamos a nossa API, para garantirmos o controle e o funcionamento da nossa aplicação da forma desejada.
+
 ### Faça como eu fiz: Fixtures
+
+Opinião do instrutor
+
+Para carregar dados iniciais utilizando as Fixtures, é necessário criar uma pasta chamada fixtures dentro do app onde os dados são carregados.
+
+Depois podemos criar um arquivo chamado programas_iniciais.json, com uma lista indicando o nome do app, a classe do modelo com os dados, o ID e os campos com seus respectivos atributos, como ilustra o código abaixo:
+
+        [
+            {
+              "model": "aluraflix.programa",
+              "pk": 1,
+              "fields": {
+                "titulo": "Coisas bizarras",
+                "tipo": "S",
+                "data_lancamento": "2016-07-15",
+                "likes": 7864,
+                "dislikes": 465
+              }
+            },
+            {
+                "model": "aluraflix.programa",
+                "pk": 2,
+                "fields": {
+                  "titulo": "O bruxo",
+                  "tipo": "S",
+                  "data_lancamento": "2019-12-20",
+                  "likes": 845,
+                  "dislikes": 32
+              }
+            },
+            {
+                "model": "aluraflix.programa",
+                "pk": 3,
+                "fields": {
+                  "titulo": "Emília em São Francisco",
+                  "tipo": "S",
+                  "data_lancamento": "2020-10-02",
+                  "likes": 441,
+                  "dislikes": 12
+              }
+            },
+            {
+                "model": "aluraflix.programa",
+                "pk": 4,
+                "fields": {
+                  "titulo": "Corações de lata",
+                  "tipo": "F",
+                  "data_lancamento": "2015-02-05",
+                  "likes": 2873,
+                  "dislikes": 132
+              }
+            },
+            {
+                "model": "aluraflix.programa",
+                "pk": 5,
+                "fields": {
+                  "titulo": "Le Le Lend",
+                  "tipo": "F",
+                  "data_lancamento": "2017-01-13",
+                  "likes": 1230,
+                  "dislikes": 19
+              }
+            },
+            {
+                "model": "aluraflix.programa",
+                "pk": 6,
+                "fields": {
+                  "titulo": "Saltadores Utimato",
+                  "tipo": "F",
+                  "data_lancamento": "2019-04-25",
+                  "likes": 31771,
+                  "dislikes": 87
+              }
+            },
+            {
+                "model": "aluraflix.programa",
+                "pk": 7,
+                "fields": {
+                  "titulo": "Capitão Bahia",
+                  "tipo": "F",
+                  "data_lancamento": "2011-07-29",
+                  "likes": 10340,
+                  "dislikes": 127
+              }
+            },
+            {
+                "model": "aluraflix.programa",
+                "pk": 8,
+                "fields": {
+                  "titulo": "Caderno da vida",
+                  "tipo": "S",
+                  "data_lancamento": "2017-07-20",
+                  "likes": 51,
+                  "dislikes": 89
+              }
+            },
+            {
+              "model": "aluraflix.programa",
+              "pk": 9,
+              "fields": {
+                "titulo": "O resgate do soldado Carlinhos",
+                "tipo": "F",
+                "data_lancamento": "1999-09-05",
+                "likes": 51,
+                "dislikes": 89
+            }
+          }
+          ]
+        
+Para migrar esses dados para o banco de dados, basta executar o seguinte comando:
+
+        python manage.py loaddata programas_iniciais.json
+
+Sucesso! Sua base de dados agora possui 9 programas cadastrados!
+
+Você pode ler mais sobre [Fixtures na documentação]('https://docs.djangoproject.com/en/3.1/howto/initial-data/').
+
+Ficou com alguma dúvida, lembre-se do fórum da Alura. Não tem dúvidas? Que tal ajudar alguém no fórum?
+
+:)
+
 ### Carregando dados iniciais
+
+Marcos está desenvolvendo uma API e gostaria de fornecer alguns dados iniciais para seus modelos. Esses dados iniciais correspondem a aplicativos e modelos diferentes.
+
+Sabendo disso, analise as afirmações abaixo e marque a verdadeira.
+
+a) O Django fornece uma forma de carregar dados iniciais desde que o formato dos dados seja JSON. Não há suporte para outros tipos de dados.
+
+b) Tanto o Django como o Django Rest Framework não possuem suporte para carregamento de dados iniciais.
+
+c) **Alternativa correta:** O Django fornece uma forma de carregar dados iniciais para diferentes modelos através das Fixtures.
+- _Alternativa correta! Certo! Podemos utilizar fixtures dentro de cada APP com arquivos JSON ou YAML, por exemplo, referenciando cada modelo, a chave primária, os campos e seus respectivos valores._
+
 ### Para saber mais: Testes automatizados
+
+A ideia é fazer com que a pessoa desenvolvedora escreva testes automatizados de maneira constante ao longo do desenvolvimento de um software. Um ponto que é sempre levantado em qualquer discussão sobre testes manuais versus testes automatizados é produtividade.
+
+O argumento mais comum é o de que agora a equipe de desenvolvimento gastará tempo escrevendo código de teste; antes ela só gastava tempo escrevendo código de produção. Portanto, essa equipe será menos produtiva.
+
+A pergunta que devemos fazer é: o que é produtividade? Se produtividade for medida através do número de linhas de código de produção escritas por dia, talvez a pessoa desenvolvedora seja sim menos produtiva.
+
+Agora, se a produtividade for a quantidade de linhas de código de produção sem defeitos escritos por dia, provavelmente o desenvolvedor ou desenvolvedora será mais produtivo ao usar testes automatizados.
+
+[..] Aniche, Maurício. Test Driven Development: Teste e Design no Mundo Real. [Casa do código]('https://www.casadocodigo.com.br/products/livro-tdd')
+
 ### Para saber mais: Teste funcional e de unidade
+
+Existem muitas maneiras de descrever tipos de testes. Para nossos propósitos, vamos diferenciar entre testes de unidade e testes funcionais. A distinção é semântica, mas informará nossa estratégia de teste.
+
+Testes de unidade
+Concentram-se nas preocupações da pessoa que desenvolve e geralmente são pequenos. São executados em microssegundos e testam uma única parte do projeto.
+
+Teste funcional
+O teste funcional é focado na experiência do usuário, pode ser grande e levar mais tempo quando comparado aos testes de unidade. Geralmente, simula aquilo que um usuário faria.
+
+Para saber mas sobre o assunto, leia [este artigo e descubra outros tipos de testes (texto em inglês)]('https://www.atlassian.com/continuous-delivery/software-testing/types-of-software-testing').
+
 ### O que aprendemos?
+
+**Nesta aula:**
+- Aprendemos que é possível carregar dados iniciais para os modelos através das fixtures. Para isso, dentro de cada APP, podemos criar uma pasta chamada fixtures com dados no formato JSON, por exemplo, e carregá-los executando o comando manage.py loaddata seguido do nome do arquivo que contém os dados.
+- Aprendemos que existem diferentes formas de testar uma aplicação, como testes manuais, automatizados, testes de unidade, integração, entre outros.
+
+**Na próxima aula:**
+- Vamos aprender como testar nossos modelos e serializers na prática, escrevendo testes de unidade!
+
 ## 02. Testes de unidade
 ### Projeto da aula anterior
 ### Testando modelo
