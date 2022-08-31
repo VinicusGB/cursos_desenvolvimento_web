@@ -610,13 +610,283 @@ c) **Alternativa correta:** Garantir que a saída do serializador tenha as chave
 - Vamos criar testes de integração para verificar a requisição de um usuário autenticado com as credenciais corretas!
 
 ## 03. Teste de integração
-### Projeto da aula anterior
 ### Testando a autenticação
+
+1. Criar um arquivo test_authentication.py:
+
+        from django.contrib.auth.models import User
+        from rest_framework.test import APITestCAse
+        from django.contrib.auth import authenticate
+
+        class AuthenticationTestCase(APITestCase):
+                def setUp(self):
+                        self.user = User.objects.create_user('c3po',password='123456')
+                def test_autenticacao_user_com_credenciais_corretas(self):
+                        """Teste que verifica a autenticacao de um user com dados correto"""
+                        user = authenticate(username='c3po',password='123456')
+                        self.assertTrue(user is not None) and user.is_authenticated)
+
+---
+
+[00:00] A nossa API possui um sistema de autenticação, isso significa que se eu tentar visualizar os recursos e programa, ele vai me pedir o username e a password. Então eu coloco o meu nome, coloco a minha senha supersegura e quando eu aperto a tecla “Enter”, aparece os recursos. Eu posso criar um novo programa ou atualizar um determinado programa.
+
+[00:22] Se eu coloco, por exemplo, ID 2, aparece “O bruxo” e eu consigo visualizar, dar um PUT, atualizar ou deletar algum recurso. Ou seja, para de fato consumir a minha API, é necessário que eu esteja autenticado.
+
+[00:33] Mas minha pergunta é: como será que podemos testar esse comportamento, esse fluxo de um usuário que faz uma autenticação e tenta consumir os dados da API? Vamos ver isso, então!
+
+[00:44] Para começar, eu vou abrir do lado a nossa pasta do “aluraflix > tests” e criar um novo arquivo, chamado “test_authentication.py”, porque eu quero testar as nossas autenticações. Para começar, nos outros testes sempre tínhamos um modelo como referência, então tenho um modelo de programa no “aluraflix”.
+
+[01:07] Nesse nosso caso da autenticação, qual é o modelo que vamos utilizar como referência? É o modelo de usuário do próprio Django. Então lá do “django.contrib.auth.models” (esse nome é grande) tem o modelo do usuário do Django que conseguimos verificar se ele está autenticado ou não.
+
+[01:24] Então vamos trazê-lo - ‘from Django.contrib.auth.models import User’. Além disso, nesse nosso teste vamos utilizar uma propriedade, que é a ‘APITestCase’ porque posteriormente vamos tentar realizar uma requisição, de fato, para essa nossa rota dos programas que temos da nossa API.
+
+[01:56] O que eu vou fazer? Primeira coisa: vou importar do ‘from rest_framework.test import APITestCase’. Vamos criar a nossa classe de teste, vou chamar de ‘class AuthenticationUserTestCase(APITestCase):’ e nós vamos começar!
+
+[02:29] Em primeiro lugar vamos criar o nosso cenário de teste - ‘def setUp(self)’. De quem eu preciso? Eu preciso de um usuário, então vou colocar ‘self.user = User’. Eu preciso agora, de fato, criar um usuário. Porém temos uma reflexão interessante: vamos observar nosso teste de modelo e o nosso teste do serializer, vou abrir os 3.
+
+[03:00] No teste do modelo temos uma instância do programa, não temos o programa de fato no banco de dados. O mesmo acontece no nosso teste do serializer.
+
+[03:09] Não temos esse programa que usamos no teste do serializer ou no teste do modelo criado no banco de dados. Isso define que os nossos testes são testes de unidade. Pegamos toda a nossa API em pedaços, depois pegamos todo o contexto da API, pegamos um pedacinho de código que se trata do modelo e testamos os modelos.
+
+[03:31] Nesse nosso caso da autenticação, o que vamos fazer? Queremos verificar se o usuário respeita todas as regras de negócio impostas pelo Django. Então é importante que nesse teste não façamos um teste de unidade, e sim um teste de integração - porque vamos integrar o banco de dados com a nossa API.
+
+[03:55] Lembrando que o banco de dados não é o banco de dados real que está em produção, onde estão os nossos filmes. Lembre-se que o Django já tem uma estrutura para criar sempre os bancos de dados de teste.
+
+[04:07] Então para eu criar um programa, nesse caso vou usar o ‘objects,create_user()’ e vou criar um usuário que será criado quando eu executar esse teste no banco de dados de teste. Vou chamar esse usuário de “c3po” e vou criar uma senha para ele, então ficou ‘(‘c3po’, password=’123456’)’.
+
+[04:34] Criei meu usuário e agora quero criar um teste para verificar se de fato esse usuário consegue ser autenticado. Então para conseguir de fato testar se esse usuário consegue se autenticar, eu vou importar mais um módulo - ‘from Django.contrib.auth import authenticate’ - porque eu quero autenticar esse usuário.
+
+[05:04] Vou criar um novo teste ‘def test_’. Esse teste eu posso chamar como, por exemplo, autenticação de um user com credenciais corretas – acho que fica bem legal - ‘def test_autenticacao_user_com_credenciais_corretas(self):’. Nós vamos começar a escrever o nosso teste. Colocando a nossa docstring, então esse é um teste que verifica a autenticação de um user com as credenciais corretas.
+
+[05:59] Colocamos a nossa docstring e agora vamos começar a escrever o nosso teste. Então em primeiro lugar, eu tenho um usuário já criado através do setup, esse usuário ‘c3po’ que criamos. Vamos autenticar o ‘c3po’.
+
+[06:12] Então vou chamar ‘authenticate(username=’c3po’, password=’123456’)’. Vou guardar isso dentro de uma variável chamada ‘user = ’ e vou fazer uma acertação para verificar se esse usuário de fato está autenticado.
+
+[06:35] Então vou verificar duas coisas. Primeiro: se o usuário não é vazio e se temos um usuário de fato criado. Então para isso vou colocar um ‘self.assertTrue()’. Eu quero que isso seja verdadeiro.
+
+[06:49] Então em primeiro lugar eu vou verificar assim: ‘(use is not None)’ - isso significa que eu tenho um usuário criado. Além disso, vou colocar ‘and user is_authenticated’, dizendo que esse usuário está de fato autenticado.
+
+[07:07] Abrindo nosso terminal e parando nosso servidor, eu vou executar ‘manage.py test’. Quando apertar a tecla “enter” vai rodar o nosso teste... O nosso teste passou!
+
+[07:21] Como o nosso teste passou e deu tudo certo, o que podemos fazer na sequência? Podemos verificar outras coisas. Se eu tento, de fato, uma requisição sem realizar a autenticação desse usuário, o que será que acontece? Vamos ver como criar esses outros testes, na sequência!
+
 ### Credenciais incorretas
+
+1. Em test_authentication.py:
+
+        ...
+        from django.urls import reverse
+        from rest_framework import status
+
+        ...
+                def setUp(self):
+                        self.list_url = reverse('programas-list')
+                        self.user = ...
+                        ...
+                ...
+                def test_requisicao_get_nao_autorizada(self):
+                        """Teste que verifica uma requisição GET sem autenticar"""
+                        response = self.client.get(self.list_url)
+                        self.assertEqual(response.status_code,status.HTTP_401_UNAUTHORIZED)
+                def test_autenticacao_de_user_com_usernaem_incorreto(self):
+                        """Teste que verifica a autenticacao de um user com dados incorreto"""
+                        user = authenticate(username='c3pp',password='123456')
+                        self.assertFalse(user is not None) and user.is_authenticated)
+                ...
+
+---
+
+[00:00] Nós realizamos o nosso teste para verificarmos se o usuário c3po conseguia se autenticar - e ele conseguiu. Esse foi um teste. Eu quero criar um outro teste, agora um pouco mais além. Nem vou falar de autenticação, eu quero realizar uma requisição get para programas, para ver o que acontece.
+
+[00:19] Para nós conseguirmos realizar essa requisição get é importante passarmos a URL que ele vai passar a requisição. Existe um módulo do Django, o from django.urls, chamado de reverse. Através desse módulo reverse ele vai expandir para nós todas as possíveis URLs.
+
+[00:42] Por que vamos utilizar o reverse para passarmos o localhost8000/? Porque queremos garantir que esse código continue funcionando e que nossos testes continuem funcionando depois que subirmos nosso projeto em produção também.
+
+[00:57] Então não vamos utilizar passando o localhost, não quero fazer uma requisição do localhost. Eu quero fazer uma requisição na lista dos meus endpoints relacionados ao programa. Então, para isso eu vou criar uma instância chamada self.list_url = reverse(`)` e entre parênteses eu vou precisar passar qual vai ser o endpoint/recurso que eu quero utilizar.
+
+[01:26] O recurso que vamos utilizar, podemos visualizar exatamente o nome dele em “aluraflix > setup > urls.py”. Existe um base name chamado programas, então no meu teste de autenticação, eu posso passar programas. Só que eu não quero realizar apenas uma requisição get ou apenas uma requisição post ou delit, eu quero realizar diferentes requisições.
+
+[01:48] Então eu quero passar uma lista dos endpoints relacionados aos programas. Então eu coloco um traço e escrevo “list”. Desta forma, quando eu falo “uma requisição get” para essa lista URL”, ela já sabe que é uma requisição get para programas.
+
+[02:05] Temos a nossa requisição, o que eu preciso fazer agora é criar o nosso teste. Para criar o nosso teste - def test_requisicao_get_nao_autorizada() - vou colocar em cima para vermos melhor - (self): e vou começar a escrever o nosso teste: “““Teste que verifica uma requisição GET sem autetnicar”””.
+
+[02:56] Primeira coisa: vou precisar realizar um get. Então vou utilizar o cliente que é disponível no APITestCase, então: self.client. Quando eu colocar o ponto final já vai aparecer o get - self.client.get(self.list_url).
+
+[03:21] Essa requisição, estou a fazendo e vou guardar a resposta dela. Então vou criar uma nova variante chamada response e vou guardar essa requisição dentro desta variável response.
+
+[03:35] Vou fazer agora uma acertação self.assertEqual e vou colocar a nossa acertação. Se o status code dessa resposta, (response.status_code,), for igual a um status não autorizado - para deixarmos bem legal, o nosso código, vamos importar também um status. Então do rest frame, nós temos o status: from rest_framework import status.
+
+[04:13] Então para colocar o status e ficar bem bonito, vou chamar de status.HTTP_401_UNAUTHORIZED. Significa “sem autenticar” ou “não autorizado”, acho que os dois nomes ficariam bem.
+
+[04:30] O que fizemos aqui? Fizemos uma requisição com o cliente que vem do APITestCase, uma requisição get para nossa lista de URLs que estamos utilizando em cima, através do reverse do programa. Então, o endpoint do programa.
+
+[04:45] Vou guardar essa resposta e verificar se o status code dessa resposta é igual ao status 401, de não autorizado. Vou executar meu teste... Nosso teste foi aprovado! Então quando temos uma requisição get, sem autenticarmos e recebemos um 401. Será mesmo que isso está acontecendo? Vamos verificar!
+
+[05:08] Vou na minha view e vou comentar essa linha da autenticação. O que vai acontecer agora? Eu não tenho mais a autenticação na minha view e quando eu fizer uma requisição get, ele vai aceitar a requisição get - e vai devolver o quê? Um 200, esse teste vai falhar.
+
+[05:27] Fiz o teste e ele falhou! Ele devolveu 200 != 401. O assert fala que é o teste que verifica a requisição get sem autenticar. “Requisição GET não autorizada”, vai ficar bem chique. Vou mudar para “““Teste que verifica uma requisição GET não autorizada”””.
+
+[05:47] Não é isso o que eu quero, no nosso projeto nós queremos a autenticação. Então quando eu volto e tiro o comentário da nossa view, deixo a autenticação e rodo o nosso teste mais uma vez. Observe que o nosso código é aprovado.
+
+[06:04] Outro teste em que podemos verificar em relação às credenciais, em relação ao autorizado ou não é: quando um usuário erra o seu nome, será que de fato ele está autenticado? Será que nós queremos que ele esteja autenticado se ele errar o nome ou errar a senha? Vou criar um teste para garantir esses dois cenários.
+
+[06:23] Então vou criar um teste aqui, vou chamá-lo de def test_autenticacao_de_user_com_username_incorreto(self):. Esperamos que ele não consiga se autenticar. O que vamos fazer?
+
+[06:49] Vamos fazer a mesma autenticação que fizemos em cima. Eu vou até copiar as linhas 15 e 16, exatamente isso que queremos fazer nesse teste. Copiei o “aluraflix” também, não é isso que queremos.
+
+[07:04] Vou autenticar, só que com o username incorreto. Então ao invés de c3po, vai ser c3pp, digitou errado. Então ele vai verificar se o usuário não é nulo e se ele está autenticado. Só que eu não quero uma acertação verdadeira, eu espero que isso seja falso, então digito assertFalse. Vamos verificar isso. Subindo o nosso teste... Aprovado!
+
+[07:31] Então se erramos o nome ou erramos a senha, o nosso usuário não consegue ser autenticado. Podemos fazer o mesmo com a senha, então no lugar de username eu posso colocar password. Só para deixar nosso código bem legal, vou deixar o username correto e a senha vou colocar como 123455.
+
+[07:58] Na linha 23, o que eu vou fazer? Só para manter o nosso código organizado eu vou colocar “““Teste que verifica autenticação de um user com username incorreto”””. Queremos essa mesma docstring, só que no lugar de username nós vamos mudar para senha – password.
+
+[08:33] Dessa forma manteremos o nosso código sempre organizado e com as informações que queremos.
+
 ### Requisições de user autenticado
+
+[FORCE AUTHENTICATION]('https://www.django-rest-framework.org/api-guide/testing/#forcing-authentication')
+
+1. Em test_authentication.py:
+
+        ...
+        def test_requisicao_get_com_user_autenticado(self):
+                """Teste que verifica um requisição get de um user autenticado"""
+                self.client.force_authenticate(self.user)
+                response = self.client.get(self.list_url)
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+...
+
+[00:00] Realizamos diferentes testes para autenticarmos o usuário, para verificarmos se esse comportamento está correto. Vimos se com as credenciais do usuário ele consegue estar autenticado, se ele consegue realizar uma requisição não estando autenticado - e obtivemos sucesso nesses nossos testes.
+
+[00:19] Porém, o que eu quero fazer agora é o oposto, eu quero fazer agora uma requisição get com o usuário autorizado. Então vou criar um novo teste - def test_requisicao_get_com_user_autenticado(self):.
+
+[00:46] Vamos começar a escrever a nossa docstring para mantermos o nosso teste bem documentado. Então, “““Teste que verifica uma requisição GET de um user autenticado”””.
+
+[01:13] A primeira coisa que vamos ter em mente é que nós não podemos usar, nesse caso, o authenticate. Por quê? O authenticate é uma ação que verifica se o usuário passa nessas regras de autenticação do Django durante uma solicitação.
+
+[01:34] Então ele vai verificar o username, o password. O objetivo de quando utilizamos esse método authentication é de fato a eficiência. Então ele vai verificar se as credenciais estão certas. Se estiverem certas, esse usuário estará autenticado.
+
+[01:51] Então, nesse caso, o que eu preciso fazer? Para que eu consiga de fato visualizar os dados da requisição é importante que eu esteja autenticado. Então eu preciso, de alguma maneira, forçar a requisição. Nós vamos utilizar esse método chamado force authentication.
+
+[02:10] Qual é a diferença dele? O objetivo de forçar a autenticação é assim: mesmo que o usuário faça a autenticação com uma negação de algum username ou password, nós vamos garantir que ele seja autenticado, vamos forçar a autenticação através dele. Mas como fazemos isso?
+
+[02:32] Para começar, eu vou criar self.client.force. Aqui está escrito force_login, mas o nome que vamos utilizar é force_authenticate. O que precisamos passar para esse force_authenticate? Vamos passar o usuário que criamos, então digitamos (self.user). Então estamos forçando, estamos falando que queremos que o cliente da requisição seja autenticado. Ficou self.client.focr_authenticate(self.user).
+
+[03:11] Podemos encontrar mais detalhes disso na própria documentação do Django Rest sobre o force authentication. Temos a assinatura do método, request, o user - que criamos na nossa função de setup - e temos todos esses detalhes bem explicados.
+
+[03:32] Então forçamos que o cliente da requisição esteja autenticado com esse usuário que acabamos de criar. Até aí está tudo bem. O que eu quero fazer agora é criar uma requisição get. Podemos usar o mesmo código que usamos na linha 20. Vou copiar esse linha response = self.client.get(self.list_url).
+
+[03:56] Então nós temos um usuário que foi forçado à uma autenticação e que fez uma requisição get. O que vou fazer agora? Vou verificar se esse status é 200, se o status code da resposta desse response que eu tenho é de 200. Então vou digitar self.assertEqual(reponse.status_code, status HTTP¬_200_OK).
+
+[04:30] Abrindo nosso console, vou rodar o “manage.py test” e vou deixar em cima para nós visualizarmos. Ele vai começar a rodar os nossos testes... Nosso teste foi aprovado! Então quando queremos de fato testar se o usuário está autenticado, esse cliente da requisição precisa de outros passos e nós precisamos da autenticação.
+
+[04:55] Então, utilizamos o force authenticate e não apenas o authenticate.[00:00] Realizamos diferentes testes para autenticarmos o usuário, para verificarmos se esse comportamento está correto. Vimos se com as credenciais do usuário ele consegue estar autenticado, se ele consegue realizar uma requisição não estando autenticado - e obtivemos sucesso nesses nossos testes.
+
+[00:19] Porém, o que eu quero fazer agora é o oposto, eu quero fazer agora uma requisição get com o usuário autorizado. Então vou criar um novo teste - def test_requisicao_get_com_user_autenticado(self):.
+
+[00:46] Vamos começar a escrever a nossa docstring para mantermos o nosso teste bem documentado. Então, “““Teste que verifica uma requisição GET de um user autenticado”””.
+
+[01:13] A primeira coisa que vamos ter em mente é que nós não podemos usar, nesse caso, o authenticate. Por quê? O authenticate é uma ação que verifica se o usuário passa nessas regras de autenticação do Django durante uma solicitação.
+
+[01:34] Então ele vai verificar o username, o password. O objetivo de quando utilizamos esse método authentication é de fato a eficiência. Então ele vai verificar se as credenciais estão certas. Se estiverem certas, esse usuário estará autenticado.
+
+[01:51] Então, nesse caso, o que eu preciso fazer? Para que eu consiga de fato visualizar os dados da requisição é importante que eu esteja autenticado. Então eu preciso, de alguma maneira, forçar a requisição. Nós vamos utilizar esse método chamado force authentication.
+
+[02:10] Qual é a diferença dele? O objetivo de forçar a autenticação é assim: mesmo que o usuário faça a autenticação com uma negação de algum username ou password, nós vamos garantir que ele seja autenticado, vamos forçar a autenticação através dele. Mas como fazemos isso?
+
+[02:32] Para começar, eu vou criar self.client.force. Aqui está escrito force_login, mas o nome que vamos utilizar é force_authenticate. O que precisamos passar para esse force_authenticate? Vamos passar o usuário que criamos, então digitamos (self.user). Então estamos forçando, estamos falando que queremos que o cliente da requisição seja autenticado. Ficou self.client.focr_authenticate(self.user).
+
+[03:11] Podemos encontrar mais detalhes disso na própria documentação do Django Rest sobre o force authentication. Temos a assinatura do método, request, o user - que criamos na nossa função de setup - e temos todos esses detalhes bem explicados.
+
+[03:32] Então forçamos que o cliente da requisição esteja autenticado com esse usuário que acabamos de criar. Até aí está tudo bem. O que eu quero fazer agora é criar uma requisição get. Podemos usar o mesmo código que usamos na linha 20. Vou copiar esse linha response = self.client.get(self.list_url).
+
+[03:56] Então nós temos um usuário que foi forçado à uma autenticação e que fez uma requisição get. O que vou fazer agora? Vou verificar se esse status é 200, se o status code da resposta desse response que eu tenho é de 200. Então vou digitar self.assertEqual(reponse.status_code, status HTTP¬_200_OK).
+
+[04:30] Abrindo nosso console, vou rodar o “manage.py test” e vou deixar em cima para nós visualizarmos. Ele vai começar a rodar os nossos testes... Nosso teste foi aprovado! Então quando queremos de fato testar se o usuário está autenticado, esse cliente da requisição precisa de outros passos e nós precisamos da autenticação.
+
+[04:55] Então, utilizamos o force authenticate e não apenas o authenticate.
+
 ### Faça como eu fiz
+
+Nos testes de modelo e serializer, não utilizamos o banco de dados para a criar um objeto no banco de dados de teste, usamos apenas uma instância de programa. Porém, nesta aula, vinculamos o banco de dados de teste, criamos um usuário e realizamos uma série de testes para garantir que os dados da API serão mostrados apenas para usuários cadastrados.
+
+Que magia é essa aí?
+
+#### Opinião do instrutor
+
+Para começar, vamos criar a lista das URLs do recurso de programa e criar um usuário no banco de dados de teste:
+
+        class AuthenticationUserTestCase(APITestCase):
+
+            def setUp(self):
+                self.list_url = reverse('programas-list')
+                self.user = User.objects.create_user('c3po', password='123456')
+
+Agora, vamos escrever um teste para verificar se o usuário c3po consegue se autenticar:
+
+        def test_autenticacao_user_com_credenciais_corretas(self):
+                """Teste que verifica a autenticação de um user com as credenciais corretas"""
+                user = authenticate(username='c3po', password='123456')
+                self.assertTrue((user is not None) and user.is_authenticated)
+
+Em seguida, vamos tentar realizar uma requisição sem autenticar nenhum usuário:
+
+        def test_requisicao_get_nao_autorizada(self):
+                """Teste que verifica uma requisição GET não autorizada"""
+                response = self.client.get(self.list_url)
+                self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
+        
+Para fechar com chave de ouro, vamos autenticar o usuário criado na função setUp e realizar uma requisição GET:
+
+        def test_requisicao_get_com_user_autenticado(self):
+                """Teste que verifica uma requisição GET de um user autenticado"""
+                self.client.force_authenticate(self.user)
+                response = self.client.get(self.list_url)
+                self.assertEqual(response.status_code, status.HTTP_200_OK)
+        
+Ao executar o `manage.py` test, nossos testes serão aprovados!
+
+Ficou com alguma dúvida, lembre-se do fórum da Alura. Não tem dúvidas? Que tal ajudar alguém no fórum?
+
+:)
+
 ### Unidade ou Integração?
+
+O método de teste setUp permite criar dados de teste comuns com facilidade e eficiência. Uma vez que você configura os registros para a classe, você não precisa recriar os registros para cada método de teste, como ilustram os códigos abaixo:
+
+Código 1
+
+        def setUp(self):
+                self.programa = Programa(
+                    titulo = 'Procurando ninguém em latim',
+                    data_lancamento = '2003-07-04'
+                )
+
+Código 2
+
+        def setUp(self):
+                self.programa = Programa.objects.create(
+                    titulo = 'Procurando ninguém em latim',
+                    data_lancamento = '2003-07-04'
+                )
+
+Analisando os trechos de código acima, podemos afirmar que:
+
+a) Os testes que usam a função setUp do Código 1 podem ser chamados de testes de integração e do Código 2, podem ser chamados de testes de unidade.
+b) **Alternativa correta:** Os testes que usam a função setUp do Código 1 podem ser chamados de testes de unidade e do Código 2, podem ser chamados de testes de integração.
+- _Alternativa correta! Certo! Os testes de unidade são focados nos componentes individuais do programa. Já os testes de integração, testam componentes e suas dependências._
+c) Ambos são testes de integração, tanto oCódigo 1 como o Código 2.
+
 ### O que aprendemos?
+
+**Nesta aula:**
+- Criamos os testes que verificam a autenticação de um usuário com base nas políticas de acesso do Django, criando um usuário na base de dados de testes;
+- Verificamos as tentativas de acesso de um usuário com as credenciais corretas e incorretas e realizamos uma requisição GET de um usuário autenticado.
+
+**Na próxima aula:**
+- Vamos aprender como carregar os dados das fixtures em nossos testes e descobrir como podemos escrever testes no Postman!
+
 ## 04. Testando a API
 ### Projeto da aula anterior
 ### Fixtures nos testes
