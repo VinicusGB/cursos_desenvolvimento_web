@@ -344,13 +344,271 @@ Para saber mas sobre o assunto, leia [este artigo e descubra outros tipos de tes
 - Vamos aprender como testar nossos modelos e serializers na prática, escrevendo testes de unidade!
 
 ## 02. Testes de unidade
-### Projeto da aula anterior
 ### Testando modelo
+
+1. Criar um arquivo test_models.py:
+
+        from django.test import TestCase
+        from aluraflix.models import Programa
+
+        class ProgramaModelTestCase(TestCase):
+                def setUp(self):
+                        self.programa = Programa(
+                                titulo = 'Procurando ninguem em latim',
+                                data_lancamento = '2003-07=04',
+                        )
+                def test_verfica_aribuots_do_programa(self):
+                        """Teste que verifica os atribuots de um programa"""
+                        self.assertEqual(self.programa.titulo,'Procurando ninguem em latim' ),
+                        self.assertEqual(self.programa.data_lancamento,'2003-07-04')
+                def test_falha(self):
+                        self.fail('Teste falhou')
+
+---
+
+[00:00] No treinamento passado nós criamos testes automatizados para verificarmos as principais requisições da nossa API: get, post, put e init. Isso ficou bem legal, porém não testamos nenhuma outra parte da nossa API. Então vamos começar a testar algumas partes da nossa API.
+
+[00:17] Se você acessar o “aluraflix”, vai observar que não temos aquele “teste.py” que vem por padrão quando criamos um app. Por quê? Nós vamos criar uma série de testes e vamos testar partes diferentes da nossa aplicação. Vimos que existe uma série de testes diferentes.
+
+[00:32] Então eu vou clicar para criar uma nova pasta dentro do “aluraflix”, que eu vou chamar de “testes”. Então ele está dentro do “aluraflix”. Dentro do “aluraflix” eu vou criar um arquivo para que os testes sejam executados, um arquivo init. Então, “init.py”, para os nossos testes serem executados. Vou criar mais um arquivo, que vou chamar de “test”, no singular, com underline e o nome do teste que vamos criar.
+
+[01:05] Então para começarmos, vamos testar os nossos modelos. Então vou colocar “test_models.py”. Criei o “test” e tenho o teste do meu modelo. Eu vou deixar meu modelo aberto, ao lado, só para visualizarmos. Tenho o meu arquivo de teste. Vamos focar, então!
+
+[01:24] Quando eu vou criar um programa novo, seja ele um filme ou uma série, observe que tenho alguns valores default. Então um programa da “aluraflix” vai ter um título, um tipo - se ele é um filme ou uma série - e o valor default para filme. Ele tem uma data de lançamento, quantidade de like e quantidade de dislike. Caso eu não passe nenhum valor, ele atribui o valor default=0.
+
+[01:51] Mas será que, de fato, isso está acontecendo? Podemos criar um teste para verificarmos isso. Então a primeira coisa que vamos fazer vai ser importar from django.test import TestCase.
+
+[02:09] Como queremos testar se nosso modelo vai atribuir esses valores default, eu vou trazer também o nosso modelo, então: from aluraflix.models import Programa. Vamos criar nossa classe de teste, que eu vou chamar de class ProgramaModelTestCase(TestCase):.
+
+[02:34] O que isso significa? Quando eu crio uma classe e utilizo o argumento TestCase vai significar que todos os métodos que tem o prefixo “Test” serão executados quando eu rodar o python manage.py test - e é isso o que queremos fazer! Só para garantir, vou criar uma função, chamá-la de test_falha(self):, dentro self.fail(‘Teste falhou’) e vou executar isso no nosso terminal.
+
+[03:18] Parei meu servidor e vou executar python manage.py test. Quando aperto a tecla “Enter”, observe o que acontece: nós temos um “F”, nosso teste falhou. Temos self.fail(‘Teste falhou’).
+
+[03:32] Então tomando cuidado só com algumas coisas: nome das pastas, no plural, tests; o arquivo init e test no singular, underline e o nome do que vamos testar. Fazendo tudo isso, o nosso teste está sendo executado.
+
+[03:45] Não quero criar um teste para falhar, eu quero criar um cenário de teste onde eu não vou passar os valores que são atribuídos por default, no meu modelo. Primeira coisa: vou criar uma função setUp, que vai ser executada antes dos nossos testes, para criar o nosso cenário de teste.
+
+[04:07] Então vou colocar self.programa, vou falar que self.programa vai ser um programa que vem do nosso modelo, só que nesse caso eu não vou utilizar Programa.objects.create. Por que eu não vou fazer isso?
+
+[04:22] Não vou fazer isso porque se eu faço isso, eu estou usando o meu teste mais o banco de dados dele, estou de fato criando esse programa no banco de dados de teste - e não é isso que eu quero fazer, eu quero utilizar apenas uma instância de programa.
+
+[04:39] Então, o que eu vou fazer? Vou tirar esse objects.create. Eu quero um teste de unidade, não de integração. Eu vou passar as propriedades que contém esse programa. Então, o programa tem um título, que vou chamar de Procurando ninguém em latim e vou passar para ele uma data, por exemplo: 4 de julho de 2003, então vou passar data_lancamento = '2003-07-04'.
+
+[05:25] Passei esses 2 valores, tenho a instância de um programa e não estou vinculando no banco de dados. Eu quero fazer agora uma verificação dos atributos desse programa, um teste para verificar os atributos, então digito def test_verifica_atributos_do_programa(self):.
+
+[05:52] Para manter nossos testes bem organizados, vou passar uma docstring, para deixar nossos testes bem claros. Então “““Teste que verifica os atributos de um programa com valores default”””. Esse é o objetivo do nosso teste.
+
+[06:15] Então vou começar minhas acertações: self.assertEqual. Eu quero pegar esse programa que criamos (self.progama.titulo,) e quero verificar se o título desse programa é igual a “Procurando ninguém em latim”, então vou passar uma string “Procurando ninguém em latim”.
+
+[06:37] Porém, eu quero fazer o mesmo com os outros campos. Vou segurar a tecla “Shift + Ctrl” para baixo para fazer uma cópia dessa linha. Então temos um programa o título o tipo, que eu não lembro, vou precisar ver... Título, tipo, data de lançamento, likes e dislikes.
+
+[06:53] Então título, self.programa.data_lancamento, self.programa.likes e self.programa.dislikes. O que vamos fazer agora? Vamos verificar. Quando não atribuímos nenhum valor, qual é o tipo que esperamos?
+
+[07:10] Segundo nosso modelo, quando não temos nenhum valor, o valor default dele é um filme. Então vou passar que o tipo vai ser F. Além do tipo, nós temos a data de lançamento, que precisa ser igual à data de lançamento que colocamos em cima. Então: 2003-07-04. Quantidade de likes, quando não passamos nenhum valor, qual é o valor de like default? É 0 para likes e 0 para dislikes. Então vou passar o valor 0 para os dois.
+
+[07:48] Um ponto importante: se eu passo esse valor 0 como string, vou ter um erro, porque o 0 inteiro não é igual ao 0 string, então precisamos deixar o 0 sem ser no formato de string. Subindo, vamos testar... Vou ligar meu teste e digitar python manage.py test. Está executando. Executou o nosso teste e ele foi aprovado!
+
+[08:11] Só para garantir, vou colocar entre strings para você ver esse 0. Então vamos supor que você errou e passou um 0 string. Quando executar o teste, ele vai falar que essa acertação está errada; no teste que verifica os atributos de um programa com valor default, o 0 string não é igual a um 0 inteiro. Então vou tirar as aspas simples para nosso teste ser aprovado.
+
+[08:35] Dessa forma nós conseguimos garantir no nosso teste de modelo, os atributos e os valores default desse nosso programa.
+
 ### Testando serializer
+
+1. Criar um arquivo test_serializar.py:
+
+        from django.test import TestCase
+        from aluraflix.models import Programa
+        from aluraflix.serializers import ProgramaSerializar
+
+        class ProgramaSerializerTestCase(TestCase):
+                def setUp(self):
+                        self.programa = Programa(
+                                ...
+                        )
+                        self.serializar = ProgramaSerializer(instance=self.programa)
+                
+                def test_verifcar_campos_serializados(self):
+                        """Teste que verifica os campos que estão sendo serializados"""
+                        data = self.serializer.data
+                        self.asserEqual(set(data.keys()), set['titulo','data_lancamento','likes','tipo'])
+
+---
+
+[00:00] Dentro de um API, os serializers possuem um papel muito importante. É importante que consigamos testar para garantirmos o seu funcionamento. Então vamos escrever um teste para verificarmos o serializer e como podemos escrever os testes automatizados para garantirmos o seu funcionamento.
+
+[00:17] Vou fechar nossos testes de modelo e vou abrir nossa pasta de testes dentro do “aluraflix” e vou criar mais um teste, “test_serializers.py”. O que vamos precisar para realizarmos nossos testes do serializer?
+
+[00:35] Em primeiro lugar o Django, então digito from Django.test import TestCase. Vamos precisar do nosso modelo de programa, então digito from aluraflix.models import Programa. Vamos precisar também do nosso serializer, então digito from aluraflix.serializers import ProgramaSerializer.
+
+[00:58] Trouxemos os imports necessários para realizarmos os testes do serializer e vamos criar nossa classe de teste, então digitamos class ProgramaSerializerTestCase(TestCase):. Vamos preparar nosso cenário de teste, nossa função setup, vou falar passando o nosso self e vou começar criando o programa – def setUp(self):.
+
+[01:30] Esse programa eu vou criar assim: vou passar a instância, self.programa= e vou criar um novo programa, vou fazer da mesma forma. Quero garantir os testes de unidade, então não vou dar o objects.create, vou passar apenas as propriedades do programa.
+
+[01:48] Vou roubar um pouco, vou no nosso teste de modelo, copiar o título e a data de lançamento e vou passar os outros valores também. Então, Procurando ninguém em latim. Vou colocar que o tipo dele vai ser um filme. Vou passar também uma quantidade de likes, por exemplo: likes=2340. Esqueci a virgula nas linhas 12 e 13. Para finalizar, os dislikes, que vão ser igual a 40, dislikes=40, só um pouquinho.
+
+[02:28] Criei um programa, então tenho título, tipo, data de lançamento, likes e dislikes. Eu preciso passar agora o serializer que vamos utilizar, uma instância do serializer. Como fazemos isso?
+
+[02:40] Vou utilizar a palavra self.serializer = ProgramaSerializer, porém eu preciso de uma instância dele e informar que essa instância é vinculada com esse programa que estamos utilizando. Como fazemos isso?
+
+[03:00] Vou utilizar a palavra (instance=self.programa), dessa forma já temos o serializer apontando para esse programa que acabamos de criar. Esse é o nosso cenário de teste, ele está feito. Agora vamos para as verificações.
+
+[03:18] O que eu preciso fazer/testar em um serializer? Então, a primeira coisa que podemos pensar em testarmos no serializer é verificarmos se os campos que estão sendo serializados são os mesmos campos que queremos que sejam serializados. Então podemos verificar os campos serializados.
+
+[03:39] Vou colocar uma função def. Vou jogar para cima para visualizarmos melhor. Então, def test_verifica_campos_serializados(self) e vou colocar a docstring para ficar legal. Nessa docstring eu posso escrever algo, por exemplo, como um teste que verifica os campos que estão sendo serializados, então digito “““Teste que verifica os campos que estão sendo serializados”””.
+
+[04:19] Para começarmos, do que precisamos? É importante que antes de já verificarmos nosso serializer e criarmos nossa acertação, que já tenhamos alguma data ou algum campo específico, para falarmos: “os campos do serializer são esses”.
+
+[04:37] Então vou armazenar essa informação aqui data = self.serializer.data. O que isso significa? Que eu estou pegando todos os campos do serializer e armazenando nessa variável data, só para manter nosso código mais organizado. Agora vou criar nossa assertação: self.assertEqual() e nela vou passar alguma propriedades para o assertEqual.
+
+[05:06] Em primeiro lugar, eu preciso garantir que os campos/atributos desse serializer de fato vão ser serializados, então vou colocar data.keys - que é a função que vai pega o serializer. Porém, é importante passarmos uma outra coisa antes de pegarmos de fato os dados do serializer que vou passar, ele se chama set.
+
+[05:30] O que o set vai fazer? Usando o set vamos garantir que a saída do serializer tenha as chaves extas que estamos esperando. Então sempre que utilizamos o set para fazermos essa verificação, na verdade, o que estamos fazendo? Qualquer alteração que tivermos no serializer vai refletir no nosso teste.
+
+[05:49] Então tenho o nosso set do serializer. Vou voltar porque faltou alguns parênteses. Eu peguei todos os dados do meu reializer, então qualquer alteração que fizer no serializer vai ser refletida no nosso teste. Preciso verificar agora se esse set contém os campos que eu quero, então vou colocar set e vou passar o nome dos campos. Eu tenho titulo? Tenho a data_lancamento?
+
+[06:28] O que podemos fazer também para o nosso teste ficar mais claro é darmos uma olhada no nosso serializer, igual eu tinha feito no modelo. Então, o que temos? Vou copiar titulo, tipo, data_lancamento e likes.
+
+[06:41] Observe que os dislikes não aparecem aqui, então vou colocar só esses valores set[titulo,tipo,data_lancamento,likes] )). Eu achei que abri um parêntese errado e fechei um parêntese a mais no nosso set.
+
+[07:01] Então começou nossa acertação, então temos o set do data, esses dois fecham corretamente. No nosso set tem mais um parêntese, eu me esqueci, me desculpe. Tem mais um. Agora sim, tinha me esquecido desse parêntese. Vou colocar para visualizarmos a linha toda, mas é só para entendermos que está na mesma linha e para conseguirmos visualizar na nossa tela.
+
+[07:25] Criamos o nosso teste, vamos ver se isso está de fato acontecendo e realizar algumas alterações. Vou reexecutar o teste. Ele executou e passou, até aí tudo bem. O que fizemos? Falamos “olhe, o serializer possui esses campos: titulo, tipo, data_lancamento e likes?” Possui, então nosso teste foi aprovado!
+
+[07:44] O que vou fazer agora? Vou alterar! Vamos supor que mudou, os dislikes que não estavam sendo exibidos no nosso serializer entraram, então eu tenho likes e dislikes. Vou rodar meu teste mais uma vez. Olhe só que interessante, nosso teste foi aprovado porque o dislike eu escrevi errado.
+
+[08:07] Agora eu acho que vai sim, vamos ver. Salvei o serializer e está executando o teste. Agora sim, nós recebemos a mensagem de erro. Naquela hora eu tinha escrito errado.
+
+[08:17] No que nosso teste falhou? Um teste foi aprovado (nosso teste de modelo) e esse teste falhou (o teste que verifica os campos que estão sendo serializados). Ele fala assim: “você tem um item que está no primeiro set, mas não está no segundo set, que é o dislike”.
+
+[08:34] O que isso significa? Significa que no nosso primeiro set temos um item que não está no segundo. Qual item é esse? É o dislike. Então observe que qualquer alteração que eu faço no meu serializer, vou conseguir pegar essas alterações quando eu executar os meus testes. Isso vai garantir que consigamos o comportamento esperado nos nossos campos que estão sendo serializados.
+
 ### Conteúdo do serializer
+
+1. Em test_serializers.py:
+
+        ...
+                def test_verfica_conteudo_dos_campos_serializados(self):
+                        """Verifica se o conteudo dos campos serializados"""
+                        data = self.serializar.data
+                        self.assertEqual(data['titulo'], self.programa.titulo)
+                        ...
+
+---
+
+[00:00] Conseguimos testar os campos serializados do programa serializer, só que esse não é o único teste que podemos executar no nosso serializer. Podemos verificar se o conteúdo que está sendo serializado é igual ao conteúdo que criamos, para vermos se o serializer está fazendo sua função certa.
+
+[00:18] Então, o que eu vou fazer? Antes de tudo, vou tirar o dislike, não temos o dislike no serializer, temos apenas esses 4 campos sendo serializados. Eu vou criar um novo teste, porque eu quero verificar o conteúdo.
+
+[00:32] Então vou comparar o conteúdo do serializer com o conteúdo da instância do programa que temos, então digito def test_. Posso chamar esse teste de verifica_conteudo_dos_campos_serializdos(self). Nós vamos começar colocando nossa docstring para mantermos nossos códigos bem documentados.
+
+[00:56] Então o objetivo desse teste é verificar o conteúdo dos campos serializados, então digito “““Teste que verifica o conteudo dos campos serializados”””. A primeira coisa que vou fazer vai ser pegar todos os dados do serializer, então digito self.serializer.data e guardo isso em uma variável que vou chamar de data, bem semelhante com o que fizemos em cima.
+
+[01:28] Agora eu vou criar uma acertação para verificar, por exemplo, se o data que está vindo do serializer, o titulo, é igual à instância que criamos em cima, de programa; se é igual a esse título do programa.
+
+[01:42] Então, self.assertEqual() e vou passar a nossa primeira acertação. Vou pegar o data, que é o nosso serializer, mas eu quero o campo titulo. Vou verificar se o campo titulo é igual ao self.programa.titulo. Ficou self.assertEqual(data[titulo], self.programa.titulo).
+
+[02:10] Vou fazer o mesmo com os outros campos, então vou colar com as teclas “Ctrl + C” e colar com “Ctrl + V”. Acho até que coloquei um a mais. Eu tenho o título e data de lançamento, então vou passar também data_lancamento.
+
+[02:26] Esse data_lancamento vai vir para o nosso data do serializer. Temos o tipo e, para finalizarmos, temos os likes. Temos os dislikes sendo serializados, então não faz sentido eu colocar esse teste, ele iria falhar.
+
+[02:51] Então, o que acontece? Temos 4 campos sendo serializados: título, tipo, data de lançamento e os likes. Então eu quero verificar se o conteúdo desses campos, do serializer, é o mesmo conteúdo que temos da instância do nosso programa.
+
+[03:05] Abrindo o nosso terminal, vou executar manage.py test. Quando eu aperto a tecla “enter”, o nosso teste é aprovado. Vou colocar o campo dislikes, por exemplo. Coloquei um campo a mais que não está sendo serializado, dislikes. Vou perguntar se ele é igual a dislikes.
+
+[03:25] Quando eu salvo isso no nosso teste serializer e executo, olhe só que interessante. Executei. Vamos ver... Ele está pensando se vai executar ou não. Executou e deu um erro, temos alguns erros.
+
+[03:43] O primeiro erro que temos foi dos campos serializados, então vamos verificar qual é o problema. Ele fala que temos o KeyError nesse dislikes, na linha 29; porquê? Porque esse dado não tem no serializer, esse conteúdo dislikes não está disponível no nosso serializer, então não tem como compararmos.
+
+[04:07] Então o nosso teste foi reprovado e garantimos o comportamento que esperamos. Se eu executar o teste de novo, sem o dislikes, terei o teste certo. Criando o banco de dados de teste... E agora sim foi aprovado!
+
+[04:21] Então essa é uma outra forma que nós temos para testarmos os nossos serializers.
+
 ### Faça como eu fiz
+
+Nesta aula, vimos como criar testes de unidades para verificar partes isoladas da aplicação. Testamos se os valores default atribuídos nos modelos estavam sendo setados quando nenhum valor era passado na instância de um programa.
+
+Como criar testes de unidades para verificar o comportamento dos modelos no Django?
+
+#### Opinião do instrutor
+
+Nosso modelo de produtos possuem as seguintes características:
+
+        class Programa(models.Model):
+            TIPO = (('F', 'Filme'),('S', 'Serie'),)
+
+            titulo = models.CharField(max_length=50)
+            tipo = models.CharField(max_length=1,choices=TIPO, blank=False, null=False,default='F')
+            data_lancamento = models.DateField()
+            likes = models.PositiveIntegerField(default=0)
+            dislikes= models.PositiveIntegerField(default=0)
+
+Observe que os campos tipo, likes e dislikes possuem os seguintes valores default: F, 0 e 0. Isso significa que, na ausência de atribuição de valores nestes campos, esses valores são incluídos.
+
+Para testar este comportamento, vamos realizar um teste, onde criamos uma instância de programa atribuindo valores nos campos que não possuem a tag default, nesse caso, título e data de lançamento, como ilustra o código abaixo:
+
+        class ProgramaModelTestCase(TestCase):
+
+            def setUp(self):
+                self.programa = Programa(
+                    titulo = 'Procurando ninguém em latim',
+                    data_lancamento = '2003-07-04'
+                )
+
+            def test_verifica_atributos_do_programa(self):
+                """Teste que verifica os atributos de um programa com valores default"""
+                self.assertEqual(self.programa.titulo, 'Procurando ninguém em latim')
+                self.assertEqual(self.programa.tipo, 'F')
+                self.assertEqual(self.programa.data_lancamento, '2003-07-04')
+                self.assertEqual(self.programa.likes, 0)
+                self.assertEqual(self.programa.dislikes, 0)
+        
+Vamos executar este teste?
+
+        python manage.py test
+
+Tudo certo! Nosso teste foi aprovado e os valores default foram atribuídos com sucesso.
+
+Ficou com alguma dúvida, lembre-se do fórum da Alura. Não tem dúvidas? Que tal ajudar alguém no fórum?
+
+:)
+
 ### Uso do Set
+
+Nesta aula, criamos um teste para verificar quais campos estavam sendo serializados pelo ProgramaSerializer com o seguinte código:
+
+        class ProgramaSerializerTestCase(TestCase):
+
+            def setUp(self):
+                self.programa = Programa(
+                    titulo = 'Procurando ninguém em latim',
+                    data_lancamento = '2003-07-04',
+                    tipo='F',
+                    likes=2340,
+                    dislikes=40
+                )
+                self.serializer = ProgramaSerializer(instance=self.programa)
+
+            def test_verifica_campos_serializados(self):
+                """Teste que verifica os campos que estão sendo serializados"""
+                data = self.serializer.data
+                self.assertEqual(set(data.keys()), set(['titulo', 'tipo', 'data_lancamento', 'likes'] ))
+
+Analisando o código acima, podemos afirmar que o uso do set no método que verifica os campos serializados tem a função de:
+
+a) Adicionar campos não serializados presentes ou disponíveis no modelo.
+b) Remover os dados serializados do banco de dados.
+c) **Alternativa correta:** Garantir que a saída do serializador tenha as chaves exatas.
+- _Alternativa correta! Certo! Usar um set para fazer essa verificação é na verdade muito importante porque vai garantir que a adição ou remoção de qualquer campo do serializador seja percebida pelo teste._
+
 ### O que aprendemos?
+
+**Nesta aula:**
+- Aprendemos que o teste de unidade é um método de teste de software no qual os componentes individuais do programa, chamados de unidades, são testados a despeito das dependências necessárias;
+- Criamos os testes de unidade para verificar os campos serializados e se o modelo atribuía os valores default quando eram omitidos.
+
+**Na próxima aula:**
+- Vamos criar testes de integração para verificar a requisição de um usuário autenticado com as credenciais corretas!
+
 ## 03. Teste de integração
 ### Projeto da aula anterior
 ### Testando a autenticação
