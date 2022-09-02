@@ -888,13 +888,201 @@ c) Ambos são testes de integração, tanto oCódigo 1 como o Código 2.
 - Vamos aprender como carregar os dados das fixtures em nossos testes e descobrir como podemos escrever testes no Postman!
 
 ## 04. Testando a API
-### Projeto da aula anterior
 ### Fixtures nos testes
+
+Podmeos também utilizar nosso banco de dados para teste.
+
+1. Em tests/test_features.py:
+
+        from django.test import TestCase
+        from aluraflix.models import Programa
+
+        class FixturesDataTest(TestCase):
+                fixtures = ['progrmas_iniciais']
+
+                def test_verifica_carregamento_da_fixture(self):
+                        programa_bizarro = Programa.objects.get(pk=1)
+                        todos_os_programas = Programa.objects.all()
+                        self.asssertEqual(programa_bizarro.titulo, 'Coisas Bizarras')
+                        self.asssertEqual(len(programa_bizarro),9)
+
+---
+
+[00:00] Nós realizamos uma série de testes na nossa API, porém existe algo interessante que fizemos no início da nossa aplicação. Para não começarmos nossa aplicação sem nenhum programa cadastrado, o que fizemos? Carregamos de “fixtures” um array de JSON, que temos aqui, para que seja carregado na nossa base de dados.
+
+[00:20] Então iniciamos nosso programa, rodamos o load data, indicando qual é o arquivo onde contém os JSON que queremos carregar na nossa base de dados - e esses arquivos foram carregados.
+
+[00:31] Só que, será que é possível carregar esses arquivos dos programas iniciais, no meu banco de dados de teste? Porque todas as vezes que eu rodo o python manage.py test, olhe o que acontece. Na primeira linha ele cria um banco de dados de teste, assim como nós vimos nos cursos anteriores.
+
+[00:53] Esse banco de dados de teste é possível que vinculemos também com essas fixtures - ou seja, assim como fizemos nas funções setups, eu posso criar objetos de usuário diferentes, porém é possível que eu carregue os dados que estão nesse meu arquivo, “programas_iniciais”. Então, vamos fazer isso!
+
+[01:15] Para não misturarmos os testes, eu vou criar uma nova pasta, que vou chamar de “test_fixtures.py”. Dentro desse arquivo vamos precisar do Django Test, então digitamos ‘from django.test import TestCase’. Vamos precisar também de um modelo de programa, por exemplo. Então vou trazer meu modelo de programa lá de ‘from aluraflix.models import Programa’.
+
+[01:53] Vamos criar nossa classe, que vou chamar de ‘class FixtureDataTestCase(TestCase):’. O que vou fazer? Para conseguir vincular o nosso teste com os dados das fixtures, o que eu preciso fazer? É só indicar que eu tenho fixtures nesse arquivo, então: fixtures = [‘’] e eu passo o nome de onde está o meu arquivo JSON, então eu coloco [‘programas_iniciais’]’.
+
+[02:35] Apenas nessa linha eu já trago para essa minha classe de teste todos os programas cadastrados. Será que isso é verdade? Vou realizar um teste para verificar - def test_verifica_carregamento_da_fixture(self):. Vamos começar o nosso teste!
+
+[03:04] Em primeiro lugar, eu vou deixar aberto o “fixture” só para nós garantirmos os nossos dados, então estou com meu teste “fixtures” e meu programa “fixtures”. O ID 1, que é o modelo de programa, vai criar uma série chamada “Coisas bizarras”. Então, o que eu vou fazer no meu teste? Vou buscar esse ID 1 e perguntar se o título é “Coisas bizarras”, por exemplo.
+
+[03:29] Primeira coisa: eu vou digitar programa_bizarro = Programa.objects.get(pk=1). Eu quero pegar quem? O programa que tem a chave primária, o ID 1 - que podemos verificar na linha 4, ‘”pk”: 1,’. Eu trouxe esse programa bizarro que tem isso também.
+
+[03:56] Outra coisa que podemos fazer para verificarmos, é trazer todos os programas e contá-los. Então vou pegar pelo ID, nove programas. Vou pegar todos_os_programas e falar que são iguais a = Programa.objects.all(). Eu trouxe então todos os programas e guardei nessa variável.
+
+[04:26] Então temos o programa_bizarro, que é do ID 1, o Coisas bizarras; e temos todos_os_programas. Vamos fazer as nossas acertações, os nossos testes. Primeiro, vou começar com o de todos os programas: self.assertEqual(programa_bizarro.titulo, ‘Coisas Bizarras’).
+
+[05:01] Se observarmos então, o que eu falei? O programa 1, que eu carreguei na minha base de dados vai se chamar “Coisas Bizarras”. A próxima acertação que eu vou fazer vai ser muito parecida com essa última, só que eu vou pegar ‘todos_os_programas’.
+
+[05:18] Só que eu quero a soma de todos os programas, quero verificar quantos programas eu tenho. Então vou colocar um len na frente para contar, vinculando todos os programas. Quantos programas eu preciso ter? 9. Então posso passar na nossa acertação, que ele precisa ser igual a 9. Ficou self.assertEqual(len(todos_os_programas), 9).
+
+[05:37] Então, se o que eu falei é verdade, a nossa fixture vai carregar para os nossos testes para o nosso FixturesDataTestCase, todos os programas que temos no JSON “programas_iniciais” e vamos poder usar esses dados nos nossos testes também.
+
+[05:53] Claro que isso não é uma regra. Eu preciso usar o fixtures para carregar os dados dos meus testes? Vai depender muito do que você está testando!
+
+[06:03] Então para verificarmos se tudo isso o que fizemos é verdade, nós vamos rodar mais um teste. Rodando nosso teste, tudo passou. Ele passou uma coisa interessante: eu escrevi ‘Coisas Bizarras’ em um, e utilizei a letra “B” maiúscula, mas passei com a tecla “b” minúscula. Então se observarmos, ‘Coisas bizarras’ é com “b” minúsculo. Olhe que interessante, então de fato ele conseguiu pegar os dados no nosso teste!
+
+[06:32] Salvei, alterei o ‘Coisas bizarras’ com a letra “b” minúscula e quando eu rodar meu teste de novo, agora sim, tudo será aprovado.
+
+[06:41] Então, de fato, o que precisamos fazer para carregar as fixtures? Passamos a nossa array de “fixtures” - no nosso caso só temos uma, poderíamos ter mais- passei a “fixture” que eu quero carregar e depois, durante os meus testes, eu farei um get e conseguirei pegar dados dessa “fixture” para utilizar nos meus testes.
+
 ### Preparando o ambiente: Postman
+
+Na próxima atividade, vamos aprender como testar a API no Postman. Sendo assim, é importante que você tenha o Postman instalado para alcançar o mesmo resultado apresentado no vídeo. Caso não tenha, faça a [instalação de acordo com seu sistema operacional]('https://www.postman.com/downloads/').
+
+Sabendo disso, vamos lá?
+
 ### Testando API no Postman
+
+1. No Postman:
+
+        pm.test("Status code deve ser 200", function (){
+                pm.response.to.have.status(200);
+        });
+
+        pm.test("Resposta está no formato JSON", function (){
+                pm.response.to.be.json;
+        })
+
+        pm.test("Saltadores Ultimato no body da resposta", function (){
+                pm.expectipe.text()).to.include("Saltadores Ultimato");
+
+---
+
+[00:00] Durante o nosso treinamento nós realizamos uma série de testes. Então abrindo a pasta “aluraflix > tests”, temos teste de autenticação, teste das “fixtures”, modelo, serializer e vários testes diferentes.
+
+[00:12] Todos esses testes são executados por um comando python manage.py test. Até aí tudo bem. O que eu quero pensar com vocês agora é: será que existe uma forma de testar nossa API, fora do escopo do Django Rest, fora do nosso código Python? E existe!
+
+[00:30] Uma das formas que temos para testar é utilizando o Postman. Já utilizamos o Postman nos cursos de Rest anteriores, mas em nenhum momento mostramos como escrever testes no Postman e eu quero mostrar isso para vocês agora.
+
+[00:42] Caso você não tenha o Postman instalado, é só você digitar “Postman” e ir no link de download do Postman, que você consegue realizar o download do Postman na sua máquina.
+
+[00:54] Vou clicar no “+” no menu superior para abrirmos e vou colocar o endpoint principal: localhost8000/programas/. Quando eu clicar “Send”, o que ele vai falar? “As credenciais de autenticação não foram fornecidas”. Vamos fornecer!
+
+[01:09] Em “Authorization”, vou ir em “Basic Auth” e está lá o meu nome e minha senha supersegura. Quando eu clico em “Send”, tenho a requisição com a resposta correta, com todos os programas que temos, cadastrados.
+
+[01:22] Até aí tudo bem. Se viermos nessa propriedade “Tests”, antes do “Settings”, é possível que escrevamos testes no Postman, também. Qual é a finalidade de testarmos a nossa aplicação no Postman? Pense, é uma aplicação que não está no contexto, é uma aplicação que está de fato consumindo os recursos da nossa API, uma aplicação cliente.
+
+[01:44] Então se quisermos ler mais sobre testes, nesse link “Learn more about tests scripts”, quando eu clico, aparece como eu escrevo testes no Postman. A documentação dele está bem legal. Então se você quiser saber mais, pode clicar aí.
+
+[02:00] Não vamos nos especializar nos testes do Postman. Por quê? Os testes do Postman utilizam a linguagem Java Script e o nosso foco principal é o Python no backend, mas eu vou criar alguns testes para eu conseguir ter uma base vincular legal e testar nossa aplicação.
+
+[02:17] Então, em primeiro lugar, existem alguns códigos que vão nos gerar o snippet de código, ou seja, ele vai gerar o código que precisamos para realizar alguns testes.
+
+[02:29] O primeiro teste que eu quero verificar, scrollando para baixo, é o “Status code: Code is 200”. Quando eu clico nele, aparece o nosso teste escrito na linguagem script.
+
+[02:39] Então é ‘pm’ - que é a instância do Postman - .test(“Status code is 200”, e uma arrow function que diz que a resposta deve ter status ‘200’. Observe que ele é bem descritivo.
+
+[02:54] Então quando eu clico em “Send” mais uma vez, aparece na aba de teste Test Results (1/1), em verde.
+
+[03:00] Quando eu clico, ele fala “Status code is 200”. Podemos mudar esse nome, por exemplo, para “Status code deve ser 200”. Outro teste que podemos criar também é para verificarmos se o conteúdo da nossa resposta está no formato JSON.
+
+[03:21] Então vou escrever esse teste com vocês - pm.test(). Entre parênteses eu vou colocar o que o nosso teste faz, então vou colocar (“Resposta está no formato JSON”), function(){}, abro e fecho parênteses e abro e fecho chaves – ou “bigodes”, para os íntimos de Java Script – e vou verificar se a minha resposta, o pm.response está no formato JSON, então digito ‘.to.be.son;’.
+
+[04:01] Cuidado para não colocar parênteses, esse JSON não é uma função, é a apenas uma verificação. Então, o que fizemos? Estamos verificando se a resposta é um JSON. Quando eu clico em “Send”, aparece que os nossos dois testes passaram - tanto o “Status code deve ser 200” quanto “Resposta está no formato JSON”.
+
+[04:22] Outra coisa que podemos verificar também é quando vamos no link “Body” da nossa requisição. Existem diversos filmes, um dos filmes é o “Saltadores Ultimato”. Vou clicar no “Saltadores Ultimato”, quero criar um teste para verificar se esse título, “Saltadores Ultimato”, está na resposta da minha requisição.
+
+[04:42] Então observe que scrollando essa parte de snippets, aparece uma verificação que fala se a resposta contém uma determinada string. Então vou apertar a tecla “Enter” e vou clicar em “Response body: contains string”. Aperto a tecla “Enter” e ele cria a função que vai fazer isso.
+
+[05:06] Então vamos alterar esse código - (“Saltadores Ultimato no body da resposta”. Ele tem ‘pm.test’, o nosso teste, a função e ele tem pm.response.text()).to.include(“string_you_wan_to_search”);.
+
+[05:36] Quem vai ser procurada? O (“Saltadores Ultimato”). Clico novamente em “Send” e nós temos agora mais 3 testes, os 3 foram aprovados. Temos o “Saltadores Ultimato”.
+
+[05:48] Pessoal, eu já deixo de desafio para vocês: se vocês quiserem criar outros tipos de testes para verificarem, tem duas coisas: podem olhar a documentação do Postman para vocês conseguirem criarem os seus testes no Postman ou, se vocês quiserem, vocês podem usar esses snippets, lendo na documentação para verificarem quais testes são importantes para as suas APIs.
+
+[06:10] Lembrando que esses testes vão ficar vinculados nessa aba que temos. Se eu crio uma nova aba, por exemplo, coloco o https://localhost8000/programas/ e apertar a tecla “Enter” - quando eu dou uma requisição, observe que ele já fala que a autenticação não foi fornecida.
+
+[06:34] Na outra aba nós temos os nossos testes e temos a autorização feita, então cada aba pode manter uma sequência de testes.
+
 ### Faça como eu fiz
-### Função setUP
+
+Nesta aula aprendemos que podemos usar os dados iniciais do fixtures em nossos testes também. Além disso, executamos alguns testes no Postman, verificando o statuscode da requisição ou o formato dos dados da resposta, por exemplo.
+
+Fixtures nos testes? Testes no Postman? QUEEEEEEEeee???
+
+#### VER OPINIÃO DO INSTRUTOR - Opinião do instrutor
+
+Para carregar os dados do arquivo programas_iniciais.json, basta incluirmos na classe de nossos testes o seguinte comando:
+
+        class FixtureDataTestCase(TestCase):
+                fixtures = ['programas_iniciais']
+
+Desta forma, podemos realizar um teste onde buscamos o programa com ID=1 e comparamos com título descrito no arquivo json:
+
+        def test_verifica_carregamento_da_fixture(self):
+                programa_bizarro = Programa.objects.get(pk=1)
+                self.assertEqual(programa_bizarro.titulo, 'Coisas bizarras')
+
+Em relação aos testes no Postman, podemos executar uma séries de testes em nossos endpoints, verificando, por exemplo, o status code, o formato dos dados ou se um determinado dado se encontra no corpo da resposta:
+
+        pm.test("Status code deve ser 200", function () {
+            pm.response.to.have.status(200);
+        });
+
+        pm.test("Resposta está no formato JSON", function(){
+            pm.response.to.be.json;
+        })
+
+        pm.test("Saltadores Utimato no body da resposta", function () {
+            pm.expect(pm.response.text()).to.include("Saltadores Utimato");
+        });
+
+Ficou com alguma dúvida, lembre-se do fórum da Alura. Não tem dúvidas? Que tal ajudar alguém no fórum?
+
+:)
+
+### Função setUp
+
+Após desenvolver uma API e testar manualmente as principais requisiçòes, uma pessoa decidiu escrever testes automatizados e começou com o seguinte código:
+
+        from rest_framework.test import APITestCase
+        from escola.models import Animal
+        from django.urls import reverse
+
+        class AnimaisTestCase(APITestCase):
+
+            def setUp(self):
+                self.list_url = reverse('Animais-list')
+                self.animal_1 = Animal.objects.create(
+                    nome='Urso'
+                )
+
+Com base no código acima e analisando as afirmações abaixo, podemos afirmar que:
+
+a) **Alternativa correta:** Existe um cenário de teste com um animal cadastrado, porém sem nenhum teste.
+- _Alternativa correta! Certo! Através da função setUp(), o cenário de teste foi montado com as rotas de animais e o animal_1 foi criado apenas para os testes, sem vincular os dados reais da aplicação e nenhum teste ou afirmação foi desenvolvida._
+b) **Alternativa correta:** Qualquer método em uma subclasse TestCase que comece com o prefixo test_ será executado sempre que executarmos o python manage.py test
+- _Alternativa correta! Certo! Assumindo que não adicionamos um argumento para excluí-lo, o método será executado._
+c) O método setUp() é executado quando os métodos de testes são concluídos.
+
 ### O que aprendemos?
+
+**Nesta aula:**
+- Aprendemos que é possível carregar os dados das fixtures no banco de dados de testes;
+- Testamos a API da Alura no Postman, verificando se o statuscode da requisição era o esperado. Além disso, verificamos também se o tipo de dado da resposta estava no formato desejado.
+
+**Na próxima aula - cereja do curso!**
+Vamos aprender como documentar uma API, integrando o Swagger com o Django Rest Framework!
+
 ## 05. Documentando a API com Swagger
 ### Projeto da aula anterior
 ### Swagger
