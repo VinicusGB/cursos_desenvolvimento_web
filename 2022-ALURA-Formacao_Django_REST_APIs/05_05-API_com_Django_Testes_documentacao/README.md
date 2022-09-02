@@ -1084,11 +1084,221 @@ c) O método setUp() é executado quando os métodos de testes são concluídos.
 Vamos aprender como documentar uma API, integrando o Swagger com o Django Rest Framework!
 
 ## 05. Documentando a API com Swagger
-### Projeto da aula anterior
-### Swagger
+### [Swagger]('https://swagger.io/')
+
+Auxilia de forma fácil para documentar a API.
+
+---
+
+[00:00] Na maioria dos casos, a equipe que desenvolve uma API é diferente daquelas que a consomem. Como conseguimos conversar com esse outro time ou de alguma forma auxiliar?
+
+[00:11] Porque se pararmos para pensar, no nosso caso temos um endpoint de programas, podemos especificar, a nossa API aceita requisições get, post, put e delete - mas, se tivéssemos outros modelos, precisaríamos especificar quais são os endpoints e os verbos permitidos para cada um deles.
+
+[00:31] Uma forma que podemos pensar é criando um arquivo ou um TXT, por exemplo. Eu vou colocar lá os endpoints de programa, vou escrever programa. Seria de requisições get, mostro um exemplo, depois requisições post e mostro um exemplo.
+
+[00:44] Porém, a grande dificuldade disso é manter esse código. À medida que a minha API vai crescendo, novos recursos vão sendo inseridos. Vai ficar difícil eu manter isso e a chance de eu errar e esquecer um determinado endpoit é muito fácil.
+
+[01:00] Pensando nisso, existe uma forma de conseguir documentar a nossa API sem acessar, de fato, o código fonte, sem que esse outro time que vai consumir acesse o código fonte ou, por exemplo, faça inspeção de tráfico de rede para conseguir identificar quais são as rotas aceitas ou não. Então, qual é essa forma?
+
+[01:22] Essa forma de documentar a API é através do Swagger. Então se observarmos, o Swagger é uma linguagem de descrição de interfaces de API RESTful usando a linguagem JSON. Ela é de um código aberto, utilizada para construir e documentar serviços Web RESTful. É justamente o que precisamos!
+
+[01:43] Acessando a pagina principal do Swagger aparece “O Swagger elimina o trabalho manual da documentação da API”. Então querermos gerar de alguma forma e falar “eu tenho esse recurso, esses endpoints e essas ações disponíveis”.
+
+[02:03] No nosso caso, temos o endpoint de programa, onde podemos fazer uma requisição get e post. Se eu entro em um outro determinado programa, tenho a requisição put ou patch para conseguir editar e o delete também.
+
+[02:17] Então eu quero de alguma forma mostrar - “esse recurso possui todas essas ações”. Só para entendermos mais ou menos a aparência do Swagger, ele vai ficar assim como apresentado.
+
+[02:25] Então pare para pensar em uma pet shop. Ele me mostra quais são os verbos permitidos para esse determinado recurso, o endpoint específico e o que esse endpoint faz, documentando, assim, a nossa API.
+
+[02:39] Então lembre-se: o problema de eu criar uma API e que outros times consigam utilizar a minha API é que eles precisam saber qual é o endpoint. Então se eles não sabem qual é o endpoint, não tem como eles utilizarem a API. Porém, se criamos uma forma de documentarmos essa API, conseguiremos ter passado todas essas informações para aqueles que forem utilizar a nossa API.
+
+[02:59] Mas como eles teriam acesso? Se observarmos a tela, tem as cores, os recursos... Como poderíamos acessar? Poderíamos, por exemplo, falar que dentro do nosso recurso, do nosso endpoint de programa, vamos ter um endpoint chamado doc.
+
+[03:17] Então sempre que acessarmos o endpoint doc, vamos para a página de documentação da nossa API. Então nós mostramos quais são os modelos, os recursos principais que temos e as ações que esse recurso permite, com alguns exemplos. Então essa é uma das formas que temos de utilizarmos.
+
+[03:37] Qual é a grande vantagem do Swagger? Lembre-se: ele não vai acessar o código fonte, nós não vamos precisar fazer uma documentação na mão ou inspeção de tráfico de rede. Nada disso, vamos conseguir integrar com a nossa API sem problema nenhum!
+
+[03:51] O que vamos fazer em sequência? No próximo vídeo vamos colocar a mão na massa, vamos vincular a nossa API com o Django Rest, integrar o Swagger na nossa API e gerar uma documentação para nossa API, também!
+
 ### DRF e Swagger
+
+[DRF YASG]('https://github.com/axnsan12/drf-yasg')
+[DRF PYPI]('https://pypi.org/project/drf-yasg/')
+
+1. No terminal:
+
+        pip install drf-yasg
+
+2. No settings.py:
+
+        INSTALLED_APPS = [
+                ...
+                'drf-yasg',
+        ]
+
+3. No urls.py:
+
+        ...
+        from rest_framework import permission
+        from drf_yasg.views import get_schema_view
+        from drf_yasg import openapi
+
+        ...
+
+        schema_view = get_schema_view(
+           openapi.Info(
+              title="AluraFlix",
+              default_version='v1',
+              description="Provedor local de séries e filmes desenvolvida pela Alura no curso de DJANGO REST",
+              terms_of_service="https://www.google.com/policies/terms/",
+              contact=openapi.Contact(email="contact@snippets.local"),
+              license=openapi.License(name="BSD License"),
+           ),
+           public=True,
+           permission_classes=[permissions.AllowAny],
+        )
+
+        urlpatterns = [
+           re_path(r'^swagger(?P<format>\.json|\.yaml)$', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+           re_path(r'^swagger/$', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+           re_path(r'^redoc/$', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+           ...
+        ]
+
+---
+
+[00:00] Vamos gerar a documentação da nossa API utilizando o Swagger. Em primeiro lugar, como fazemos para vincular o Django Rest e gerar a nossa documentação com o Swagger? Para isso, existe uma biblioteca chamada “drf-yasg”.
+
+[00:19] Nesse primeiro link da pesquisa no Google nós temos essa documentação sobre essa biblioteca que vai vincular. Ele fala, esse “yasg” significa Yet another Swagger generator, ou seja, ainda é um outro gerador de Swagger, algo desse tipo.
+
+[00:36] Ele fala da compatibilidade, todas as informações referentes ao Swagger. Então o que eu quero é a instalação. Na instalação ele fala para utilizar o pip install -U drf-yasg, então vou fazer isso.
+
+[00:50] Já estou com meu terminal aberto e digitei pip install drf-yasg. Quando eu aperto a tecla “Enter”, ele traz todos os módulos necessários para que o “yasg” seja instalado na nossa aplicação.
+
+[01:07] Ele já terminou. Maravilha, fez a instalação! O que vamos precisar na sequência, com base na documentação, é falar no nosso settings, nos apps instalados. Vamos falar que temos o drf_yasg. Então, vamos fazer isso! Vou minimizar o meu terminal, abrir em “setup > settings.py”. Temos os apps instalados. Eu vou falar que agora também temos o drf_yasg.
+
+[01:33] Para finalizar, ele fala para irmos nas URLs da nossa aplicação. Vamos precisar importar 3 coisas: o permissions, o get_schema_view - para conseguirmos, de fato, visualizar aquela janela que eu mostrei no vídeo anterior - e o openpi, para fazermos algumas alterações no nosso código.
+
+[01:51] Vou copiar esses 3, vou na nossa “urls.py” no nosso arquivo de settings e vou colar eles. Tenho esses 3. Agora ele já nos dá algumas informações: no esquema view, vamos ter uma instância dessa classe que trouxemos, o get_schema_view. Eu vou deixar maior para conseguirmos ver melhor.
+
+[02:13] Então temos uma instância do get_schema_view com algumas propriedades, falando qual é o título da nossa API, quais são algumas informações importantes da nossa API, o tipo de licença e o tipo de permissão. Então vou copiar toda essa linha selecionada e vamos fazer algumas alterações na nossa URL.
+
+[02:33] Então vou apertar a tecla “Enter” e colocar na linha 9. Então temos o nosso guia get_schema_view. Eu vou começar mudando algumas informações.
+
+[02:40] Qual é o título da nossa API, é “aluraflix”, então digito title = “Aluraflix”,. A versão eu vou deixar a v1 mesmo. O teste, o description, podemos escrever o que a nossa API faz, então vou colocar uma descrição curta, mas você pode detalhar com várias coisas. Por exemplo: uma provedora local de filmes e séries, de streaming ou alguma coisa desse tipo.
+
+[03:06] Então vou escrever assim description=“Provedor local de séries e filmes desenvolvida pela Alura no curso de Django Rest”, - algo desse tipo. Vou ir em “View > Toggle Word Wrap”, no menu principal, só para conseguirmos enxergar tudo nessa página. Então na descrição usem e abusem para detalharem a sua API.
+
+[03:47] No termos de serviço, ele dá um link para um arquivo no Google. Então vamos supor, mesmo utilizando o Swagger, eu posso vincular outras informações da minha API também. No nosso caso, como eu não tenho nenhum arquivo, não vou criar nessa aula um arquivo do Google com detalhes da API - mas eu poderia criar os termos de serviço e ir vinculando com um arquivo DOC do Google, por exemplo.
+
+[04:13] Ele fala qual é o contato, então vou passar como exemplo. Usamos o c3po no código e vou usar ele agora também. Então contact=openapi.Contact(email=“c3po@alura.local”),. Seria o nome do time responsável, a alura.com.br. A licença eu vou deixar a que está mesmo.
+
+[04:34] Ele fala que a nossa privacidade para nossa documentação vai ser pública e ele fala que a permissão está para AllowAny, está para todos.
+
+[04:48] O que precisamos fazer agora? Agora que já temos o Swagger com as configurações, o schema_view dele, precisamos falar que em determinada URL vamos ter o Swagger. Então, como fazemos isso? Vou copiar essa segunda linha da URL e vamos alterar algumas informações dela na nossa aplicação.
+
+[05:14] Em primeiro lugar, não utilizamos a tag url, utilizamos path e também não utilizamos expressões regulares para conseguirmos vincular na nossa API. Então vamos utilizar, por exemplo: path(),'swagger', e 'swagger' vai chamar esse schema_view.with_ui. Nós vamos ter um nome, que vai ser o swagger. Ele dá uma informação do cache e dá um name, que vamos utilizar para a nossa API.
+
+[05:45] Você pode me falar: “beleza, Guilherme, já fizemos algumas alterações. O que eu vou fazer?” Estou com dois terminais abertos, vou fechar meu servidor. Vou subir meu servidor mais uma vez, para garantir todas essas alterações. Ele está pensando... Subiu.
+
+[06:00] Minimizando, o que nós temos? Temos agora um path para Swagger com schema_view, que passamos algumas configurações que pegamos da documentação e colocamos no nosso código.
+
+[06:14] Então se eu vou na nossa API, na nossa lista de programas, aparentemente tudo está funcionando. Se eu digito localhost:8000/swagger/ e aperto a tecla “Enter”, olhe que interessante - aparece o Aluraflix, o provedor local de séries e filmes produzido pela Alura no curso de Django Rest. Temos o endpoitnt, o recurso de programa e todos os endpoints disponíveis para o programa.
+
+[06:40] Supondo que eu tivesse outros recursos, igual eu disse - programas, diretor, roteirista, câmeras e várias outras coisas - cada endpoint teria a sua descrição. Então quando eu clico em um endpoint de “/programa/”, ele me fala o tipo do que eu quero, a seleção e os detalhes da informação: um programa tem um título, tem um tipo - que é uma stream, que no caso é um menu de filmes e séries - ele passa várias informações interessantes.
+
+[07:12] Se eu quiser realizar um post de programa ele me dá a descrição e os dados que são obrigatórios quando vamos gerar um determinado programa. Um exemplo de código, também, ou seja, ele dá uma visualização muito legal e uma documentação muito bacana da nossa API.
+
+[07:31] Além do Swagger, existe uma outra forma de conseguirmos visualizar os nossos dados utilizando um outro gerador, que é o ReDoc. Então vou copiar essa linha do ReDoc, a última linha, e vou mostrar para vocês a diferença entre os dois.
+
+[07:48] Então no Swagger vamos ter sempre essa aparência e no ReDoc - vou colocar em baixo – teclas “Enter + Command + V”, não utilizamos url, utilizamos o path. Não vamos utilizar a expressão regular e temos um ReDoc. Vou tirar esse ícone e vou deixar só o redoc/.
+
+[08:10] Também utilizamos através do schema_view. Tem o tempo de cache e o nome schena-redoc. Salvei. Vamos acessar, então. Vou copiar para visualizarmos as duas formas de documentação da nossa API e vou colar na barra de endereço do Google Chrome. No lugar de localhost:8000/swagger/ vou escrever localhost:8000/redoc.
+
+[08:30] Quando aperto a tecla “Enter”, olhe só que interessante! Ele carrega um outro layout de visualização para a nossa aplicação/API.
+
+[08:40] Então quando eu vou em “programas”, ele me mostra a lista dos endpoints disponíveis para programa, detalhes do tipo, do título e dos campos dos atributos que eu tenho para determinado recurso - assim como temos, também, no Swagger.
+
+[08:59] Então essa é uma das formas que temos - e uma das formas, provavelmente, mais utilizada de como conseguimos documentar uma API feita, que já desenvolvemos, para que aqueles que vão consumir a nossa API saibam quais são os endpoints e quais são os recursos principais.
+
+[09:16] No nosso caso estamos visualizando um programa. Se tivessem vários recursos, eles estariam todos listados com detalhes no campo, como utilizamos para criar, quais são as propriedades requeridas no nosso trabalho, quando temos o status de 201, algum exemplo de código...
+
+[09:37] Então conseguimos criar essa documentação, através do Swagger - ou se quisermos um outro tipo de visualização, através do ReDoc.
+
 ### Faça como eu fiz
+
+Nesta aula, integramos o Swagger com o Django para gerar a documentação da nossa API de forma automática.
+
+Como integrar o Swagger no Django Rest?
+
+#### VER OPINIÃO DO INSTRUTOR - Opinião do instrutor
+
+Para integrar o Swagger no Django Rest, em primeiro lugar instale o pacote yasg com o seguinte comando:
+
+        pip install drf-yasg
+
+Em seguida, inclua na lista de app instalados do settings:
+
+        INSTALLED_APPS = [
+           ...
+           'drf_yasg',
+           ...
+        ]
+
+No arquivo urls.py do setup do projeto, faça o importe das seguintes linhas para criar a rota e a parte visual da documentação:
+
+        from rest_framework import permissions
+        from drf_yasg.views import get_schema_view
+        from drf_yasg import openapiCOPIAR CÓDIGO
+
+Para finalizar, crie as rotas com as configurações básicas da documentação:
+
+        schema_view = get_schema_view(
+           openapi.Info(
+              title="Aluraflix",
+              default_version='v1',
+              description="Provedor local de séries e filmes desenvolvida pela Alura no curso de Django Rest",
+              terms_of_service="#",
+              contact=openapi.Contact(email="c3po@alura.com.br"),
+              license=openapi.License(name="BSD License"),
+           ),
+           public=True,
+           permission_classes=[permissions.AllowAny],
+        )
+
+        urlpatterns = [
+        ...
+            path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+        ]
+
+Para acessar a documentação, basta subir o servidor (caso não esteja de pé) e acessar o caminho http://localhost:8000/swagger/.
+
+Muito legal, né?
+
+Não tem dúvidas? Que tal ajudar alguém no fórum?
+
+:)
+
 ### Detalhes do Swagger
+
+Uma API possui diversos modelos, rotas, endpoints e manter a documentação de seu funcionamento pode ser um grande desafio. Pensando nisso, vimos como integrar o Swagger com Django Rest para a criação de uma documentação, eliminando o trabalho manual de documentar a API.
+
+Sabendo disso, podemos afirmar que:
+
+a) **Alternativa correta:** Ao usar o Swagger, podemos dizer que a documentação evolui no mesmo ritmo da implementação.
+- _Alternativa correta! Certo! Toda a documentação é gerada automaticamente com base em anotações do código, seguindo a implementação e mantendo a documentação no mesmo ritmo da implementação._
+
+b) Apesar de ser um grande desafio, a melhor forma de documentar uma API é a manual, num arquivo txt ou doc.
+
+c) **Alternativa correta:** O Swagger auxilia a descrição, consumo e visualização de serviços de uma API REST.
+- _Alternativa correta! Certo! Integramos o Django Rest e vimos na prática seu funcionamento. Além disso, o Swagger pode ser integrado com várias linguagens e frameworks._
+
 ### Projeto final do curso
+
+Aqui você pode baixar o zip da aula 05 ou acessar os arquivos no [Github]('https://github.com/alura-cursos/drf_teste_documentacao/tree/aula_5')!
+
 ### O que aprendemos?
- 
+
+**Nesta aula:**
+- Entendemos a importância de documentar uma API para outras pessoas e sistemas. Porém, essa documentação deve seguir o ritmo da implementação de código;
+- Integramos o Swagger no Django Rest Framework e vimos na prática a documentação gerada. Além disso, realizamos alguns testes no Swagger.
