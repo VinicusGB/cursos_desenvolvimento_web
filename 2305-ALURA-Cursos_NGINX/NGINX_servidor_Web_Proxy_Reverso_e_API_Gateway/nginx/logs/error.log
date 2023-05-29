@@ -1,0 +1,77 @@
+2023/05/28 14:44:18 [error] 3240#12968: *1 CreateFile() "C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/html/favicon.ico" failed (2: The system cannot find the file specified), client: 127.0.0.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "localhost", referrer: "http://localhost/"
+2023/05/28 15:52:14 [alert] 11376#4680: worker process 13364 exited with code C0000142
+2023/05/28 15:52:14 [alert] 11376#4680: could not respawn worker
+2023/05/28 15:52:14 [alert] 11376#4680: worker process 3996 exited with code C0000142
+2023/05/28 15:52:14 [alert] 11376#4680: could not respawn worker
+2023/05/28 15:52:14 [alert] 11376#4680: worker process 14516 exited with code C0000142
+2023/05/28 15:52:14 [alert] 11376#4680: could not respawn worker
+2023/05/28 15:52:14 [alert] 11376#4680: worker process 12908 exited with code C0000142
+2023/05/28 15:52:14 [alert] 11376#4680: could not respawn worker
+2023/05/28 15:56:19 [error] 2716#4716: *1 CreateFile() "C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/html/favicon.ico" failed (2: The system cannot find the file specified), client: 127.0.0.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "localhost", referrer: "http://localhost/"
+2023/05/28 15:58:02 [notice] 17112#17116: signal process started
+2023/05/28 15:58:32 [notice] 4260#2724: signal process started
+2023/05/28 15:58:46 [notice] 4400#11816: signal process started
+2023/05/28 15:58:46 [error] 4400#11816: CreateFile() "C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/logs/nginx.pid" failed (2: The system cannot find the file specified)
+2023/05/28 15:59:02 [notice] 17400#17364: signal process started
+2023/05/28 15:59:02 [error] 17400#17364: CreateFile() "C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/logs/nginx.pid" failed (2: The system cannot find the file specified)
+2023/05/28 15:59:22 [notice] 5496#7156: signal process started
+2023/05/28 15:59:22 [error] 5496#7156: CreateFile() "C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/logs/nginx.pid" failed (2: The system cannot find the file specified)
+2023/05/28 16:00:02 [notice] 8300#8500: signal process started
+2023/05/28 16:00:15 [notice] 15068#8336: signal process started
+2023/05/28 16:00:15 [error] 15068#8336: CreateFile() "C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/logs/nginx.pid" failed (2: The system cannot find the file specified)
+2023/05/28 16:01:16 [notice] 9408#9316: signal process started
+2023/05/28 16:05:42 [notice] 2856#16352: signal process started
+2023/05/28 16:13:23 [notice] 8080#9260: signal process started
+2023/05/28 16:13:33 [notice] 6548#8820: signal process started
+2023/05/28 16:13:33 [error] 6548#8820: CreateFile() "C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/logs/nginx.pid" failed (2: The system cannot find the file specified)
+2023/05/28 16:13:51 [notice] 7348#15444: signal process started
+2023/05/28 16:13:51 [error] 7348#15444: CreateFile() "C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/logs/nginx.pid" failed (2: The system cannot find the file specified)
+2023/05/28 16:14:33 [error] 9048#15040: *8 CreateFile() "C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/html/teste" failed (2: The system cannot find the file specified), client: 127.0.0.1, server: localhost, request: "GET /teste HTTP/1.1", host: "localhost"
+2023/05/28 16:16:47 [error] 9048#15040: *12 CreateFile() "C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/html/teste" failed (2: The system cannot find the file specified), client: 127.0.0.1, server: localhost, request: "GET /teste HTTP/1.1", host: "localhost"
+2023/05/28 16:48:07 [notice] 2876#1624: signal process started
+2023/05/28 16:48:07 [error] 2876#1624: CreateFile() "C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/logs/nginx.pid" failed (2: The system cannot find the file specified)
+2023/05/28 16:48:37 [notice] 6288#11948: signal process started
+2023/05/28 16:48:37 [error] 6288#11948: CreateFile() "C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/logs/nginx.pid" failed (2: The system cannot find the file specified)
+2023/05/28 16:48:56 [notice] 1680#13704: signal process started
+2023/05/28 16:48:56 [error] 1680#13704: CreateFile() "C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/logs/nginx.pid" failed (2: The system cannot find the file specified)
+2023/05/28 16:50:13 [notice] 18388#15416: signal process started
+2023/05/28 16:50:13 [error] 18388#15416: CreateFile() "C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/logs/nginx.pid" failed (2: The system cannot find the file specified)
+2023/05/28 16:50:16 [notice] 14476#3556: signal process started
+2023/05/28 16:50:16 [error] 14476#3556: CreateFile() "C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/logs/nginx.pid" failed (2: The system cannot find the file specified)
+2023/05/28 16:52:20 [notice] 5636#3300: signal process started
+2023/05/28 17:08:43 [notice] 16508#13300: signal process started
+2023/05/28 17:20:18 [notice] 16844#16632: signal process started
+2023/05/28 17:20:18 [error] 16844#16632: OpenEvent("Global\ngx_reload_3320") failed (2: The system cannot find the file specified)
+2023/05/28 17:20:46 [notice] 3992#16532: signal process started
+2023/05/28 17:20:46 [error] 3992#16532: OpenEvent("Global\ngx_quit_3320") failed (2: The system cannot find the file specified)
+2023/05/28 17:21:53 [error] 16780#15452: *1 CreateFile() "C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/html/favicon.ico" failed (2: The system cannot find the file specified), client: 127.0.0.1, server: localhost, request: "GET /favicon.ico HTTP/1.1", host: "localhost", referrer: "http://localhost/"
+2023/05/28 17:22:07 [notice] 10640#16396: signal process started
+2023/05/28 17:23:10 [emerg] 1236#8396: invalid number of arguments in "root" directive in C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/conf/nginx.conf:46
+2023/05/28 17:23:22 [emerg] 7140#12032: invalid number of arguments in "root" directive in C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/conf/nginx.conf:46
+2023/05/28 17:23:27 [emerg] 1716#16212: invalid number of arguments in "root" directive in C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/conf/nginx.conf:46
+2023/05/28 17:24:37 [emerg] 14848#10100: invalid number of arguments in "root" directive in C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/conf/nginx.conf:46
+2023/05/28 17:28:13 [error] 16644#16336: *7 "C:/path/to/your/mysite/media/index.html" is not found (3: The system cannot find the path specified), client: 127.0.0.1, server: localhost, request: "GET /media/ HTTP/1.1", host: "localhost"
+2023/05/28 17:29:14 [error] 16644#16336: *7 CreateFile() "C:/path/to/your/mysite/media/cadastro/associados/12345678909" failed (3: The system cannot find the path specified), client: 127.0.0.1, server: localhost, request: "GET /media/cadastro/associados/12345678909 HTTP/1.1", host: "localhost"
+2023/05/28 17:29:20 [error] 16644#16336: *7 "C:/path/to/your/mysite/media/cadastro/associados/12345678909/index.html" is not found (3: The system cannot find the path specified), client: 127.0.0.1, server: localhost, request: "GET /media/cadastro/associados/12345678909/ HTTP/1.1", host: "localhost"
+2023/05/28 17:29:44 [error] 16644#16336: *7 CreateFile() "C:/path/to/your/mysite/media/cadastro/associados/12345678909/12345678909-RG-NOME_TESTE.pdf" failed (3: The system cannot find the path specified), client: 127.0.0.1, server: localhost, request: "GET /media/cadastro/associados/12345678909/12345678909-RG-NOME_TESTE.pdf HTTP/1.1", host: "localhost"
+2023/05/28 17:29:48 [error] 16644#16336: *7 CreateFile() "C:/path/to/your/mysite/media/cadastro/associados/12345678909/12345678909-RG-NOME_TESTE.pdf" failed (3: The system cannot find the path specified), client: 127.0.0.1, server: localhost, request: "GET /media/cadastro/associados/12345678909/12345678909-RG-NOME_TESTE.pdf HTTP/1.1", host: "localhost"
+2023/05/28 17:30:01 [error] 16644#16336: *7 CreateFile() "C:/path/to/your/mysite/media/cadastro/associados/12345678909/12345678909-RG-NOME_TESTE.pdf" failed (3: The system cannot find the path specified), client: 127.0.0.1, server: localhost, request: "GET /media/cadastro/associados/12345678909/12345678909-RG-NOME_TESTE.pdf HTTP/1.1", host: "localhost"
+2023/05/28 17:31:42 [notice] 11280#1340: signal process started
+2023/05/28 17:33:00 [notice] 9620#7612: signal process started
+2023/05/28 17:33:32 [notice] 6884#13616: signal process started
+2023/05/28 17:37:13 [warn] 10912#8952: server name "localhost/*" has suspicious symbols in C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/conf/nginx.conf:37
+2023/05/28 17:37:13 [notice] 10912#8952: signal process started
+2023/05/28 17:37:13 [warn] 17340#14732: server name "localhost/*" has suspicious symbols in C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/conf/nginx.conf:37
+2023/05/28 17:37:13 [warn] 12060#10684: server name "localhost/*" has suspicious symbols in C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/conf/nginx.conf:37
+2023/05/28 17:37:13 [warn] 5880#8052: server name "localhost/*" has suspicious symbols in C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/conf/nginx.conf:37
+2023/05/28 17:37:13 [warn] 7760#16892: server name "localhost/*" has suspicious symbols in C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/conf/nginx.conf:37
+2023/05/28 17:46:10 [notice] 16800#6424: signal process started
+2023/05/28 17:49:03 [notice] 8072#7496: signal process started
+2023/05/28 17:50:49 [error] 17392#10140: *21 "C:\SINDSEP_BASE/juridico/cadastro/dadopessoal/392/change/index.html" is not found (3: The system cannot find the path specified), client: 127.0.0.1, server: localhost, request: "GET /juridico/cadastro/dadopessoal/392/change/?_changelist_filters=q%3Dteste HTTP/1.1", host: "localhost:8000"
+2023/05/28 17:52:05 [notice] 13768#11504: signal process started
+2023/05/28 17:52:53 [notice] 16964#16676: signal process started
+2023/05/28 17:55:59 [notice] 13356#17236: signal process started
+2023/05/28 17:56:02 [notice] 13792#10808: signal process started
+2023/05/28 17:56:02 [error] 13792#10808: CreateFile() "C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/logs/nginx.pid" failed (2: The system cannot find the file specified)
+2023/05/28 17:57:25 [notice] 9076#12872: signal process started
+2023/05/28 17:57:25 [error] 9076#12872: CreateFile() "C:\Projetos\cursos_dev_web\2305-ALURA-Cursos_NGINX\NGINX_servidor_Web_Proxy_Reverso_e_API_Gateway\nginx/logs/nginx.pid" failed (2: The system cannot find the file specified)
